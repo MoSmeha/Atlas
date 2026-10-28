@@ -1,5 +1,6 @@
 import type { Answer, Source, Usage } from '@atlas/shared';
 import type { CleanValue } from '../../domain/table';
+import { NumberEvidence } from './NumberEvidence';
 
 /** Rows a tool computed, kept under an id so the answer, export_table and calculate can reuse them. */
 export interface SavedResult {
@@ -25,6 +26,8 @@ export class Session {
   readonly turns: Turn[] = [];
   lastUsage: Usage | null = null;
   totalCostUsd = 0;
+  /** Numbers seen in this chat; calculate checks its typed inputs against it. */
+  readonly evidence = new NumberEvidence();
   private readonly results = new Map<string, SavedResult>();
   private nextResult = 1;
 
@@ -35,6 +38,7 @@ export class Session {
   saveResult(result: Omit<SavedResult, 'id'>): SavedResult {
     const saved = { ...result, id: `r${this.nextResult++}` };
     this.results.set(saved.id, saved);
+    this.evidence.noteRows(saved.rows);
     return saved;
   }
 
