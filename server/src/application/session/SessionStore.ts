@@ -13,6 +13,11 @@ export class SessionStore {
     return session;
   }
 
+  /** The session if it has been started, without starting one. */
+  find(id: string): Session | null {
+    return this.sessions.get(id) ?? null;
+  }
+
   clear(id: string): void {
     this.sessions.delete(id);
   }

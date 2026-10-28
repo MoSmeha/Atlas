@@ -7,6 +7,7 @@ import { FakeClock } from './FakeClock';
 import { FakeFileSystem } from './FakeFileSystem';
 import { FakeIndex } from './FakeIndex';
 import { FakeExporter } from './FakeOutputs';
+import { testLineup } from './lineup';
 import { MemoryRunLogger } from './MemoryRunLogger';
 
 /** ApiDeps made of fakes; pass overrides for the features a test cares about. */
@@ -22,16 +23,19 @@ export function makeApiDeps(overrides: Partial<ApiDeps> = {}): ApiDeps {
     clock: new FakeClock(),
     maxFileBytes: 10 * 1024 * 1024,
   });
+  const sessions = new SessionStore();
   return {
     health: { version: 'test', apiKeyPresent: false },
     exports: {
-      sessions: new SessionStore(),
+      sessions,
       exportResult: new ExportResult(new FakeExporter(), new FakeClock()),
       exportsDir: '/exports',
     },
     folder: { indexFolder, workspace, repoRoot: '/repo' },
     documents: { workspace },
     uploads: { indexFolder, uploadsDir: '/data/uploads', maxFileBytes: 10 * 1024 * 1024 },
+    models: { lineup: testLineup, answerTier: 'frontier' },
+    usage: { sessions },
     ...overrides,
   };
 }
