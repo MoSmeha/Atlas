@@ -27,7 +27,7 @@ export function ModelPicker() {
       allowDeselect={false}
       withCheckIcon={false}
       disabled={models.data === undefined}
-      placeholder={models.isError ? 'Models unavailable' : 'Loading models'}
+      placeholder={models.isError ? 'Default model' : 'Loading models'}
       renderOption={({ option, checked }) => (
         <ModelOptionRow label={option.label} tier={tierOf(option.value)} checked={checked === true} />
       )}
