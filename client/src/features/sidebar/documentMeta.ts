@@ -13,7 +13,7 @@ export function formatBytes(bytes: number): string {
     unit++;
   }
   const digits = value < 10 && unit > 0 ? 1 : 0;
-  return `${value.toFixed(digits)} ${units[unit]}`;
+  return `${Number(value.toFixed(digits))} ${units[unit]}`;
 }
 
 /**
