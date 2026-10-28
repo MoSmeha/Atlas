@@ -2,7 +2,8 @@ import type { FileStatus } from '@atlas/shared';
 import {
   IconAlertCircle,
   IconAlertTriangle,
-  IconCircleDashed,
+  IconCircleMinus,
+  IconFileOff,
   IconLock,
   type Icon,
 } from '@tabler/icons-react';
@@ -44,13 +45,13 @@ const looks: Record<Exclude<FileStatus, 'ok'>, StatusLook> = {
   empty: {
     label: 'Empty',
     color: 'gray',
-    icon: IconCircleDashed,
+    icon: IconCircleMinus,
     detail: 'The file has no text or data to read.',
   },
   skipped: {
     label: 'Not read',
     color: 'gray',
-    icon: IconCircleDashed,
+    icon: IconFileOff,
     detail: 'Atlas reads only PDF and Excel files.',
   },
 };
