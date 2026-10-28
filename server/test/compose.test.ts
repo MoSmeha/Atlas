@@ -1,7 +1,8 @@
-import { mkdtempSync, readdirSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { ChatEvent } from '@atlas/shared';
 import { afterAll, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/api/app';
@@ -10,9 +11,13 @@ import { loadSettings } from '../src/infrastructure/settings';
 import { compose } from '../src/main';
 
 const logDir = mkdtempSync(join(tmpdir(), 'atlas-compose-logs-'));
+const workDir = mkdtempSync(join(tmpdir(), 'atlas-compose-work-'));
 const noKey = { ...loadSettings({}, 'no-such.env'), openAiApiKey: null, logDir };
 
-afterAll(() => rm(logDir, { recursive: true, force: true }));
+afterAll(async () => {
+  await rm(logDir, { recursive: true, force: true });
+  await rm(workDir, { recursive: true, force: true });
+});
 
 describe('compose', () => {
   it('works without an API key: no model client, lineup in catalog order', async () => {
@@ -56,6 +61,21 @@ describe('compose', () => {
     expect(outcome).toEqual({ ok: false, error: expect.objectContaining({ code: 'missing_api_key' }) });
     expect(events).toEqual([{ type: 'error', error: expect.objectContaining({ code: 'missing_api_key' }) }]);
     expect(readdirSync(logDir)).toHaveLength(1);
+  });
+
+  it('ends indexing with five suggested questions for the folder', async () => {
+    const folder = join(workDir, 'project');
+    mkdirSync(folder);
+    copyFileSync(fileURLToPath(new URL('fixtures/arabic-edge.pdf', import.meta.url)), join(folder, 'Site_Note.pdf'));
+    const container = await compose({ ...noKey, dataDir: join(workDir, 'data'), logDir: join(workDir, 'logs') });
+
+    await container.indexFolder.load(folder);
+    const status = await container.indexFolder.idle();
+
+    expect(status.phase).toBe('ready');
+    expect(status.suggestions).toHaveLength(5);
+    expect(status.suggestions).toContain('Extract all dates and deliverables from these documents');
+    container.workspace.require().index.close();
   });
 
   it('offers the lineup with the configured answer tier as the default model', async () => {

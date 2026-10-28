@@ -6,6 +6,7 @@ import { ExportResult } from './application/ExportResult';
 import { classificationStep } from './application/indexing/classificationStep';
 import { ClassifyDocument } from './application/indexing/ClassifyDocument';
 import { IndexFolder } from './application/indexing/IndexFolder';
+import { suggestionsStep } from './application/indexing/suggestionsStep';
 import type { Lineup } from './application/models/pickLineup';
 import type { Clock } from './application/ports/Clock';
 import type { EmbeddingClient } from './application/ports/EmbeddingClient';
@@ -76,7 +77,7 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     logger,
     clock,
     maxFileBytes: settings.maxFileBytes,
-    steps: [classificationStep({ classifier, logger, clock })],
+    steps: [classificationStep({ classifier, logger, clock }), suggestionsStep(workspace)],
   });
   const askQuestion = new AskQuestion({
     workspace,

@@ -1,4 +1,4 @@
-import type { DocumentSummary } from '@atlas/shared';
+import type { DocumentSummary, TableSummary } from '@atlas/shared';
 import type { BoqRow } from '../../domain/boqArithmetic';
 import type { CleanValue } from '../../domain/table';
 import type { DocumentIndex, TableRowRecord, TableSchema } from '../ports/DocumentIndex';
@@ -12,7 +12,7 @@ export const BOQ_COLUMNS = ['quantity', 'rate', 'amount'] as const;
 const MAX_LISTED = 30;
 
 /** A priced table: it has quantity, rate and amount columns. */
-export function isBoqTable(table: TableSchema): boolean {
+export function isBoqTable(table: Pick<TableSummary, 'columns'>): boolean {
   const names = new Set(table.columns.map((column) => column.name));
   return BOQ_COLUMNS.every((name) => names.has(name));
 }
