@@ -49,8 +49,11 @@ function splitParagraph(paragraph: string): string[] {
 }
 
 function endsSentence(text: string, at: number, stop: number): boolean {
-  const word = /([\p{L}.]+)$/u.exec(text.slice(Math.max(0, at - 12), at))?.[1] ?? '';
-  if (text[at] === '.' && (ABBREVIATIONS.has(word.toLowerCase()) || /^\p{L}$/u.test(word))) return false;
+  const before = text.slice(Math.max(0, at - 12), at);
+  const word = /([\p{L}.]+)$/u.exec(before)?.[1] ?? '';
+  // An initial such as "J." is a capital standing alone; the "م" in "2026م." is a Gregorian mark that ends a sentence.
+  const initial = /(?:^|\s)[A-Z]$/.test(before);
+  if (text[at] === '.' && (ABBREVIATIONS.has(word.toLowerCase()) || initial)) return false;
   const next = /\S/.exec(text.slice(stop));
   return next === null || !/[a-z]/.test(next[0]);
 }

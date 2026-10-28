@@ -32,6 +32,20 @@ describe('splitSentences', () => {
     ]);
   });
 
+  it('ends an Arabic sentence after a year with the Gregorian mark', () => {
+    expect(splitSentences('آخر موعد هو ٥ أبريل ٢٠٢٦م.\nيتم الاستلام في ١١ رمضان ١٤٤٨هـ.')).toEqual([
+      'آخر موعد هو ٥ أبريل ٢٠٢٦م.',
+      'يتم الاستلام في ١١ رمضان ١٤٤٨هـ.',
+    ]);
+  });
+
+  it('keeps initials such as "J." inside a sentence', () => {
+    expect(splitSentences('Signed by J. Smith on 1 March 2026. Approved.')).toEqual([
+      'Signed by J. Smith on 1 March 2026.',
+      'Approved.',
+    ]);
+  });
+
   it('splits Arabic text at full stops and Arabic question marks', () => {
     expect(splitSentences('يجب تقديم البرنامج الزمني خلال ٢٨ يوماً. هل تمت الموافقة؟ نعم')).toEqual([
       'يجب تقديم البرنامج الزمني خلال ٢٨ يوماً.',
