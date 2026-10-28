@@ -146,7 +146,7 @@ function fuse(keywordHits: SearchHit[], semanticHits: SearchHit[], query: string
 function noPassagesNote(scope: DocumentSummary | null): string {
   if (scope === null) return 'No passage matched. Try other words, or check list_documents for scanned or unreadable files.';
   if (scope.status !== 'ok' && scope.status !== 'scanned') {
-    return `${scope.path} has no searchable text: ${scope.statusDetail ?? `its status is ${scope.status}`}.`;
+    return `${scope.path} has no searchable text. ${scope.statusDetail ?? `Its status is ${scope.status}.`}`;
   }
   if (scope.kind === 'excel') return `No passage matched in ${scope.path}. Read spreadsheet rows with query_tables.`;
   if (scope.scannedPages.length > 0) {
