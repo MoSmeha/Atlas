@@ -32,6 +32,15 @@ describe('NumberEvidence', () => {
     expect(evidence.has(0.30000000000000004)).toBe(true);
   });
 
+  it('notes the numbers anywhere in a tool output, but not its keys', () => {
+    const evidence = new NumberEvidence();
+    evidence.noteValue({ pages: [{ number: 4, text: 'Retention is 5% of SAR 2,400,000.' }], total: 1250000.5, '777': null });
+    expect(evidence.has(1250000.5)).toBe(true);
+    expect(evidence.has(2400000)).toBe(true);
+    expect(evidence.has(0.05)).toBe(true);
+    expect(evidence.has(777)).toBe(false);
+  });
+
   it('skips values that are not finite', () => {
     const evidence = new NumberEvidence();
     evidence.noteNumber(Number.POSITIVE_INFINITY);

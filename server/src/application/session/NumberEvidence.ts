@@ -1,3 +1,4 @@
+import { numbersFromValue } from '../../domain/numbers';
 import { numbersInText } from '../../domain/numbersInText';
 import type { CleanValue } from '../../domain/table';
 
@@ -11,6 +12,11 @@ export class NumberEvidence {
   /** Notes every number written in a text, such as the user's question or a tool output. */
   noteText(text: string): void {
     for (const value of numbersInText(text)) this.noteNumber(value);
+  }
+
+  /** Notes every number a JSON value holds, such as a tool output: its number values and the numbers in its strings. */
+  noteValue(value: unknown): void {
+    for (const number of numbersFromValue(value)) this.noteNumber(number);
   }
 
   noteNumber(value: number): void {
