@@ -42,11 +42,10 @@ export function EmptyState({ status, statusError, canAsk, onAsk, onReload }: Emp
   if (status.folder === null) {
     return (
       <Frame>
-        <Heading>Load a folder to begin</Heading>
-        <Line>
+        <Intro heading="Load a folder to begin">
           Type the path of a folder of PDF and Excel files in the documents panel, or drop files there. Atlas reads every
           file, then answers your questions with the page or rows each fact came from.
-        </Line>
+        </Intro>
       </Frame>
     );
   }
@@ -55,7 +54,7 @@ export function EmptyState({ status, statusError, canAsk, onAsk, onReload }: Emp
   if (status.phase === 'error') {
     return (
       <Frame>
-        <Heading>Atlas could not read {name}</Heading>
+        <Intro heading={`Atlas could not read ${name}`} />
         {status.error && <ErrorNotice error={status.error} />}
       </Frame>
     );
@@ -64,8 +63,9 @@ export function EmptyState({ status, statusError, canAsk, onAsk, onReload }: Emp
   if (status.phase !== 'ready') {
     return (
       <Frame>
-        <Heading>Reading {name}</Heading>
-        <Line>{status.progress?.message ?? 'Looking for PDF and Excel files.'} Suggested questions appear when it is done.</Line>
+        <Intro heading={`Getting ${name} ready`}>
+          {sentence(status.progress?.message ?? 'Looking for PDF and Excel files')} Suggested questions appear when it is done.
+        </Intro>
         <SuggestedQuestionsSkeleton />
       </Frame>
     );
@@ -73,14 +73,13 @@ export function EmptyState({ status, statusError, canAsk, onAsk, onReload }: Emp
 
   return (
     <Frame>
-      <Stack gap={6}>
-        <Heading>Ask about {name}</Heading>
-        <Line>{folderSummary(status.documents)}</Line>
-      </Stack>
+      <Intro heading={`Ask about ${name}`}>{folderSummary(status.documents)}</Intro>
       {status.suggestions.length > 0 ? (
         <SuggestedQuestions questions={status.suggestions.slice(0, 5)} disabled={!canAsk} onAsk={onAsk} />
       ) : (
-        <Line>Type a question below to start.</Line>
+        <Text fz="md" c="dimmed">
+          Type a question below to start.
+        </Text>
       )}
     </Frame>
   );
@@ -94,18 +93,24 @@ function Frame({ children }: { children: ReactNode }) {
   );
 }
 
-function Heading({ children }: { children: ReactNode }) {
+/** The heading that names the state, with one line under it. */
+function Intro({ heading, children }: { heading: string; children?: ReactNode }) {
   return (
-    <Title order={1} c="bright" style={{ overflowWrap: 'anywhere' }}>
-      {children}
-    </Title>
+    <Stack gap="xs">
+      <Title order={1} c="bright" style={{ overflowWrap: 'anywhere' }}>
+        {heading}
+      </Title>
+      {children && (
+        <Text fz="md" c="dimmed" maw="65ch">
+          {children}
+        </Text>
+      )}
+    </Stack>
   );
 }
 
-function Line({ children }: { children: ReactNode }) {
-  return (
-    <Text fz="md" c="dimmed" maw="65ch">
-      {children}
-    </Text>
-  );
+/** Ends a progress message such as "Reading BOQ.xlsx, 3 of 12" with a full stop. */
+function sentence(text: string): string {
+  const trimmed = text.trim();
+  return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
 }
