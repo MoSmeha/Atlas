@@ -3,6 +3,7 @@ import {
   AppShell,
   Badge,
   Button,
+  Code,
   Combobox,
   createTheme,
   Menu,
@@ -252,6 +253,7 @@ export const theme = createTheme({
     Combobox: Combobox.extend({ defaultProps: { shadow: 'md', radius: 'md' } }),
     Notification: Notification.extend({ defaultProps: { radius: 'md', withBorder: true } }),
     ScrollArea: ScrollArea.extend({ defaultProps: { scrollbarSize: 8, type: 'hover' } }),
+    Code: Code.extend({ defaultProps: { color: 'gray.1' } }),
     Title: Title.extend({ styles: { root: { letterSpacing: '-0.01em' } } }),
   },
 });
