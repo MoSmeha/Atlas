@@ -1,32 +1,19 @@
 import type { ColumnType } from '@atlas/shared';
 import { columnLetters } from '../cellRange';
 import type { RawCell, SheetGrid } from '../document';
-import { type CleanColumn, type CleanRow, type CleanTable, type ColumnRole, sqlIdentifier } from '../table';
+import type { CleanTable } from '../table';
 import { cellAt, rowTexts } from './area';
+import { buildTable, columnTypes, leadingTextColumns, type SourceColumn, type SourceRow } from './buildTable';
 import { isBlank } from './cellText';
-import { cleanValue, columnType } from './columnTypes';
 import { splitTables, type TableBlock } from './splitTables';
-import { tableCurrency } from './tableCurrency';
 import { headingText, isSectionHeading, isTotalRow } from './totalRows';
 
 const MAX_TITLE_LENGTH = 300;
-/** Columns of measures and money; section headings only use the text columns before the first of them. */
-const MEASURE_ROLES: ReadonlySet<ColumnRole> = new Set(['unit', 'quantity', 'rate', 'amount', 'currency']);
-
-interface SourceColumn {
-  label: string;
-  role: ColumnRole | null;
-}
 
 interface BodyRow {
   sheetRow: number;
   /** One cell per source column. */
   cells: RawCell[];
-}
-
-interface ClassifiedRow extends BodyRow {
-  isTotal: boolean;
-  section: string | null;
 }
 
 /**
@@ -44,48 +31,8 @@ export function cleanSheet(grid: SheetGrid): CleanTable[] {
 function cleanBlock(grid: SheetGrid, block: TableBlock): CleanTable {
   const title = tableTitle(grid, block);
   const { columns: sources, rows: body } = sourceRows(grid, block);
-  const draftTypes = typesOf(sources, body);
-  const rows = classifyRows(body, sources, draftTypes);
-  const types = typesOf(sources, rows);
-  const currency = tableCurrency(
-    sources.map((column, i) => ({ label: column.label, role: column.role, type: types[i] ?? 'text' })),
-    rows.map((row) => row.cells),
-    title,
-  );
-
-  const columns = [...sources];
-  if (currency.perRow !== null && !sources.some((column) => column.role === 'currency')) {
-    columns.push({ label: 'Currency', role: 'currency' });
-    types.push('text');
-  }
-  const currencyColumn = columns.findIndex((column) => column.role === 'currency');
-  const names = columnNames(columns);
-  return {
-    title,
-    sheet: grid.name,
-    pageFrom: null,
-    pageTo: null,
-    columns: columns.map((column, i): CleanColumn => ({
-      name: names[i] ?? `col_${i + 1}`,
-      label: column.label,
-      type: types[i] ?? 'text',
-      role: column.role,
-    })),
-    rows: rows.map(
-      (row, r): CleanRow => ({
-        values: columns.map((_, i) =>
-          i === currencyColumn && currency.perRow !== null
-            ? (currency.perRow[r] ?? null)
-            : cleanValue(row.cells[i] ?? null, types[i] ?? 'text'),
-        ),
-        sheetRow: row.sheetRow,
-        page: null,
-        isTotal: row.isTotal,
-        section: row.section,
-      }),
-    ),
-    currency: currency.currency,
-  };
+  const rows = classifyRows(body, sources, columnTypes(sources, body));
+  return buildTable({ title, sheet: grid.name, pageFrom: null, pageTo: null }, sources, rows);
 }
 
 /** The text of the rows above the header, each row's cells joined with spaces and the rows with " - ". */
@@ -123,26 +70,17 @@ function sourceRows(grid: SheetGrid, block: TableBlock): { columns: SourceColumn
   return { columns, rows };
 }
 
-function typesOf(columns: readonly SourceColumn[], rows: readonly BodyRow[]): ColumnType[] {
-  return columns.map((column, i) =>
-    columnType(
-      rows.map((row) => row.cells[i] ?? null),
-      column.role,
-    ),
-  );
-}
-
 /**
  * Marks total rows and turns section headings into the section of the rows below them; headings in a row with no data
  * between them join with " - ", as in "Bill 1 - Substructure - 1.1 Earthworks". Heading rows are not data. A total right
  * after another total ("Total Bill 1" after "Sub-total 1.3") covers more than the last section, so it gets none.
  */
-function classifyRows(rows: readonly BodyRow[], columns: readonly SourceColumn[], types: readonly ColumnType[]): ClassifiedRow[] {
+function classifyRows(rows: readonly BodyRow[], columns: readonly SourceColumn[], types: readonly ColumnType[]): SourceRow[] {
   const headingColumns = leadingTextColumns(columns, types);
   const detailColumns = new Set(
     columns.flatMap((column, i) => (column.role === 'unit' || column.role === 'rate' ? [i] : [])),
   );
-  const classified: ClassifiedRow[] = [];
+  const classified: SourceRow[] = [];
   let section: string | null = null;
   let afterHeading = false;
   for (const row of rows) {
@@ -154,29 +92,8 @@ function classifyRows(rows: readonly BodyRow[], columns: readonly SourceColumn[]
       continue;
     }
     const afterTotal = classified.at(-1)?.isTotal === true;
-    classified.push({ ...row, isTotal, section: isTotal && afterTotal ? null : section });
+    classified.push({ ...row, page: null, isTotal, section: isTotal && afterTotal ? null : section });
     afterHeading = false;
   }
   return classified;
-}
-
-/** The text columns before the first measure or number column; none when the table has no such column. */
-function leadingTextColumns(columns: readonly SourceColumn[], types: readonly ColumnType[]): Set<number> {
-  const boundary = columns.findIndex(
-    (column, i) => (column.role !== null && MEASURE_ROLES.has(column.role)) || types[i] !== 'text',
-  );
-  return new Set(Array.from({ length: Math.max(boundary, 0) }, (_, i) => i));
-}
-
-/** Role columns take their role name; the others a snake_case form of their label, numbered on clashes. */
-function columnNames(columns: readonly SourceColumn[]): string[] {
-  const used = new Set<string>(columns.flatMap((column) => (column.role === null ? [] : [column.role])));
-  return columns.map((column, i) => {
-    if (column.role !== null) return column.role;
-    const base = sqlIdentifier(column.label, `col_${i + 1}`);
-    let name = base;
-    for (let n = 2; used.has(name); n++) name = `${base}_${n}`;
-    used.add(name);
-    return name;
-  });
 }
