@@ -1,0 +1,9 @@
+packages:
+  - shared
+  - server
+  - client
+
+# better-sqlite3 ships prebuilt binaries for every platform; never let pnpm try node-gyp.
+allowBuilds:
+  better-sqlite3: false
+  esbuild: true
