@@ -1,3 +1,6 @@
+import { type CurrencyCode, takeLeadingCurrency, takeTrailingCurrency } from './currency';
+import { foldArabic } from './language';
+
 /** Zero-width and direction marks that PDF and Excel text often carries around Arabic numbers. */
 const INVISIBLE = /[\u200B-\u200F\u202A-\u202E\u2066-\u2069\u061C]/g;
 /** A leading minus (also the Unicode minus and the en dash PDFs use for it) or plus. */
@@ -79,4 +82,52 @@ export function parseNumber(text: string, options: NumberOptions = {}): number |
   const { body, negative } = unwrapSign(rest);
   const decimal = readDecimal(body);
   return decimal === null ? null : decimalToNumber(decimal, power, negative);
+}
+
+export interface ParsedMoney {
+  amount: number;
+  currency: CurrencyCode | null;
+}
+
+/** Scale words after an amount, by power of ten. Lower-case "m" is metres and "B" is often an item suffix, so neither is a scale. */
+const SCALE_WORDS: readonly (readonly [power: number, words: string])[] = [
+  [3, 'k|thousands?|ألف|آلاف'],
+  [6, '(?-i:M)|mn|mln|millions?|مليون|ملايين'],
+  [9, 'bn|bln|billions?|مليار|مليارات|بليون'],
+];
+const SCALE = new RegExp(
+  `^(?<number>.*?)\\s*(?:${SCALE_WORDS.map(([power, words]) => `(?<p${power}>${foldArabic(words)})`).join('|')})$`,
+  'iu',
+);
+const ARABIC = /\p{Script=Arabic}/u;
+
+/** The unsigned amount, scaled. A bare Arabic scale word is one of it ("ألف ريال" is 1000), but only next to a currency. */
+function readAmount(text: string, hasCurrency: boolean): number | null {
+  const body = text.replace(/\s*\/-$/, '');
+  const scaled = SCALE.exec(body);
+  const power = scaled === null ? 0 : (SCALE_WORDS.find(([p]) => scaled.groups?.[`p${p}`] !== undefined)?.[0] ?? 0);
+  const number = scaled === null ? body : (scaled.groups?.number ?? '');
+  if (scaled !== null && number === '') return hasCurrency && ARABIC.test(scaled[0]) ? 10 ** power : null;
+  const decimal = readDecimal(number);
+  return decimal === null ? null : decimalToNumber(decimal, power, false);
+}
+
+/**
+ * An amount with an optional currency and scale word, such as "SAR 1,250,000.00", "1.2M SAR", "(1,000)",
+ * "EUR 3.400,50", "SR 1,000/-", "١٬٢٥٠٬٠٠٠ ر.س" or "1.5 مليون ريال". Null when the text is anything but one amount.
+ * Never rounds: "1.2M" is exactly 1200000.
+ */
+export function parseMoney(text: string): ParsedMoney | null {
+  const outer = unwrapSign(foldArabic(cleanNumberText(text)));
+  const leading = takeLeadingCurrency(outer.body);
+  const middle = unwrapSign(leading?.rest ?? outer.body);
+  const trailing = takeTrailingCurrency(middle.body);
+  const inner = unwrapSign(trailing?.rest.trim() ?? middle.body);
+  if (leading !== null && trailing !== null && leading.code !== trailing.code) return null;
+  const signs = [outer, middle, inner].filter((part) => part.negative).length;
+  if (signs > 1) return null;
+  const currency = leading?.code ?? trailing?.code ?? null;
+  const amount = readAmount(inner.body, currency !== null);
+  if (amount === null) return null;
+  return { amount: signs === 1 && amount !== 0 ? -amount : amount, currency };
 }
