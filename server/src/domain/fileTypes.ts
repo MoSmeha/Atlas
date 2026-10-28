@@ -10,6 +10,11 @@ export function kindForExtension(extension: string): FileKind {
   return KINDS[extension.toLowerCase()] ?? 'other';
 }
 
+/** True for names Atlas never lists: hidden files and folders ('.git') and Office lock files ('~$BOQ.xlsx'). */
+export function isIgnoredName(name: string): boolean {
+  return name.startsWith('.') || name.startsWith('~$');
+}
+
 const ONLY_PDF_AND_EXCEL = 'only PDF and Excel files are.';
 
 const SAVE_AS_XLSX: Record<string, string> = {
