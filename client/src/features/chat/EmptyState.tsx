@@ -51,6 +51,16 @@ export function EmptyState({ status, statusError, canAsk, onAsk, onReload }: Emp
   }
 
   const name = folderName(status.folder);
+  if (status.phase === 'error' && status.error?.code === 'folder_empty') {
+    return (
+      <Frame>
+        <Intro heading={`No PDF or Excel files in ${name}`}>
+          Load a folder that holds PDF or Excel files, or drop files into the documents panel.
+        </Intro>
+      </Frame>
+    );
+  }
+
   if (status.phase === 'error') {
     return (
       <Frame>
