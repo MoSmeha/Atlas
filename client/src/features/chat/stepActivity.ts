@@ -1,4 +1,5 @@
 import type { ToolStep } from '@atlas/shared';
+import { describeStepInput } from './stepInput';
 
 /** What each tool is doing, as a reader would say it while it runs. */
 const activities: Record<string, string> = {
@@ -23,7 +24,10 @@ export function stepActivity(name: string): string {
 /** What to say while an answer has no text yet: the step running now, or that the answer is being written. */
 export function pendingActivity(steps: ToolStep[]): { label: string; detail: string | null } {
   const runningStep = steps.findLast((step) => step.status === 'running');
-  if (runningStep) return { label: stepActivity(runningStep.name), detail: runningStep.inputSummary || null };
+  if (runningStep) {
+    const input = describeStepInput(runningStep.name, runningStep.inputSummary);
+    return { label: stepActivity(runningStep.name), detail: input?.text ?? null };
+  }
   if (steps.length > 0) return { label: 'Writing the answer', detail: null };
   return { label: 'Reading the question', detail: null };
 }
