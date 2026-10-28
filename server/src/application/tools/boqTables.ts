@@ -63,6 +63,12 @@ export function toBoqRow(record: TableRowRecord): BoqRow {
   };
 }
 
+/** The row's own currency cell when the table has one, otherwise the table's currency. */
+export function rowCurrency(record: TableRowRecord, table: TableSchema): string | null {
+  const cell = record.values['currency'];
+  return typeof cell === 'string' && cell.trim() !== '' ? cell.trim() : table.currency;
+}
+
 function noBoqIn(doc: DocumentSummary): string {
   if (doc.status !== 'ok') {
     return `${doc.path} could not be read (${doc.statusDetail ?? doc.status}), so it has no tables to check.`;
