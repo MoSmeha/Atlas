@@ -12,6 +12,15 @@ export function columnNumber(letters: string): number {
   return number;
 }
 
+/** Letters for a column number such as 1 ('A') or 28 ('AB'). */
+export function columnLetters(column: number): string {
+  let letters = '';
+  for (let rest = Math.floor(column); rest > 0; rest = Math.floor((rest - 1) / 26)) {
+    letters = String.fromCharCode(65 + ((rest - 1) % 26)) + letters;
+  }
+  return letters;
+}
+
 /**
  * A range in A1 notation, such as 'A1:C2' or a single 'B4', as 1-based inclusive coordinates.
  * Corners may come in either order and '$' signs are ignored. Null when the text is not a cell range.
