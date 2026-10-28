@@ -1,0 +1,133 @@
+/* A quiet text control; the chevron turns as the steps open. Timing comes from the theme, inline. */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: -6px;
+  padding: 4px 6px;
+  border-radius: var(--mantine-radius-sm);
+  color: var(--mantine-color-gray-7);
+  font-size: var(--mantine-font-size-sm);
+  line-height: var(--mantine-line-height-sm);
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+}
+
+@media (hover: hover) {
+  .toggle:hover {
+    background-color: var(--mantine-color-gray-0);
+    color: var(--mantine-color-bright);
+  }
+}
+
+.label {
+  font-weight: 600;
+}
+
+.meta {
+  color: var(--mantine-color-dimmed);
+}
+
+.chevron {
+  flex-shrink: 0;
+  transition-property: transform;
+}
+
+.toggle[aria-expanded='true'] .chevron {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition-property: none;
+  }
+}
+
+/* Steps sit on a rail: each marker joins the next with a hairline, solid once a step finished, dashed while it runs. */
+.steps {
+  margin: 0;
+  padding: var(--mantine-spacing-sm) 0 var(--mantine-spacing-xs);
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  column-gap: var(--mantine-spacing-sm);
+  padding-bottom: var(--mantine-spacing-md);
+}
+
+.step:last-child {
+  padding-bottom: 0;
+}
+
+.step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  bottom: 4px;
+  inset-inline-start: 8.5px;
+  border-inline-start: 1px solid var(--mantine-color-gray-3);
+}
+
+.step[data-status='running']:not(:last-child)::before {
+  border-inline-start-style: dashed;
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 1px solid var(--mantine-color-gray-4);
+  border-radius: 50%;
+  color: var(--mantine-color-gray-7);
+  background-color: var(--mantine-color-body);
+}
+
+.step[data-status='running'] .marker {
+  border-color: transparent;
+}
+
+.step[data-status='error'] .marker {
+  border-color: var(--mantine-color-gray-7);
+  color: var(--mantine-color-gray-9);
+}
+
+.step[data-status='refused'] .marker {
+  border-style: dashed;
+  border-color: var(--mantine-color-gray-6);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mantine-spacing-xs);
+  min-height: 20px;
+}
+
+.duration {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+.wrap {
+  overflow-wrap: anywhere;
+}
+
+.code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: var(--mantine-line-height-sm);
+}
