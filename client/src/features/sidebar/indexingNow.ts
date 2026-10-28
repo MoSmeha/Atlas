@@ -23,7 +23,8 @@ export interface IndexingNow {
   percent: number | null;
 }
 
-function isActive(phase: IndexPhase): phase is ActivePhase {
+/** True while a folder is being indexed. */
+export function isIndexing(phase: IndexPhase): phase is ActivePhase {
   return phase in steps;
 }
 
@@ -50,7 +51,7 @@ function runningStep(
   status: IndexStatus | undefined,
   activity: IndexActivity | null,
 ): { phase: ActivePhase; progress: IndexProgress | null } | null {
-  if (status === undefined || !isActive(status.phase)) return null;
-  if (activity !== null && isActive(activity.phase)) return { phase: activity.phase, progress: activity.progress };
+  if (status === undefined || !isIndexing(status.phase)) return null;
+  if (activity !== null && isIndexing(activity.phase)) return { phase: activity.phase, progress: activity.progress };
   return { phase: status.phase, progress: status.progress };
 }
