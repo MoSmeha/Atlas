@@ -7,6 +7,7 @@ import { classificationStep } from './application/indexing/classificationStep';
 import { ClassifyDocument } from './application/indexing/ClassifyDocument';
 import { IndexFolder } from './application/indexing/IndexFolder';
 import { suggestionsStep } from './application/indexing/suggestionsStep';
+import { WatchFolder } from './application/indexing/WatchFolder';
 import type { Lineup } from './application/models/pickLineup';
 import type { Clock } from './application/ports/Clock';
 import type { EmbeddingClient } from './application/ports/EmbeddingClient';
@@ -29,8 +30,11 @@ import { MupdfPageRenderer } from './infrastructure/readers/MupdfPageRenderer';
 import { MupdfReader } from './infrastructure/readers/MupdfReader';
 import { loadSettings, repoRoot, type Settings } from './infrastructure/settings';
 import { SystemClock } from './infrastructure/SystemClock';
+import { ChokidarWatcher } from './infrastructure/watch/ChokidarWatcher';
 
 const VERSION = '0.1.0';
+/** How long shutdown waits for open requests, such as event streams, before the process exits anyway. */
+const SHUTDOWN_GRACE_MS = 3_000;
 
 /** Everything the server and the CLI share, built once by compose(). */
 export interface Container {
@@ -48,6 +52,8 @@ export interface Container {
   /** The loaded folder, its index and its status. */
   workspace: Workspace;
   indexFolder: IndexFolder;
+  /** Watches each folder the indexer loads; stop it before exiting. */
+  watchFolder: WatchFolder;
   /** Chats by session id: turns, saved results and spend. */
   sessions: SessionStore;
   askQuestion: AskQuestion;
@@ -78,7 +84,9 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     clock,
     maxFileBytes: settings.maxFileBytes,
     steps: [classificationStep({ classifier, logger, clock }), suggestionsStep(workspace)],
+    onFolderActivated: (folder) => watchFolder.start(folder),
   });
+  const watchFolder = new WatchFolder({ watcher: new ChokidarWatcher(), updates: indexFolder, logger });
   const askQuestion = new AskQuestion({
     workspace,
     sessions,
@@ -106,6 +114,7 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     fs,
     workspace,
     indexFolder,
+    watchFolder,
     sessions,
     askQuestion,
     api: {
@@ -125,11 +134,24 @@ async function start(): Promise<void> {
   const settings = loadSettings();
   const container = await compose(settings);
   const app = buildApp(container.api);
+  app.addHook('onClose', () => container.watchFolder.stop());
+  for (const signal of ['SIGINT', 'SIGTERM'] as const) process.once(signal, () => void shutdown(app));
   await app.listen({ port: settings.port, host: settings.host });
   const { frontier, balanced, small } = container.lineup;
   console.log(`Atlas server listening on http://${settings.host}:${settings.port}`);
   console.log(`Models: frontier ${frontier.id}, balanced ${balanced.id}, small ${small.id}`);
   if (settings.startFolder !== null) await loadStartFolder(container, settings.startFolder);
+}
+
+/** Closes the server, which stops the folder watch, and exits; open event streams get a short grace period. */
+async function shutdown(app: ReturnType<typeof buildApp>): Promise<void> {
+  const grace = new Promise<void>((resolve) => setTimeout(resolve, SHUTDOWN_GRACE_MS).unref());
+  try {
+    await Promise.race([app.close(), grace]);
+  } catch (error) {
+    console.error(error);
+  }
+  process.exit(0);
 }
 
 /** Loads ATLAS_FOLDER; a folder that cannot be loaded is reported and the server keeps running. */

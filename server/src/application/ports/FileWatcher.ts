@@ -8,6 +8,9 @@ export interface WatchHandle {
 }
 
 export interface FileWatcher {
-  /** Reports files added, changed or removed under the folder while the app runs. */
-  watch(folder: string, onChange: (change: FileChange) => void): WatchHandle;
+  /**
+   * Reports files added, changed or removed under the folder while the app runs. Problems while watching go to
+   * onError and never throw.
+   */
+  watch(folder: string, onChange: (change: FileChange) => void, onError: (error: Error) => void): WatchHandle;
 }

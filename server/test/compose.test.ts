@@ -75,6 +75,28 @@ describe('compose', () => {
     expect(status.phase).toBe('ready');
     expect(status.suggestions).toHaveLength(5);
     expect(status.suggestions).toContain('Extract all dates and deliverables from these documents');
+    await container.watchFolder.stop();
+    container.workspace.require().index.close();
+  });
+
+  it('watches each folder the indexer loads', async () => {
+    const first = join(workDir, 'first');
+    const second = join(workDir, 'second');
+    for (const folder of [first, second]) {
+      mkdirSync(folder);
+      copyFileSync(fileURLToPath(new URL('fixtures/arabic-edge.pdf', import.meta.url)), join(folder, 'Site_Note.pdf'));
+    }
+    const container = await compose({ ...noKey, dataDir: join(workDir, 'watch-data'), logDir: join(workDir, 'watch-logs') });
+    expect(container.watchFolder.folder()).toBeNull();
+
+    await container.indexFolder.load(first);
+    expect(container.watchFolder.folder()).toBe(first);
+    await container.indexFolder.load(second);
+    expect(container.watchFolder.folder()).toBe(second);
+
+    await container.indexFolder.idle();
+    await container.watchFolder.stop();
+    expect(container.watchFolder.folder()).toBeNull();
     container.workspace.require().index.close();
   });
 
