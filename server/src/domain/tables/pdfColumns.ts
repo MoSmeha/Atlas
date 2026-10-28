@@ -18,7 +18,7 @@ const MAX_SHORT_WORDS = 3;
 /** A line of at least this many evenly spaced words across three columns is a paragraph, not a row. */
 const PARAGRAPH_WORDS = 6;
 const EVEN_SPACING = 3;
-/** How far text may sit beyond the outer columns, in line heights. */
+/** How far left of the first column text may start, in line heights. */
 const OUTSIDE = 2;
 
 /**
@@ -51,7 +51,7 @@ export function columnLayout(columns: readonly PdfColumn[], lines: readonly Page
 
 /**
  * The text of each column for one printed line, '' where a column is empty; null when the line does not fit the
- * layout: a paragraph across the columns, text beyond the table, a word across a column edge, or words in a number
+ * layout: a paragraph across the columns, text in the left margin, a word across a column edge, or words in a number
  * column that are not a number or a short note. A run over several columns is split word by word, by overlap and
  * otherwise by x-centre, each column reaching from its start to the next column's start.
  */
@@ -60,11 +60,11 @@ export function fitLine(line: PageLine, layout: ColumnLayout): string[] | null {
   const runs = wordRuns(line);
   if (isParagraph(line, layout)) return null;
   const first = extents[0];
-  const last = extents.at(-1);
-  if (first === undefined || last === undefined) return null;
+  if (first === undefined) return null;
   const parts: PositionedWord[][] = columns.map(() => []);
   for (const run of runs) {
-    if (run.x1 < first.x0 - OUTSIDE * line.height || run.x0 > last.x1 + OUTSIDE * line.height) return null;
+    // Only the left margin is checked: right-aligned amounts can end far right of a left-aligned "Amount".
+    if (run.x1 < first.x0 - OUTSIDE * line.height) return null;
     const hits = overlapping(extents, run);
     if (hits.length <= 1) {
       parts[hits[0] ?? byCentre(extents, run)]?.push(...run.words);
