@@ -13,12 +13,12 @@ export interface ChatContextValue {
   retry(turnId: string): void;
   /** Stops the streaming question; its turn keeps what arrived and is marked stopped. */
   stop(): void;
-  /** Forgets the chat on the server, then empties the thread. Rejects with an ApiError when the server cannot. */
+  /**
+   * Forgets the chat on the server, empties the thread and starts a new session id.
+   * Rejects with an ApiError when the server cannot, and the thread stays as it was.
+   */
   clear(): Promise<void>;
   clearing: boolean;
-  /** The model the next question uses; null means the server's default. */
-  model: string | null;
-  setModel(model: string | null): void;
 }
 
 export const ChatContext = createContext<ChatContextValue | null>(null);

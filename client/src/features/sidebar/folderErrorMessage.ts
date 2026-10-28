@@ -1,4 +1,5 @@
 import type { ApiError } from '../../api/ApiError';
+import { errorMessage } from '../errors/errorCopy';
 
 /**
  * The line shown under the folder path when loading fails, naming the problem and what to do.
@@ -11,6 +12,6 @@ export function folderErrorMessage(error: ApiError, path: string): string {
     case 'folder_empty':
       return `${error.message} Pick a folder that holds PDF or Excel files.`;
     default:
-      return error.message;
+      return errorMessage(error);
   }
 }

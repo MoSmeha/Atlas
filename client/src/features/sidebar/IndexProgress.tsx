@@ -2,6 +2,7 @@ import { Collapse, Group, Progress, Stack, Text } from '@mantine/core';
 import { useFolderStatus } from '../../api/useFolderStatus';
 import type { IndexActivity } from '../../api/useIndexEvents';
 import { motion } from '../../theme';
+import { errorMessage } from '../errors/errorCopy';
 import { INDEX_STEP_COUNT, type IndexingNow, indexingNow } from './indexingNow';
 
 /** Shown while the block closes after the last step, so it never collapses around stale text. */
@@ -43,7 +44,7 @@ export function IndexProgress({ activity }: { activity: IndexActivity | null }) 
       </Collapse>
       {failure !== null && (
         <Text role="alert" fz="xs" lh="sm" pt="xs" c="var(--mantine-color-error)">
-          Indexing stopped. {failure.message}
+          Indexing stopped. {errorMessage(failure)}
         </Text>
       )}
     </>

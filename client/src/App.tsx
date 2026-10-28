@@ -3,7 +3,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { useIndexEvents } from './api/useIndexEvents';
 import { ChatThread } from './features/chat/ChatThread';
 import { Sidebar } from './features/sidebar/Sidebar';
-import { SlotPlaceholder } from './shell/SlotPlaceholder';
+import { TopBarActions } from './features/topbar/TopBarActions';
 import { TopBar } from './shell/TopBar';
 import { shellLayout } from './shell/layout';
 
@@ -18,11 +18,7 @@ export function App() {
       navbar={{ width: shellLayout.navbarWidth, breakpoint: 'sm', collapsed: { mobile: !navOpened } }}
     >
       <AppShell.Header>
-        <TopBar
-          navOpened={navOpened}
-          onToggleNav={toggleNav}
-          actions={<SlotPlaceholder label="Model picker and Clear chat" owner="feature/client-picker" />}
-        />
+        <TopBar navOpened={navOpened} onToggleNav={toggleNav} actions={<TopBarActions />} />
       </AppShell.Header>
 
       <AppShell.Navbar p="md">
