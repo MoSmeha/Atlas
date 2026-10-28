@@ -1,15 +1,28 @@
+import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildApp, type ApiDeps } from './api/app';
 import { ExportResult } from './application/ExportResult';
-import { SessionStore } from './application/session/SessionStore';
-import { XlsxExporter } from './infrastructure/export/XlsxExporter';
+import { IndexFolder } from './application/indexing/IndexFolder';
 import type { Lineup } from './application/models/pickLineup';
+import type { Clock } from './application/ports/Clock';
+import type { EmbeddingClient } from './application/ports/EmbeddingClient';
+import type { FileSystem } from './application/ports/FileSystem';
 import type { ModelClient } from './application/ports/ModelClient';
+import type { RunLogger } from './application/ports/RunLogger';
+import { SessionStore } from './application/session/SessionStore';
+import { Workspace } from './application/workspace/Workspace';
 import { loadModelConfig, type ModelConfig } from './infrastructure/config/modelConfig';
+import { XlsxExporter } from './infrastructure/export/XlsxExporter';
+import { NodeFileSystem } from './infrastructure/fs/NodeFileSystem';
+import { SqliteIndexFactory } from './infrastructure/index/SqliteIndexFactory';
+import { JsonlRunLogger } from './infrastructure/logging/JsonlRunLogger';
 import { createOpenAiClient } from './infrastructure/openai/createOpenAiClient';
+import { OpenAiEmbeddingClient } from './infrastructure/openai/OpenAiEmbeddingClient';
 import { OpenAiModelClient } from './infrastructure/openai/OpenAiModelClient';
 import { resolveLineup } from './infrastructure/openai/resolveLineup';
-import { loadSettings, type Settings } from './infrastructure/settings';
+import { ExcelJsReader } from './infrastructure/readers/ExcelJsReader';
+import { MupdfReader } from './infrastructure/readers/MupdfReader';
+import { loadSettings, repoRoot, type Settings } from './infrastructure/settings';
 import { SystemClock } from './infrastructure/SystemClock';
 
 const VERSION = '0.1.0';
@@ -22,26 +35,57 @@ export interface Container {
   lineup: Lineup;
   /** Null while OPENAI_API_KEY is unset; use cases then throw missing_api_key. */
   modelClient: ModelClient | null;
+  /** Null while OPENAI_API_KEY is unset; search then works by keyword only. */
+  embeddings: EmbeddingClient | null;
+  clock: Clock;
+  logger: RunLogger;
+  fs: FileSystem;
+  /** The loaded folder, its index and its status. */
+  workspace: Workspace;
+  indexFolder: IndexFolder;
   api: ApiDeps;
 }
 
 /** The composition root: wires concrete adapters into use cases. The CLI reuses it. */
 export async function compose(settings: Settings = loadSettings()): Promise<Container> {
   const clock = new SystemClock();
+  const logger = new JsonlRunLogger(settings.logDir, clock);
+  const fs = new NodeFileSystem();
   const sessions = new SessionStore();
   const exporter = new XlsxExporter();
   const modelConfig = loadModelConfig();
   const openAi = settings.openAiApiKey === null ? null : createOpenAiClient(settings.openAiApiKey);
   const modelClient = openAi === null ? null : new OpenAiModelClient(openAi);
+  const embeddings = openAi === null ? null : new OpenAiEmbeddingClient(openAi, modelConfig.embedding);
   const lineup = await resolveLineup(modelClient, modelConfig);
+  const workspace = new Workspace();
+  const indexFolder = new IndexFolder({
+    fs,
+    readers: [new MupdfReader(), new ExcelJsReader()],
+    indexes: new SqliteIndexFactory(settings.dataDir),
+    embeddings,
+    workspace,
+    logger,
+    clock,
+    maxFileBytes: settings.maxFileBytes,
+  });
   return {
     settings,
     modelConfig,
     lineup,
     modelClient,
+    embeddings,
+    clock,
+    logger,
+    fs,
+    workspace,
+    indexFolder,
     api: {
       health: { version: VERSION, apiKeyPresent: settings.openAiApiKey !== null },
       exports: { sessions, exportResult: new ExportResult(exporter, clock), exportsDir: settings.exportsDir },
+      folder: { indexFolder, workspace, repoRoot },
+      documents: { workspace },
+      uploads: { indexFolder, uploadsDir: join(settings.dataDir, 'uploads'), maxFileBytes: settings.maxFileBytes },
     },
   };
 }
@@ -54,6 +98,17 @@ async function start(): Promise<void> {
   const { frontier, balanced, small } = container.lineup;
   console.log(`Atlas server listening on http://${settings.host}:${settings.port}`);
   console.log(`Models: frontier ${frontier.id}, balanced ${balanced.id}, small ${small.id}`);
+  if (settings.startFolder !== null) await loadStartFolder(container, settings.startFolder);
+}
+
+/** Loads ATLAS_FOLDER; a folder that cannot be loaded is reported and the server keeps running. */
+async function loadStartFolder(container: Container, folder: string): Promise<void> {
+  try {
+    await container.indexFolder.load(folder);
+    console.log(`Loading ${folder}`);
+  } catch (error) {
+    console.warn(`Could not load ${folder}: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {

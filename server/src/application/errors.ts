@@ -26,6 +26,8 @@ export const errors = {
     ),
   notIndexed: () => new AppError('not_indexed', 'Load a folder before asking a question.'),
   documentNotFound: (name: string) => new AppError('document_not_found', `No loaded document matches "${name}".`),
+  sheetNotFound: (document: string, sheet: string) =>
+    new AppError('document_not_found', `${document} has no sheet named "${sheet}".`),
   resultNotFound: (id: string) => new AppError('result_not_found', `No saved result with id ${id} in this chat.`),
   rateLimited: (retryAfterSeconds: number | null) =>
     new AppError(
