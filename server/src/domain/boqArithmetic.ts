@@ -28,6 +28,10 @@ export interface BoqMismatch {
   base: BoqRow | null;
   /** For a total, the item rows its expected value adds up; empty for an item row. */
   covered: BoqRow[];
+  /** A covered item whose amount is exactly the gap, so the total seems to leave it out or count it twice. */
+  gap: { row: BoqRow; how: 'left_out' | 'counted_twice' } | null;
+  /** A grand total that adds up the sub-totals above it correctly, so its gap comes from a wrong sub-total. */
+  matchesSubtotals: boolean;
 }
 
 export interface BoqCheck {
@@ -58,6 +62,8 @@ interface SeenTotal {
   amount: number;
   /** A "Brought forward" row: it follows another total and repeats it. */
   carried: boolean;
+  /** It has item rows right above it, as a sub-total has. */
+  closesItems: boolean;
 }
 
 /** A way a total can add up: an optional earlier total plus some item rows. */
@@ -97,7 +103,7 @@ export function checkRows(rows: readonly BoqRow[]): BoqCheck {
       if (mismatch) mismatches.push(mismatch);
       return;
     }
-    const outcome = checkTotal(walk, { index, row, amount: row.amount, carried: false });
+    const outcome = checkTotal(walk, { index, row, amount: row.amount, carried: false, closesItems: false });
     if (outcome !== 'skipped') checkedRows++;
     if (outcome !== 'skipped' && outcome !== 'ok') mismatches.push(outcome);
   });
@@ -108,7 +114,7 @@ function checkItem(row: BoqRow, quantity: number, rate: number, amount: number):
   const expected = Number((quantity * rate).toPrecision(15));
   const difference = sumExact([amount, -expected]);
   if (Math.abs(difference) <= itemTolerance(amount)) return null;
-  return { kind: 'item', row, stated: amount, expected, difference, base: null, covered: [] };
+  return { kind: 'item', row, stated: amount, expected, difference, base: null, covered: [], gap: null, matchesSubtotals: false };
 }
 
 /** Checks one total row and records it in the walk; 'skipped' when there is nothing above it to add up. */
@@ -131,7 +137,9 @@ function checkTotal(walk: Walk, total: SeenTotal): BoqMismatch | 'ok' | 'skipped
 
   const followsTotal = sincePrevious.length === 0;
   const runs = running !== null && adds(total, running);
+  const subtotals = walk.totals.filter((seen) => seen.index >= walk.grandStart && seen.closesItems);
   total.carried = followsTotal && runs;
+  total.closesItems = !followsTotal;
   walk.totals.push(total);
   if (followsTotal && !runs) walk.grandStart = index + 1;
   if (readings.length === 0) return 'skipped';
@@ -139,15 +147,27 @@ function checkTotal(walk: Walk, total: SeenTotal): BoqMismatch | 'ok' | 'skipped
 
   const reading = primaryReading(previousInSection, running, [sectionItems, sincePrevious, sinceGrand]);
   const expected = expectedOf(reading);
+  const difference = sumExact([total.amount, -expected]);
+  const matchesSubtotals = followsTotal && subtotals.length > 0 && adds(total, { base: null, items: subtotals });
   return {
     kind: 'total',
     row,
     stated: total.amount,
     expected,
-    difference: sumExact([total.amount, -expected]),
+    difference,
     base: reading.base?.row ?? null,
     covered: reading.items.map((item) => item.row),
+    gap: matchesSubtotals ? null : gapItem(reading, difference),
+    matchesSubtotals,
   };
+}
+
+/** The last covered item whose amount is the size of the gap. */
+function gapItem(reading: Reading, difference: number): BoqMismatch['gap'] {
+  const size = Math.abs(difference);
+  const tolerance = totalTolerance(reading.items.length);
+  const item = reading.items.findLast((candidate) => Math.abs(Math.abs(candidate.amount) - size) <= tolerance);
+  return item ? { row: item.row, how: difference < 0 ? 'left_out' : 'counted_twice' } : null;
 }
 
 /**
