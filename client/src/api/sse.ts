@@ -1,4 +1,5 @@
 import type { z } from 'zod';
+import { ApiError } from './ApiError';
 import { parseJson } from './parseJson';
 
 /**
@@ -49,14 +50,25 @@ export class SseParser {
   }
 }
 
-/** Yields the data of each event in a streamed response body. Works for GET and POST alike. */
-export async function* readSse(body: ReadableStream<Uint8Array>): AsyncGenerator<string> {
+/**
+ * Atlas streams send ": ping" every 15 seconds, so this much silence means the connection is dead,
+ * for example a dev proxy left open after the server restarted.
+ */
+export const STREAM_IDLE_MS = 45_000;
+
+const lostMessage = 'Atlas stopped responding. Check that the server is running, then try again.';
+
+/**
+ * Yields the data of each event in a streamed response body. Works for GET and POST alike.
+ * Throws an "unreachable" ApiError when nothing at all arrives for `idleMs`.
+ */
+export async function* readSse(body: ReadableStream<Uint8Array>, idleMs = STREAM_IDLE_MS): AsyncGenerator<string> {
   const reader = body.getReader();
   const decoder = new TextDecoder();
   const parser = new SseParser();
   try {
     for (;;) {
-      const { done, value } = await reader.read();
+      const { done, value } = await readWithin(reader, idleMs);
       if (done) break;
       yield* parser.push(decoder.decode(value, { stream: true }));
     }
@@ -64,6 +76,17 @@ export async function* readSse(body: ReadableStream<Uint8Array>): AsyncGenerator
   } finally {
     reader.cancel().catch(() => undefined);
   }
+}
+
+function readWithin(
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  idleMs: number,
+): Promise<ReadableStreamReadResult<Uint8Array>> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const idle = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new ApiError('unreachable', lostMessage)), idleMs);
+  });
+  return Promise.race([reader.read(), idle]).finally(() => clearTimeout(timer));
 }
 
 /**
