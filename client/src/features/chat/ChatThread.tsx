@@ -3,6 +3,7 @@ import { Divider, Stack } from '@mantine/core';
 import { useFolderStatus } from '../../api/useFolderStatus';
 import { useHealth } from '../../api/useHealth';
 import { MainColumn } from '../../shell/MainColumn';
+import { SourceViewerModal } from '../viewer/SourceViewerModal';
 import { Composer } from './Composer';
 import { EmptyState } from './EmptyState';
 import { Turn } from './Turn';
@@ -14,7 +15,7 @@ import { useOpenedSource } from './useOpenedSource';
 /**
  * The conversation column: the empty state, then one turn per question, with the composer
  * docked at the bottom. The page scrolls to each new turn and follows its answer as it streams.
- * Clicking an answer's source marks it open; the viewer (feature/client-viewer) shows `opened`.
+ * Clicking an answer's source opens it in the source viewer, at its page or rows.
  */
 export function ChatThread() {
   const { turns, streaming, ask, retry, stop } = useChat();
@@ -22,7 +23,7 @@ export function ChatThread() {
   const health = useHealth();
   const thread = useRef<HTMLDivElement>(null);
   useFollowScroll(thread, turns.at(-1)?.id ?? null, streaming);
-  const { opened, open: openSource } = useOpenedSource(turns);
+  const { opened, open: openSource, close: closeSource } = useOpenedSource(turns);
 
   const readiness = askReadiness({
     status: folder.data,
@@ -55,6 +56,7 @@ export function ChatThread() {
           ))}
         </Stack>
       )}
+      <SourceViewerModal source={opened?.source ?? null} onClose={closeSource} />
     </MainColumn>
   );
 }

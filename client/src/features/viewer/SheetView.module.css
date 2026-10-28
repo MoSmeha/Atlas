@@ -1,0 +1,106 @@
+/* The sheet sits on white, edge to edge, like the grid in Excel. */
+.stage {
+  background-color: var(--mantine-color-white);
+}
+
+.table {
+  width: max-content;
+  min-width: 100%;
+  font-size: var(--mantine-font-size-sm);
+}
+
+/* Column letters stay in view while the rows scroll. */
+.head th {
+  background-color: var(--mantine-color-gray-1);
+  color: var(--mantine-color-gray-7);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* The gutter of row numbers stays in view while the columns scroll sideways. */
+.corner,
+.rowNumber {
+  position: sticky;
+  inset-inline-start: 0;
+  min-width: 3.5rem;
+  border-inline-end: 1px solid var(--mantine-color-gray-3);
+  background-color: var(--mantine-color-gray-1);
+  color: var(--mantine-color-gray-7);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.corner {
+  z-index: 3;
+}
+
+.rowNumber {
+  z-index: 1;
+}
+
+.letter {
+  min-width: 4.5rem;
+}
+
+.number {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.short {
+  white-space: nowrap;
+}
+
+/* Long text with empty cells after it runs on over them, as in Excel. */
+.runOn {
+  white-space: nowrap;
+}
+
+.text {
+  min-width: 10rem;
+  max-width: 24rem;
+  overflow-wrap: break-word;
+}
+
+/* Cited rows: the brand's light tint across the row, and a brand edge on the row number. */
+.table tr[data-cited] > td {
+  background-color: var(--mantine-primary-color-light);
+}
+
+.table tr[data-cited] > .rowNumber {
+  background-color: var(--mantine-color-ink-1);
+  box-shadow: inset 3px 0 0 var(--mantine-primary-color-filled);
+  color: var(--mantine-color-ink-9);
+}
+
+/* The cited rows' brand edge in small, as a key for the tint. */
+.swatch {
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background-color: var(--mantine-primary-color-filled);
+}
+
+/* A loading or failure line inside a stretch of rows; it stays at the left edge of a wide sheet. */
+.blockCell {
+  padding: 0;
+}
+
+.blockNote {
+  position: sticky;
+  inset-inline-start: 0;
+  width: fit-content;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+}
+
+.more {
+  position: sticky;
+  inset-inline-start: 0;
+  width: fit-content;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+}
