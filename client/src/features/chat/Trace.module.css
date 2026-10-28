@@ -104,7 +104,8 @@
   color: var(--mantine-color-gray-9);
 }
 
-.step[data-status='refused'] .marker {
+.step[data-status='refused'] .marker,
+.step[data-status='unfinished'] .marker {
   border-style: dashed;
   border-color: var(--mantine-color-gray-6);
 }

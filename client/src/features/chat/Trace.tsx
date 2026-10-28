@@ -58,7 +58,7 @@ export function Trace({ steps, streaming, durationMs }: TraceProps) {
       >
         <ol className={classes.steps} aria-label="Steps Atlas took">
           {steps.map((step) => (
-            <TraceStep key={step.id} step={step} />
+            <TraceStep key={step.id} step={step} ended={!streaming} />
           ))}
         </ol>
       </Collapse>

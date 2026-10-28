@@ -1,32 +1,39 @@
 import { Code, Text, VisuallyHidden } from '@mantine/core';
 import type { ToolStep } from '@atlas/shared';
-import { TraceStepIcon, stepStateWords } from './TraceStepIcon';
+import { TraceStepIcon, type TraceStepState, stepStateWords } from './TraceStepIcon';
 import { formatDuration } from './formatDuration';
 import { describeStepInput } from './stepInput';
 import { stepLabel } from './stepLabel';
 import classes from './Trace.module.css';
 
+interface TraceStepProps {
+  step: ToolStep;
+  /** The answer stopped streaming, so a step still marked running will never finish. */
+  ended: boolean;
+}
+
 /**
  * One tool call in "How I found this": what Atlas did, what it asked for (SQL and formulas in
  * monospace), what came back and how long it took. A failed or skipped call shows why instead.
  */
-export function TraceStep({ step }: { step: ToolStep }) {
+export function TraceStep({ step, ended }: TraceStepProps) {
+  const state: TraceStepState = ended && step.status === 'running' ? 'unfinished' : step.status;
   const input = describeStepInput(step.name, step.inputSummary);
-  const failed = step.status === 'error' || step.status === 'refused';
+  const failed = state === 'error' || state === 'refused';
   const duration =
-    step.durationMs !== null && (step.status === 'ok' || step.durationMs > 0) ? formatDuration(step.durationMs) : null;
+    step.durationMs !== null && (state === 'ok' || step.durationMs > 0) ? formatDuration(step.durationMs) : null;
 
   return (
-    <li className={classes.step} data-status={step.status}>
+    <li className={classes.step} data-status={state}>
       <span className={classes.marker}>
-        <TraceStepIcon status={step.status} />
+        <TraceStepIcon status={state} />
       </span>
       <div className={classes.body}>
         <div className={classes.head}>
           <Text component="span" fz="sm" fw={600} c="gray.9">
             {stepLabel(step.name)}
           </Text>
-          <VisuallyHidden>{`, ${stepStateWords[step.status]}`}</VisuallyHidden>
+          <VisuallyHidden>{`, ${stepStateWords[state]}`}</VisuallyHidden>
           {duration && (
             <Text component="span" fz="xs" c="dimmed" className={`${classes.duration} tabular-nums`}>
               {duration}
@@ -45,7 +52,11 @@ export function TraceStep({ step }: { step: ToolStep }) {
           ))}
         {failed ? (
           <Text fz="sm" c="var(--mantine-color-error)" className={classes.wrap}>
-            {step.error ?? stepStateWords[step.status]}
+            {step.error ?? stepStateWords[state]}
+          </Text>
+        ) : state === 'unfinished' ? (
+          <Text fz="sm" c="dimmed">
+            Did not finish.
           </Text>
         ) : (
           step.resultSummary && (
