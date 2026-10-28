@@ -33,8 +33,8 @@ const AFFIXED = new RegExp(
   `^(?<prefix>[\\p{L}\\p{M}.${GROUP_SPACES}]*?)(?<body>\\d(?:[\\d.,${GROUP_SPACES}]*\\d)?)(?<suffix>-?[\\p{L}\\p{M}]+)?$`,
   'u',
 );
-/** و، ب، ل، ف، ك (and, with, for, so, as) glued to a number, with an optional tatweel. */
-const PROCLITIC = /^[وبلفك]ـ?$/u;
+/** One or two of و، ب، ل، ف، ك (and, with, for, so, as) glued to a number, with an optional tatweel: "وب٢٠٠". */
+const PROCLITIC = /^[وبلفك]{1,2}ـ?$/u;
 const CURRENCY_PREFIX = /^(?:SAR|SR\.?|USD|US\$|EUR|AED|GBP)[\s.]*$/u;
 const SCALE_WORDS: readonly (readonly [power: number, pattern: string])[] = [
   [3, 'thousands?|ألف|الف|آلاف|الاف'],
