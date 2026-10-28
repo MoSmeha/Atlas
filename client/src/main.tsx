@@ -11,6 +11,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { App } from './App';
 import { ChatProvider } from './features/chat/ChatProvider';
 import { queryClient } from './queryClient';
+import { SessionProvider } from './state/SessionProvider';
 import { cssVariablesResolver, theme } from './theme';
 
 const rootElement = document.getElementById('root');
@@ -26,9 +27,11 @@ createRoot(rootElement).render(
     >
       <Notifications position="bottom-right" limit={3} />
       <QueryClientProvider client={queryClient}>
-        <ChatProvider>
-          <App />
-        </ChatProvider>
+        <SessionProvider>
+          <ChatProvider>
+            <App />
+          </ChatProvider>
+        </SessionProvider>
       </QueryClientProvider>
     </MantineProvider>
   </StrictMode>,

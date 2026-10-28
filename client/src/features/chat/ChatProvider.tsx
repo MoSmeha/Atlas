@@ -1,9 +1,9 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import type { ApiError } from '../../api/ApiError';
 import type { AskHandlers } from '../../api/askQuestion';
-import { chatSessionId } from '../../api/chatSession';
 import { type AskController, useAskStream } from '../../api/useAskStream';
 import { useClearChat } from '../../api/useClearChat';
+import { useSession } from '../../state/useSession';
 import { ChatContext, type ChatContextValue } from './ChatContext';
 import { type TurnError, chatReducer, isStreaming, noTurns } from './chatReducer';
 
@@ -12,10 +12,10 @@ interface Running {
   controller: AskController | null;
 }
 
-/** Holds the conversation for this page load and streams each question into it. */
+/** Holds the conversation for the current session and streams each question into it. */
 export function ChatProvider({ children }: { children: ReactNode }) {
   const [turns, dispatch] = useReducer(chatReducer, noTurns);
-  const [model, setModel] = useState<string | null>(null);
+  const { sessionId, model, startNewSession } = useSession();
   const running = useRef<Running | null>(null);
   const latest = useRef({ turns, model });
   const nextId = useRef(0);
@@ -43,7 +43,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       running.current = null;
     },
   };
-  const { ask: askStream } = useAskStream(chatSessionId, handlers);
+  const { ask: askStream } = useAskStream(sessionId, handlers);
 
   const run = useCallback(
     (turnId: string, question: string) => {
@@ -83,13 +83,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const { mutateAsync: forget, isPending: clearing } = clearChat;
   const clear = useCallback(async () => {
     running.current?.controller?.stop();
-    await forget(chatSessionId);
+    await forget(sessionId);
     dispatch({ type: 'cleared' });
-  }, [forget]);
+    startNewSession();
+  }, [forget, sessionId, startNewSession]);
 
   const value = useMemo<ChatContextValue>(
-    () => ({ turns, streaming: isStreaming(turns), ask, retry, stop, clear, clearing, model, setModel }),
-    [turns, ask, retry, stop, clear, clearing, model],
+    () => ({ turns, streaming: isStreaming(turns), ask, retry, stop, clear, clearing }),
+    [turns, ask, retry, stop, clear, clearing],
   );
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
