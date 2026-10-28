@@ -23,6 +23,10 @@ export class FakeFileSystem implements FileSystem {
     this.dirs.add(path);
   }
 
+  deleteFile(path: string): void {
+    this.files.delete(path);
+  }
+
   async isDirectory(path: string): Promise<boolean> {
     return this.dirs.has(path);
   }

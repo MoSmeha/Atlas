@@ -1,4 +1,4 @@
-import type { IndexEvent, IndexStatus } from '@atlas/shared';
+import type { DocumentSummary, ErrorDetail, IndexEvent, IndexStatus } from '@atlas/shared';
 import { errors } from '../errors';
 import type { DocumentIndex } from '../ports/DocumentIndex';
 
@@ -19,6 +19,13 @@ export class Workspace {
     if (this.active && this.active.index !== index) this.active.index.close();
     this.active = { folder, index };
     this.current = { ...idle, folder, phase: 'scanning' };
+  }
+
+  /** Shows a folder that could not be loaded, with the files found in it; the previous folder is closed. */
+  failLoad(folder: string, documents: DocumentSummary[], error: ErrorDetail): void {
+    this.active?.index.close();
+    this.active = null;
+    this.current = { ...idle, folder, phase: 'error', documents, error };
   }
 
   update(patch: Partial<Omit<IndexStatus, 'documents'>>): void {
