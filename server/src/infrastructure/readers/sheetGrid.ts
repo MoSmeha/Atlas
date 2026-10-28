@@ -13,14 +13,16 @@ export interface SheetGridResult {
 }
 
 /**
- * One worksheet as a dense grid from row 1 and column A to the last cell with a value, with its merged ranges.
- * Merges whose top-left cell is empty carry nothing and are left out; the others count towards the grid's size.
+ * One worksheet as a dense grid from row 1 and column A to the last cell with a value, with its merged ranges
+ * sorted top to bottom, then left to right. Merges whose top-left cell is empty carry nothing and are left out;
+ * the others count towards the grid's size.
  */
 export function sheetGrid(worksheet: ExcelJS.Worksheet, maxCells: number = MAX_SHEET_CELLS): SheetGridResult {
   const values = collectValues(worksheet);
   let merges = worksheet.model.merges
     .map(parseCellRange)
-    .filter((merge): merge is MergedRange => merge !== null && (values[merge.top - 1]?.[merge.left - 1] ?? null) !== null);
+    .filter((merge): merge is MergedRange => merge !== null && (values[merge.top - 1]?.[merge.left - 1] ?? null) !== null)
+    .sort((a, b) => a.top - b.top || a.left - b.left);
 
   let rowCount = merges.reduce((last, merge) => Math.max(last, merge.bottom), values.length);
   let columnCount = usedColumns(values, merges, rowCount);
