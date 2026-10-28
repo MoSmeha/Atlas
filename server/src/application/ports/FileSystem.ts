@@ -11,7 +11,7 @@ export interface FileEntry {
 
 export interface FileSystem {
   isDirectory(path: string): Promise<boolean>;
-  /** Every file under root, recursively, skipping hidden files and folders. */
+  /** Every file under root, recursively, skipping hidden files and folders and Office lock files (`isIgnoredName`). */
   listFiles(root: string): Promise<FileEntry[]>;
   /** One file's entry relative to root, or null when it does not exist. */
   stat(root: string, absolutePath: string): Promise<FileEntry | null>;
