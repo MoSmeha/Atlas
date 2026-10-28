@@ -41,7 +41,14 @@ export function Turn({ turn, onRetry }: TurnProps) {
     ) : null;
 
   return (
-    <Stack component="article" gap="md" aria-labelledby={questionId} className={classes.turn} data-status={status}>
+    <Stack
+      component="article"
+      id={turn.id}
+      gap="md"
+      aria-labelledby={questionId}
+      className={classes.turn}
+      data-status={status}
+    >
       <Title order={2} id={questionId} fz="xl" lh={1.35} className={classes.question} dir="auto">
         {turn.question}
       </Title>
