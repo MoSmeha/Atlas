@@ -97,7 +97,7 @@ export async function buildContractMainWorks(): Promise<GeneratedPdf> {
     '2.3  The Contract Price was built up from the priced Bills of Quantities. Quantities in the Bills are estimates; the Works shall be measured and valued at the rates in the Bills.',
   );
   pdf.paragraph(
-    '2.4  The Bill of Quantities for Phase 1 covers the substructure, the superstructure and the mechanical, electrical and plumbing (MEP) works. The Bill of Quantities for Phase 2, covering vertical transportation, internal finishes to common areas, external works and landscaping, will be issued separately.',
+    '2.4  The Bill of Quantities for Phase 1 covers the substructure, the superstructure and the mechanical, electrical and plumbing (MEP) works. The Bill of Quantities for Phase 2 will be issued separately in packages: the facade package (podium feature facade, tower crown and entrances) first, then vertical transportation, internal finishes to common areas, external works and landscaping.',
   );
   pdf.paragraph('2.5  All amounts are stated and paid in Saudi Riyals (SAR).');
   pdf.heading('Article 3  Contract Documents');

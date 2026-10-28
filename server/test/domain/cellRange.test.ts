@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { columnNumber, parseCellRange } from '../../src/domain/cellRange';
+import { columnLetters, columnNumber, parseCellRange } from '../../src/domain/cellRange';
 
 describe('columnNumber', () => {
   it('counts columns from A as 1', () => {
@@ -8,6 +8,21 @@ describe('columnNumber', () => {
     expect(columnNumber('AA')).toBe(27);
     expect(columnNumber('ab')).toBe(28);
     expect(columnNumber('XFD')).toBe(16_384);
+  });
+});
+
+describe('columnLetters', () => {
+  it('names column numbers the way Excel does', () => {
+    expect(columnLetters(1)).toBe('A');
+    expect(columnLetters(26)).toBe('Z');
+    expect(columnLetters(27)).toBe('AA');
+    expect(columnLetters(28)).toBe('AB');
+    expect(columnLetters(702)).toBe('ZZ');
+    expect(columnLetters(16_384)).toBe('XFD');
+  });
+
+  it('is the inverse of columnNumber', () => {
+    for (const column of [1, 52, 53, 703, 9_999]) expect(columnNumber(columnLetters(column))).toBe(column);
   });
 });
 

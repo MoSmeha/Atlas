@@ -6,7 +6,7 @@ import type { CleanValue } from '../../domain/table';
 import { sliceText } from '../../domain/text';
 import type { TableRowRecord, TableSchema } from '../ports/DocumentIndex';
 import { coverage, mismatchNote, mismatchSources, tableSources, uniqueSources } from './boqReport';
-import { pickBoqTables, toBoqRow } from './boqTables';
+import { pickBoqTables, rowCurrency, toBoqRow } from './boqTables';
 import { defineTool } from './Tool';
 
 /** How many mismatches the model sees; the saved result keeps them all. */
@@ -145,7 +145,7 @@ function toOutput({ table, mismatch, record }: Found): MismatchOutput {
     stated: mismatch.stated,
     expected: mismatch.expected,
     difference: mismatch.difference,
-    currency: currencyOf(record, table),
+    currency: rowCurrency(record, table),
     check: mismatch.kind === 'item' ? 'quantity x rate' : 'total',
     covers: coverage(mismatch),
     note: mismatchNote(mismatch),
@@ -184,12 +184,6 @@ function checkedTable(table: TableSchema, rows: number, mismatches: number): Che
     rows,
     mismatches,
   };
-}
-
-/** The row's own currency cell when the table has one, otherwise the table's currency. */
-function currencyOf(record: TableRowRecord, table: TableSchema): string | null {
-  const cell = record.values['currency'];
-  return typeof cell === 'string' && cell.trim() !== '' ? cell.trim() : table.currency;
 }
 
 function outputNote(mismatches: number, shown: number, checkedRows: number, id: string): string | null {

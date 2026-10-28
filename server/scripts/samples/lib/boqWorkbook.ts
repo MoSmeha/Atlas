@@ -1,28 +1,14 @@
-import ExcelJS from 'exceljs';
-import { FOOTER_TEXT, project } from '../project';
+import type ExcelJS from 'exceljs';
+import { project } from '../project';
 import { HEADER_ROWS, type BillLayout, type BoqLayout, type SummaryLayout } from './boqLayout';
 import { day, longDate } from './dates';
-import { setZipDates } from './zipDates';
-
-const MONEY = '#,##0.00';
-const WHOLE = '#,##0';
-const HEADER_FILL: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE7EAEE' } };
-const SECTION_FILL: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF4F5F7' } };
-const THIN: ExcelJS.Border = { style: 'thin', color: { argb: 'FFB8BEC6' } };
-const BOX: Partial<ExcelJS.Borders> = { top: THIN, left: THIN, bottom: THIN, right: THIN };
-const A4 = 9 as ExcelJS.PaperSize;
+import { addSheet, BOX, createWorkbook, HEADER_FILL, MONEY, saveWorkbook, SECTION_FILL, WHOLE, writeFooter } from './workbook';
 
 /** Writes a BOQ revision as an .xlsx: a Summary sheet and one sheet per bill, formulas with cached results. */
 export async function writeBoqWorkbook(layout: BoqLayout): Promise<Uint8Array> {
   const { revision } = layout;
   const issued = day(revision.issueDate);
-  const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'Atlas sample generator';
-  workbook.lastModifiedBy = 'Atlas sample generator';
-  workbook.created = issued;
-  workbook.modified = issued;
-  workbook.title = `${project.name} - Bill of Quantities - Phase 1 - Revision ${revision.revision}`;
-  workbook.description = FOOTER_TEXT;
+  const workbook = createWorkbook(`${project.name} - Bill of Quantities - Phase 1 - Revision ${revision.revision}`, issued);
 
   const titles = [
     project.name,
@@ -34,17 +20,7 @@ export async function writeBoqWorkbook(layout: BoqLayout): Promise<Uint8Array> {
   for (const bill of layout.bills) {
     writeBill(addSheet(workbook, bill.bill.sheet, [10, 60, 8, 12, 15, 18]), bill, titles, revision.currency);
   }
-  const buffer = await workbook.xlsx.writeBuffer();
-  return setZipDates(new Uint8Array(buffer as ArrayBuffer), issued);
-}
-
-function addSheet(workbook: ExcelJS.Workbook, name: string, widths: number[]): ExcelJS.Worksheet {
-  const sheet = workbook.addWorksheet(name, {
-    pageSetup: { paperSize: A4, orientation: 'portrait', fitToPage: true, fitToWidth: 1, fitToHeight: 0 },
-    headerFooter: { oddFooter: `&L&8${FOOTER_TEXT}&R&8Page &P of &N` },
-  });
-  sheet.columns = widths.map((width) => ({ width }));
-  return sheet;
+  return saveWorkbook(workbook, issued);
 }
 
 function writeTitles(sheet: ExcelJS.Worksheet, titles: string[], lastColumn: string): void {
@@ -122,12 +98,6 @@ function writeSummary(sheet: ExcelJS.Worksheet, summary: SummaryLayout, titles: 
   total.getCell(3).numFmt = MONEY;
   styleRow(sheet, summary.totalRow, 3, { bold: true, fill: HEADER_FILL });
   writeFooter(sheet, summary.footerRow);
-}
-
-function writeFooter(sheet: ExcelJS.Worksheet, row: number): void {
-  const cell = sheet.getCell(`A${row}`);
-  cell.value = FOOTER_TEXT;
-  cell.font = { italic: true, size: 8, color: { argb: 'FF6B6B75' } };
 }
 
 interface RowStyle {

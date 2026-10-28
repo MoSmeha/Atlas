@@ -1,24 +1,23 @@
 import { readFileSync } from 'node:fs';
 import * as mupdf from 'mupdf';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { boqPhase1Rev0 } from '../../scripts/samples/boqPhase1Rev0';
-import { boqPhase1Rev1 } from '../../scripts/samples/boqPhase1Rev1';
-import { buildContractMainWorks, type GeneratedPdf } from '../../scripts/samples/contractMainWorks';
+import type { GeneratedPdf } from '../../scripts/samples/contractMainWorks';
 import { buildExpected, type Expected } from '../../scripts/samples/expected';
-import { layoutBoq } from '../../scripts/samples/lib/boqLayout';
 import { contract, FOOTER_TEXT } from '../../scripts/samples/project';
+import { buildSampleSet } from '../../scripts/samples/sampleSet';
 
 let pdf: GeneratedPdf;
 let pages: string[];
 let expected: Expected;
 
 beforeAll(async () => {
-  pdf = await buildContractMainWorks();
+  const set = await buildSampleSet();
+  pdf = set.contract;
   const doc = mupdf.Document.openDocument(pdf.bytes, 'application/pdf');
   pages = Array.from({ length: doc.countPages() }, (_, i) =>
     doc.loadPage(i).toStructuredText('preserve-whitespace').asText().replace(/\s+/g, ' '),
   );
-  expected = buildExpected({ contract: pdf, boqRev0: layoutBoq(boqPhase1Rev0), boqRev1: layoutBoq(boqPhase1Rev1) });
+  expected = buildExpected(set);
 });
 
 const onPage = (page: number, text: string) => expect(pages[page - 1]).toContain(text);
@@ -42,7 +41,8 @@ describe('Contract_Main_Works.pdf', () => {
   });
 
   it('puts every quoted source and scope item on the page expected.json gives', () => {
-    for (const source of collectPdfSources(expected)) if (source.quote) onPage(source.page, source.quote);
+    const sources = collectPdfSources(expected).filter((source) => source.document === pdf.fileName);
+    for (const source of sources) if (source.quote) onPage(source.page, source.quote);
     expect(expected.facts.scopeOfWork.items.length).toBeGreaterThanOrEqual(10);
     expect(expected.facts.scopeOfWork.items.length).toBeLessThanOrEqual(15);
     for (const item of expected.facts.scopeOfWork.items) onPage(item.page, item.text);
@@ -85,6 +85,7 @@ describe('expected.json', () => {
 
 interface PdfSourceLike {
   kind: 'pdf';
+  document: string;
   page: number;
   quote: string | null;
 }

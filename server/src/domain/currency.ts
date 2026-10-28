@@ -102,7 +102,8 @@ const TWO_DECIMALS = new Intl.NumberFormat('en-US', {
   signDisplay: 'negative',
 });
 
-function groupKey(currency: string | null): string {
+/** The key sumByCurrency files an amount under: the code for a known alias, the text upper-cased, or UNSPECIFIED. */
+export function currencyKey(currency: string | null): string {
   if (currency === null) return UNSPECIFIED_CURRENCY;
   return currencyCode(currency) ?? (currency.trim().toUpperCase() || UNSPECIFIED_CURRENCY);
 }
@@ -114,7 +115,7 @@ function groupKey(currency: string | null): string {
 export function sumByCurrency(items: readonly { amount: number; currency: string | null }[]): Record<string, number> {
   const groups = new Map<string, number[]>();
   for (const item of items) {
-    const key = groupKey(item.currency);
+    const key = currencyKey(item.currency);
     const amounts = groups.get(key) ?? [];
     amounts.push(item.amount);
     groups.set(key, amounts);
