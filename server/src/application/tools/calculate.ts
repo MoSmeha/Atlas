@@ -86,6 +86,7 @@ function checkInputs(expression: ParsedExpression, session: Session): void {
   throw new ToolError(
     `${list} did not come from the question, a tool output or a saved result in this chat. ` +
       'Get numbers from the documents with a tool first, then refer to saved results such as r3.amount[0] ' +
-      'or copy the number exactly as the tool returned it.',
+      'or copy the number exactly as the tool returned it. Percentages such as 10% and constants such as 1 or 100 ' +
+      'are always allowed, so write a 10% deduction as x * (1 - 10%).',
   );
 }
