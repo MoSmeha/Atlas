@@ -39,16 +39,15 @@ export function tableCurrency(columns: readonly CurrencyColumnInfo[], rows: read
       return parsed === null ? null : (parsed.currency ?? detectCurrency(column.label) ?? titleCurrency);
     }),
   );
-  const mixed = perColumn.some((list) => distinct(list).length > 1);
-  const detected = mixed ? rows.map((_, row) => perColumn.map((list) => list[row] ?? null).find((code) => code !== null) ?? null) : null;
+  const detected = rows.map((_, row) => perColumn.map((list) => list[row] ?? null).find((code) => code !== null) ?? null);
 
   const stated = statedCurrencies(columns, rows);
   if (stated !== null) {
-    const perRow = stated.map((code, row) => code ?? detected?.[row] ?? null);
+    const perRow = stated.map((code, row) => code ?? detected[row] ?? null);
     const codes = distinct(perRow);
     return { currency: codes.length === 1 ? (codes[0] ?? null) : null, perRow };
   }
-  if (detected !== null) return { currency: null, perRow: detected };
+  if (perColumn.some((list) => distinct(list).length > 1)) return { currency: null, perRow: detected };
   const codes = distinct(perColumn.flat());
   return { currency: codes.length === 1 ? (codes[0] ?? null) : null, perRow: null };
 }
