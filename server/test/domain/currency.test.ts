@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CURRENCY_CODES,
   currencyCode,
+  currencyKey,
   detectCurrencies,
   detectCurrency,
   formatMoney,
@@ -167,6 +168,16 @@ describe('isCurrencyCode', () => {
     expect(isCurrencyCode('SR')).toBe(false);
     expect(isCurrencyCode('sar')).toBe(false);
     expect(isCurrencyCode('QAR')).toBe(false);
+  });
+});
+
+describe('currencyKey', () => {
+  it('files aliases under their code, other text upper-cased and no currency under UNSPECIFIED', () => {
+    expect(currencyKey('SR')).toBe('SAR');
+    expect(currencyKey(' usd ')).toBe('USD');
+    expect(currencyKey('qar')).toBe('QAR');
+    expect(currencyKey(null)).toBe(UNSPECIFIED_CURRENCY);
+    expect(currencyKey('  ')).toBe(UNSPECIFIED_CURRENCY);
   });
 });
 
