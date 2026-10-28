@@ -18,8 +18,9 @@ const headerStyles = { th: { whiteSpace: 'normal' } } as const;
 
 /**
  * The rows a tool computed for the answer, exactly as the server sent them: numbers right-aligned
- * with thousands separators and never rounded, text in its own direction, a header that stays
- * in view while the rows scroll, and an Export menu for every row of the result.
+ * with thousands separators and never rounded, text in its own direction, SQL column names as
+ * plain words, a header that stays in view while the rows scroll, and an Export menu for every
+ * row and column of the result.
  */
 export function ResultTable({ table }: { table: ResultTableData }) {
   const [limit, setLimit] = useState(FIRST_ROWS);
@@ -48,8 +49,8 @@ export function ResultTable({ table }: { table: ResultTableData }) {
           <Table stickyHeader borderColor="gray.2" styles={headerStyles} aria-describedby={countId}>
             <Table.Thead className={classes.head}>
               <Table.Tr>
-                {columns.map((column, index) => (
-                  <Table.Th key={index} dir="auto" className={column.numeric ? classes.number : undefined}>
+                {columns.map((column) => (
+                  <Table.Th key={column.index} dir="auto" className={column.numeric ? classes.number : undefined}>
                     {column.label}
                   </Table.Th>
                 ))}
@@ -58,8 +59,8 @@ export function ResultTable({ table }: { table: ResultTableData }) {
             <Table.Tbody>
               {rows.map((row, rowIndex) => (
                 <Table.Tr key={rowIndex}>
-                  {columns.map((column, index) => (
-                    <Cell key={index} value={row[index] ?? null} column={column} />
+                  {columns.map((column) => (
+                    <Cell key={column.index} value={row[column.index] ?? null} column={column} />
                   ))}
                 </Table.Tr>
               ))}

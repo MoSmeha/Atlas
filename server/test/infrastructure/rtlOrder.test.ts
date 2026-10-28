@@ -82,6 +82,26 @@ describe('logicalOrder on mixed right-to-left lines', () => {
     expect(logicalOrder(line, 'rtl').map((char) => char.c).join('')).toBe('ال 12');
   });
 
+  it('turns a number in Arabic-Indic digits back to left-to-right order', () => {
+    // "٤١٢٬٣٠٠ ساعة" from the sample meeting minutes; mupdf lists the digits from right to left.
+    const line =
+      '660@202.325-206.494/1 660@198.156-202.325/1 663@193.148-198.986/1 66c@190.644-193.143/1 662@185.635-190.644/1 ' +
+      '661@183.131-185.630/1 664@178.957-183.126/1 20@176.208-178.947/1 633@167.860-176.208/1 627@165.356-167.855/1 ' +
+      '639@159.508-165.357/1 629@154.499-159.508/1';
+    expect(read(line)).toBe('٤١٢٬٣٠٠ ساعة');
+    expect(read(line, 'ltr')).toBe('٤١٢٬٣٠٠ ساعة');
+  });
+
+  it('keeps the two halves of a time in order', () => {
+    // "١٢:٣٠" from the same minutes.
+    const line = '660@277.001-281.170/1 663@271.993-277.831/1 3a@269.825-271.995/1 662@264.817-269.826/1 661@262.313-264.812/1';
+    expect(read(line)).toBe('١٢:٣٠');
+  });
+
+  it('keeps Arabic-Indic digits that are already left to right', () => {
+    expect(read('661@10-14/1 66b@14-16/1 665@16-20/1')).toBe('١٫٥');
+  });
+
   it('keeps run order on a left-to-right line', () => {
     const line = mupdfLine('54@10-16/0 6f@16-22/0 20@22-25/0 644@30-34/1 627@26-30/1');
     expect(logicalOrder(line, 'ltr').map((char) => char.c).join('')).toBe('To لا');

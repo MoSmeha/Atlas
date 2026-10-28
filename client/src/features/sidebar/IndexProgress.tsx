@@ -16,7 +16,9 @@ export function IndexProgress({ activity }: { activity: IndexActivity | null }) 
   const status = useFolderStatus();
   const now = indexingNow(status.data, activity);
   const shown = now ?? finished;
-  const failure = status.data?.phase === 'error' ? status.data.error : null;
+  // A folder with no PDF or Excel files never started indexing; the folder form and the main column say so.
+  const error = status.data?.phase === 'error' ? status.data.error : null;
+  const failure = error?.code === 'folder_empty' ? null : error;
 
   return (
     <>
