@@ -32,19 +32,25 @@ const ink: MantineColorsTuple = [
   '#172953',
 ];
 
-/** Cool neutrals. 0 is the page ground, 1 the sidebar and top bar, 6 the dimmed text (4.8:1 on 1). */
+/**
+ * Cool neutrals. 0 is the hover tone on white, 1 the sidebar and top bar, 2 neutral badges,
+ * 3 hairlines, 6 dimmed text (5.1:1 on 1), 9 body text.
+ */
 const gray: MantineColorsTuple = [
-  '#fbfcfd',
-  '#f2f5f9',
+  '#f6f8fb',
+  '#f1f4f9',
   '#e6eaef',
   '#d8dde2',
   '#c3c8ce',
   '#9da2a9',
-  '#666c75',
+  '#626871',
   '#4a505a',
   '#30363f',
   '#151a21',
 ];
+
+/** The near-white page ground behind the conversation, a step lighter than every gray. */
+const pageGround = '#fcfcfd';
 
 /** Amber for warnings (scanned, too large). Shade 9 on shade 1 reads at 7.7:1. */
 const yellow: MantineColorsTuple = [
@@ -258,10 +264,9 @@ export const theme = createTheme({
 export const cssVariablesResolver: CSSVariablesResolver = () => ({
   variables: {},
   light: {
-    '--mantine-color-body': 'var(--mantine-color-gray-0)',
+    '--mantine-color-body': pageGround,
     '--mantine-color-dimmed': 'var(--mantine-color-gray-6)',
     '--mantine-color-placeholder': 'var(--mantine-color-gray-6)',
-    '--mantine-color-default-hover': 'var(--mantine-color-gray-1)',
     '--mantine-color-default-border': 'var(--mantine-color-gray-4)',
     '--mantine-color-error': 'var(--mantine-color-red-8)',
     '--mantine-color-gray-light': 'var(--mantine-color-gray-2)',
