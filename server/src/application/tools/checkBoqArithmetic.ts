@@ -11,6 +11,9 @@ import { defineTool } from './Tool';
 
 /** How many mismatches the model sees; the saved result keeps them all. */
 const MAX_LISTED = 30;
+/** Fewer are listed when many tables were checked, so the JSON stays under the agent's output cap and is never cut. */
+const MIN_LISTED = 5;
+const MAX_OUTPUT_CHARS = 18_000;
 const MAX_DESCRIPTION_CHARS = 160;
 
 export interface MismatchOutput {
@@ -111,15 +114,20 @@ export const checkBoqArithmetic = defineTool({
       tool: 'check_boq_arithmetic',
       detail: `quantity x rate on item rows, and totals against the rows they close, in ${tables.map((t) => t.name).join(', ')}`,
     });
-    const output: CheckBoqArithmeticOutput = {
+    const shown = listed.map((mismatch) => ({ ...mismatch, description: cut(mismatch.description) }));
+    const outputWith = (count: number): CheckBoqArithmeticOutput => ({
       result_id: saved.id,
       checked_tables: checked,
       checked_rows: checkedRows,
       mismatch_count: found.length,
-      mismatches: listed.slice(0, MAX_LISTED).map((mismatch) => ({ ...mismatch, description: cut(mismatch.description) })),
-      note: outputNote(found.length, checkedRows, saved.id),
-    };
-    return { output, summary: summarize(found.length, tables.length, saved.id) };
+      mismatches: shown.slice(0, count),
+      note: outputNote(found.length, count, checkedRows, saved.id),
+    });
+    let count = Math.min(MAX_LISTED, shown.length);
+    while (count > MIN_LISTED && JSON.stringify(outputWith(count)).length > MAX_OUTPUT_CHARS) {
+      count = Math.max(MIN_LISTED, count - 5);
+    }
+    return { output: outputWith(count), summary: summarize(found.length, tables.length, saved.id) };
   },
 });
 
@@ -184,14 +192,12 @@ function currencyOf(record: TableRowRecord, table: TableSchema): string | null {
   return typeof cell === 'string' && cell.trim() !== '' ? cell.trim() : table.currency;
 }
 
-function outputNote(mismatches: number, checkedRows: number, id: string): string | null {
+function outputNote(mismatches: number, shown: number, checkedRows: number, id: string): string | null {
   if (checkedRows === 0) {
     return 'No row had both an amount and a quantity and rate, or a total with rows above it, so nothing could be checked.';
   }
   if (mismatches === 0) return 'Every checked row adds up: quantity x rate matches each amount and every total matches its rows.';
-  if (mismatches > MAX_LISTED) {
-    return `Showing the first ${MAX_LISTED} of ${mismatches} mismatches; all of them are saved in ${id}.`;
-  }
+  if (mismatches > shown) return `Showing the first ${shown} of ${mismatches} mismatches; all of them are saved in ${id}.`;
   return null;
 }
 

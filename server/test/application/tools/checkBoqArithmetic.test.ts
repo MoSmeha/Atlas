@@ -189,6 +189,19 @@ describe('check_boq_arithmetic', () => {
     expect(context.session.result('r1')?.rows).toHaveLength(35);
   });
 
+  it('lists fewer mismatches when many tables were checked, so the output is never cut', async () => {
+    const index = new FakeIndex();
+    const long = 'Reinforced concrete grade C40 to suspended slabs including formwork and curing '.repeat(3);
+    for (let i = 1; i <= 60; i++) {
+      index.save(excelRecord(`Bills/Package_${i}_BOQ.xlsx`, [boqTable([[`${i}.1`, long, 2, 10, 21]], `Bill ${i}`)]));
+    }
+    const { output } = await run({ document: null, table: null }, makeToolContext({ index }));
+    expect(JSON.stringify(output).length).toBeLessThanOrEqual(18_000);
+    expect(output.checked_tables).toHaveLength(60);
+    expect(output.mismatches.length).toBeLessThan(30);
+    expect(output.note).toBe(`Showing the first ${output.mismatches.length} of 60 mismatches; all of them are saved in r1.`);
+  });
+
   it('cites pages for PDF tables, with a page column and the item code as quote', async () => {
     const index = new FakeIndex();
     const record = pdfRecord('Tender_BOQ.pdf', ['Cover', 'Notes', 'Bill page 1', 'Bill page 2']);
