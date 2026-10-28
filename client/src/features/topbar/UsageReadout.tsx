@@ -30,7 +30,7 @@ export function UsageReadout() {
       <Text
         component="span"
         visibleFrom="sm"
-        fz="xs"
+        fz="sm"
         c="dimmed"
         className="tabular-nums"
         tabIndex={0}
