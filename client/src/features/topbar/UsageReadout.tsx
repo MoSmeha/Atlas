@@ -5,12 +5,20 @@ import { useUsage } from '../../api/useUsage';
 import { useSession } from '../../state/useSession';
 import { formatCost, formatCount, formatDuration, questionCount } from './usageText';
 
+interface UsageReadoutProps {
+  /**
+   * "topbar" shows it beside the model picker from the sm breakpoint up; "composer" shows it, a
+   * size smaller, on the hint line under the question box below sm, where the top bar has no room.
+   */
+  placement?: 'topbar' | 'composer';
+}
+
 /**
- * The last answer's cost and time as a quiet text pair, "$0.042 · 14.2 s". Hovering or focusing
- * it shows the tokens behind the cost and what this chat has cost so far. Hidden until a question
- * is answered, and on narrow screens.
+ * The last answer's cost and time as a quiet text pair, "$0.042 · 14.2 s". Hovering, focusing or
+ * tapping it shows the tokens behind the cost and what this chat has cost so far. Hidden until a
+ * question is answered.
  */
-export function UsageReadout() {
+export function UsageReadout({ placement = 'topbar' }: UsageReadoutProps) {
   const { sessionId } = useSession();
   const usage = useUsage(sessionId);
   const models = useModels();
@@ -20,17 +28,19 @@ export function UsageReadout() {
   const cost = formatCost(last.costUsd);
   const time = formatDuration(last.durationMs);
   const modelLabel = models.data?.models.find((option) => option.id === last.model)?.label ?? last.model;
+  const inTopBar = placement === 'topbar';
 
   return (
     <Tooltip
       label={<UsageDetails usage={usage.data} modelLabel={modelLabel} />}
       events={{ hover: true, focus: true, touch: true }}
-      position="bottom"
+      position={inTopBar ? 'bottom' : 'top-end'}
     >
       <Text
         component="span"
-        visibleFrom="sm"
-        fz="sm"
+        visibleFrom={inTopBar ? 'sm' : undefined}
+        hiddenFrom={inTopBar ? undefined : 'sm'}
+        fz={inTopBar ? 'sm' : 'xs'}
         c="dimmed"
         className="tabular-nums"
         tabIndex={0}
