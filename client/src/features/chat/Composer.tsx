@@ -1,4 +1,4 @@
-import { type FormEvent, type KeyboardEvent, useId, useState } from 'react';
+import { type FormEvent, type KeyboardEvent, type ReactNode, useId, useState } from 'react';
 import { ActionIcon, Group, Stack, Text, Textarea, Tooltip } from '@mantine/core';
 import { IconArrowUp, IconPlayerStopFilled } from '@tabler/icons-react';
 import type { AskReadiness } from './askReadiness';
@@ -10,6 +10,8 @@ interface ComposerProps {
   streaming: boolean;
   onSend: (question: string) => void;
   onStop: () => void;
+  /** Quiet text at the end of the hint line, such as the last answer's cost and time on a phone. */
+  hintAside?: ReactNode;
 }
 
 /** The longest question the server accepts. */
@@ -19,7 +21,7 @@ const MAX_QUESTION = 4000;
  * The question box docked under the conversation. Enter sends, Shift+Enter starts a new line,
  * and while an answer streams the Send button becomes Stop (Esc works too).
  */
-export function Composer({ readiness, streaming, onSend, onStop }: ComposerProps) {
+export function Composer({ readiness, streaming, onSend, onStop, hintAside }: ComposerProps) {
   const [value, setValue] = useState('');
   const hintId = useId();
   const question = value.trim();
@@ -88,9 +90,12 @@ export function Composer({ readiness, streaming, onSend, onStop }: ComposerProps
           )}
         </Group>
       </form>
-      <Text id={hintId} fz="xs" c="dimmed" px="xs" aria-live="polite">
-        {hint}
-      </Text>
+      <Group gap="xs" wrap="nowrap" align="flex-start" justify="space-between" px="xs">
+        <Text id={hintId} fz="xs" c="dimmed" miw={0} aria-live="polite">
+          {hint}
+        </Text>
+        {hintAside}
+      </Group>
     </Stack>
   );
 }

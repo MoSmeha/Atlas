@@ -59,7 +59,8 @@ export function DocumentRegister() {
           </Text>
         )}
       </Group>
-      <ScrollArea flex={1} mih={0} mx="calc(var(--mantine-spacing-md) * -1)" px="md" scrollbars="y">
+      {/* type="auto" keeps the scrollbar showing whenever the list runs past the sidebar, so it reads as more below. */}
+      <ScrollArea type="auto" flex={1} mih={0} mx="calc(var(--mantine-spacing-md) * -1)" px="md" scrollbars="y">
         {body}
       </ScrollArea>
     </Stack>

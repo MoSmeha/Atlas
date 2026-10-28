@@ -3,6 +3,7 @@ import { Divider, Stack } from '@mantine/core';
 import { useFolderStatus } from '../../api/useFolderStatus';
 import { useHealth } from '../../api/useHealth';
 import { MainColumn } from '../../shell/MainColumn';
+import { UsageReadout } from '../topbar/UsageReadout';
 import { SourceViewerModal } from '../viewer/SourceViewerModal';
 import { Composer } from './Composer';
 import { EmptyState } from './EmptyState';
@@ -32,7 +33,17 @@ export function ChatThread() {
   });
 
   return (
-    <MainColumn composer={<Composer readiness={readiness} streaming={streaming} onSend={ask} onStop={stop} />}>
+    <MainColumn
+      composer={
+        <Composer
+          readiness={readiness}
+          streaming={streaming}
+          onSend={ask}
+          onStop={stop}
+          hintAside={<UsageReadout placement="composer" />}
+        />
+      }
+    >
       {turns.length === 0 ? (
         <EmptyState
           status={folder.data}

@@ -59,7 +59,7 @@
   display: -webkit-box;
   padding-inline-start: var(--mantine-spacing-xs);
   overflow: hidden;
-  border-inline-start: 2px solid var(--mantine-color-ink-3);
+  border-inline-start: 1px solid var(--mantine-color-gray-3);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   line-clamp: 3;

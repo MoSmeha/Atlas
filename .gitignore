@@ -28,3 +28,6 @@ Thumbs.db
 
 # Impeccable decision-page runtime state, at any depth
 **/.impeccable/questions/
+
+# Design review captures, regenerated on every review round
+client/.impeccable/review/

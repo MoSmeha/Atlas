@@ -66,24 +66,14 @@
   overflow-wrap: break-word;
 }
 
-/* Cited rows: the brand's light tint across the row, and a brand edge on the row number. */
+/* Cited rows: the brand's light tint across the row, a step deeper on the row number. The tint alone marks them. */
 .table tr[data-cited] > td {
   background-color: var(--mantine-primary-color-light);
 }
 
 .table tr[data-cited] > .rowNumber {
   background-color: var(--mantine-color-ink-1);
-  box-shadow: inset 3px 0 0 var(--mantine-primary-color-filled);
   color: var(--mantine-color-ink-9);
-}
-
-/* The cited rows' brand edge in small, as a key for the tint. */
-.swatch {
-  display: inline-block;
-  width: 3px;
-  height: 14px;
-  border-radius: 2px;
-  background-color: var(--mantine-primary-color-filled);
 }
 
 /* A loading or failure line inside a stretch of rows; it stays at the left edge of a wide sheet. */

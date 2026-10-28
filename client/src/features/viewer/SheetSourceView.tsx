@@ -68,7 +68,6 @@ export function SheetSourceView({ document, source }: SheetSourceViewProps) {
           <Button
             variant="subtle"
             size="compact-sm"
-            leftSection={<span className={classes.swatch} aria-hidden />}
             rightSection={<IconArrowsVertical size={14} stroke={1.75} />}
             onClick={showCited}
           >
