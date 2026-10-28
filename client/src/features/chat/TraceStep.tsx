@@ -39,7 +39,7 @@ export function TraceStep({ step }: { step: ToolStep }) {
               {input.text}
             </Code>
           ) : (
-            <Text fz="sm" c="gray.8" dir="auto" className={classes.wrap}>
+            <Text fz="sm" c="gray.8" dir="ltr" className={classes.wrap}>
               {input.text}
             </Text>
           ))}

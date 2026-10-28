@@ -18,6 +18,15 @@ const code = (text: string): StepInput => ({ text, code: true });
 const str = (value: unknown): string | null => (typeof value === 'string' && value.trim() !== '' ? value.trim() : null);
 const num = (value: unknown): number | null => (typeof value === 'number' && Number.isFinite(value) ? value : null);
 
+/**
+ * A query, question or file name, isolated (U+2068 to U+2069) so Arabic keeps its own direction
+ * inside the English line and its neighbours, such as the quotes or ", page 3", stay in place.
+ */
+function words(value: unknown): string | null {
+  const text = str(value);
+  return text === null ? null : `⁨${text}⁩`;
+}
+
 function pages(from: number | null, to: number | null): string | null {
   if (from === null) return null;
   return to === null || to === from ? `page ${from}` : `pages ${from} to ${to}`;
@@ -30,18 +39,18 @@ function joined(...parts: (string | null)[]): string {
 const describers: Record<string, Describe> = {
   list_documents: () => null,
   search_documents: (args) => {
-    const query = str(args.query);
-    const document = str(args.document);
+    const query = words(args.query);
+    const document = words(args.document);
     if (query === null) return null;
     return plain(document === null ? `"${query}"` : `"${query}" in ${document}`);
   },
   read_pages: (args) => {
-    const document = str(args.document);
+    const document = words(args.document);
     return document === null ? null : plain(joined(document, pages(num(args.from), num(args.to))));
   },
   look_at_page: (args) => {
-    const document = str(args.document);
-    const question = str(args.question);
+    const document = words(args.document);
+    const question = words(args.question);
     if (document === null) return null;
     const where = joined(document, pages(num(args.page), null));
     return plain(question === null ? where : `${where}: ${question}`);
@@ -54,11 +63,11 @@ const describers: Record<string, Describe> = {
     const expression = str(args.expression);
     return expression === null ? null : code(expression);
   },
-  check_boq_arithmetic: (args) => plain(str(args.table) ?? str(args.document) ?? 'Every BOQ table'),
-  extract_schedule: (args) => plain(str(args.document) ?? 'Every document'),
+  check_boq_arithmetic: (args) => plain(words(args.table) ?? words(args.document) ?? 'Every BOQ table'),
+  extract_schedule: (args) => plain(words(args.document) ?? 'Every document'),
   compare_revisions: (args) => {
-    const before = str(args.document_a);
-    const after = str(args.document_b);
+    const before = words(args.document_a);
+    const after = words(args.document_b);
     return before === null || after === null ? null : plain(`${before} against ${after}`);
   },
   export_table: (args) => {
