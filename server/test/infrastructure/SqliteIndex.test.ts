@@ -184,6 +184,23 @@ describe('SqliteIndex keyword search', () => {
   });
 });
 
+describe('SqliteIndex pending embeddings', () => {
+  it('counts chunks without an embedding and hands them out in batches', () => {
+    const index = open();
+    index.save(pdfRecord('A.pdf', ['one', 'two', 'three']));
+    expect(index.pendingEmbeddingCount()).toBe(3);
+
+    const first = index.pendingEmbeddings(2);
+    expect(first.map((chunk) => chunk.text)).toEqual(['one', 'two']);
+    index.saveEmbeddings(first.map((chunk) => ({ chunkId: chunk.chunkId, vector: new Float32Array([1, 0]) })));
+    expect(index.pendingEmbeddingCount()).toBe(1);
+    expect(index.pendingEmbeddings(2).map((chunk) => chunk.text)).toEqual(['three']);
+
+    index.remove('A.pdf');
+    expect(index.pendingEmbeddingCount()).toBe(0);
+  });
+});
+
 describe('SqliteIndex vector search', () => {
   it('orders chunks by cosine similarity and refreshes after changes', () => {
     const index = open();

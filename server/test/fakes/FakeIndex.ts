@@ -62,6 +62,10 @@ export class FakeIndex implements DocumentIndex {
     this.classifications.set(path, classification);
   }
 
+  pendingEmbeddingCount(): number {
+    return this.chunks.filter((chunk) => chunk.vector === null).length;
+  }
+
   pendingEmbeddings(limit: number): { chunkId: number; text: string }[] {
     return this.chunks
       .filter((chunk) => chunk.vector === null)
