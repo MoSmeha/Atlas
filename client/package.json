@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "typecheck": "tsc -p tsconfig.json && tsc -p mock/tsconfig.json",
-    "mock": "tsx mock/server.ts"
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@atlas/shared": "workspace:*",
