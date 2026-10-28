@@ -20,6 +20,10 @@ export interface IndexStepContext {
   /** Relative paths saved in this pass: new and changed files, whatever their status. */
   changedPaths: string[];
   signal: AbortSignal;
+  /** Shows the step's own progress under its phase, such as "Classifying 3 of 12". */
+  report(progress: IndexProgress): void;
+  /** Sends the document's fresh summary to the client after the step changed it. */
+  documentChanged(path: string): void;
 }
 
 /** Work after reading and embedding, such as classifying documents; the workspace shows its phase while it runs. */
@@ -176,14 +180,13 @@ export class IndexFolder {
 
   /** Reads, saves, logs and reports one file; returns its relative path. */
   private async indexFile(loaded: Loaded, file: ScannedFile, signal: AbortSignal): Promise<string> {
-    const { clock, workspace } = this.deps;
+    const { clock } = this.deps;
     const started = clock.now().getTime();
     const read = await readDocument(file, this.deps.readers);
     checkpoint(signal);
     const record = saveRecord(loaded.index, read);
     this.log(loaded.folder, record.path, record.status, clock.now().getTime() - started, record.statusDetail);
-    const summary = loaded.index.find(record.path);
-    if (summary !== null) workspace.emit({ type: 'document', document: summary });
+    this.emitDocument(loaded.index, record.path);
     return record.path;
   }
 
@@ -195,7 +198,14 @@ export class IndexFolder {
       checkpoint(signal);
       const message = STEP_MESSAGES[step.phase] ?? 'Finishing up';
       this.progress(signal, step.phase, { current: i + 1, total: steps.length, file: null, message });
-      await step.run({ folder: loaded.folder, index: loaded.index, changedPaths, signal });
+      await step.run({
+        folder: loaded.folder,
+        index: loaded.index,
+        changedPaths,
+        signal,
+        report: (progress) => this.progress(signal, step.phase, progress),
+        documentChanged: (path) => this.emitDocument(loaded.index, path),
+      });
     }
     checkpoint(signal);
     this.deps.workspace.update({ phase: 'ready', progress: null, error: null });
@@ -237,6 +247,11 @@ export class IndexFolder {
     loaded.index.remove(path);
     this.log(loaded.folder, path, 'removed', 0, null);
     this.deps.workspace.emit({ type: 'removed', path });
+  }
+
+  private emitDocument(index: DocumentIndex, path: string): void {
+    const summary = index.find(path);
+    if (summary !== null) this.deps.workspace.emit({ type: 'document', document: summary });
   }
 
   private progress(signal: AbortSignal, phase: IndexPhase, progress: IndexProgress): void {

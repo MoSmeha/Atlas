@@ -306,6 +306,28 @@ describe('IndexFolder steps', () => {
     expect(step.runs[1]?.changedPaths).toEqual([]);
   });
 
+  it('lets a step report its own progress and send changed documents', async () => {
+    const step: IndexStep = {
+      phase: 'classifying',
+      async run({ index, report, documentChanged }) {
+        report({ current: 1, total: 2, file: null, message: 'Classifying 1 of 2' });
+        index.setClassification('A.pdf', { type: 'Contract', confidence: 0.9, metadata: { projectName: null, parties: [], contractValue: null, keyDates: [] } });
+        documentChanged('A.pdf');
+        documentChanged('Missing.pdf');
+      },
+    };
+    const { fs, indexFolder, events } = setup({ outcomes: { '/p/A.pdf': pdf('Concrete works') }, steps: [step] });
+    fs.addFile('/p/A.pdf');
+    await indexFolder.load('/p');
+    await indexFolder.idle();
+
+    const afterSteps = events.slice(events.findIndex((event) => event.type === 'progress' && event.phase === 'classifying'));
+    expect(afterSteps).toContainEqual({ type: 'progress', phase: 'classifying', progress: { current: 1, total: 2, file: null, message: 'Classifying 1 of 2' } });
+    const documents = afterSteps.flatMap((event) => (event.type === 'document' ? [event.document] : []));
+    expect(documents.map((document) => [document.path, document.classification?.type])).toEqual([['A.pdf', 'Contract']]);
+    expect(afterSteps.at(-1)).toMatchObject({ type: 'ready' });
+  });
+
   it('sets phase error with the error detail when a step fails', async () => {
     const step = new RecordingStep('classifying', new AppError('rate_limited', 'Slow down.', 20));
     const { fs, indexFolder, events } = setup({ outcomes: { '/p/A.pdf': pdf('Concrete works') }, steps: [step] });
