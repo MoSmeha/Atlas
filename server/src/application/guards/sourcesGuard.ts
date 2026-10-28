@@ -1,4 +1,5 @@
 import type { Answer, DocumentSummary, ExcelSource, FileStatus, PdfSource, Source } from '@atlas/shared';
+import { capSources } from '../../domain/capSources';
 import { sliceText } from '../../domain/text';
 import type { DocumentIndex } from '../ports/DocumentIndex';
 import type { SavedResult, Session } from '../session/Session';
@@ -19,7 +20,7 @@ export interface SourcesInput {
 }
 
 export interface SourcesCheck {
-  /** The valid sources in the shared shape, then the attached result's own sources, without repeats. */
+  /** The valid sources in the shared shape, then the attached result's own sources, without repeats, at most 25. */
   sources: Source[];
   /** The saved result result_id names; null when there is none or it does not exist. */
   result: SavedResult | null;
@@ -43,7 +44,7 @@ export function checkSources(input: SourcesInput): SourcesCheck {
     if (typeof checked === 'string') problems.push({ type: 'source', reason: checked });
     else valid.push(checked);
   }
-  const sources = withoutRepeats([...valid, ...(result?.sources ?? [])]);
+  const sources = capSources(withoutRepeats([...valid, ...(result?.sources ?? [])]));
   if (input.kind === 'answer' && sources.length === 0) problems.push({ type: 'no_source' });
   return { sources, result, problems };
 }
