@@ -1,0 +1,22 @@
+{
+  "name": "atlas",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @atlas/server --filter @atlas/client dev",
+    "cli": "tsx server/src/cli.ts",
+    "samples": "tsx server/scripts/samples/index.ts",
+    "eval": "tsx server/scripts/eval/run.ts",
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
