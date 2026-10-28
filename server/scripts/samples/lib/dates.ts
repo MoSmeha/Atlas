@@ -71,11 +71,17 @@ export function ordinal(n: number): string {
   return `${n}${suffix}`;
 }
 
-/** The Umm al-Qura date, for example "13 Sha'ban 1447 AH". */
-export function hijriDate(date: Date): string {
+/** The Umm al-Qura day, month (1 to 12) and year of a date. */
+export function hijriParts(date: Date): { day: number; month: number; year: number } {
   const parts = UMM_AL_QURA.formatToParts(date);
   const part = (type: string) => Number(parts.find((p) => p.type === type)?.value);
-  return `${part('day')} ${HIJRI_MONTHS[part('month') - 1]} ${part('year')} AH`;
+  return { day: part('day'), month: part('month'), year: part('year') };
+}
+
+/** The Umm al-Qura date, for example "13 Sha'ban 1447 AH". */
+export function hijriDate(date: Date): string {
+  const hijri = hijriParts(date);
+  return `${hijri.day} ${HIJRI_MONTHS[hijri.month - 1]} ${hijri.year} AH`;
 }
 
 /** Throws when a Hijri date written into a document does not match the Gregorian date beside it. */

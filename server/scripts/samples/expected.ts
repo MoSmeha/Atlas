@@ -1,5 +1,13 @@
 import { completionDate, type GeneratedPdf } from './contractMainWorks';
 import {
+  edgeFilesStatus,
+  emptyFolderFacts,
+  meetingMinutesFacts,
+  promptInjectionFacts,
+  siteSurveyFacts,
+  specificationFacts,
+} from './expectedEdge';
+import {
   equipmentFacts,
   itemsAboveAcrossBoqs,
   ledgerFacts,
@@ -50,6 +58,7 @@ export function buildExpected(input: ExpectedInput) {
       [input.programme.fileName]: { kind: 'excel', status: 'ok', sheets: [input.programme.sheet] },
       [input.provisionalSums.fileName]: { kind: 'excel', status: 'ok', sheets: [input.provisionalSums.sheet] },
       [input.ledger.fileName]: { kind: 'excel', status: 'ok', sheets: [input.ledger.sheet] },
+      ...edgeFilesStatus(input.specification),
     },
     facts: contractFacts(input.contract),
     schedule: contractSchedule(input.contract),
@@ -64,6 +73,11 @@ export function buildExpected(input: ExpectedInput) {
     programme: programmeFacts(input.programme, input.contract),
     provisionalSums: provisionalSumsFacts(input.provisionalSums),
     costLedger: ledgerFacts(input.ledger),
+    specification: specificationFacts(input.specification),
+    promptInjection: promptInjectionFacts(input.specification, input.contract),
+    siteSurvey: siteSurveyFacts(),
+    meetingMinutes: meetingMinutesFacts(),
+    emptyFolder: emptyFolderFacts(),
   };
 }
 
