@@ -25,6 +25,7 @@
   line-height: var(--mantine-line-height-md);
   color: var(--mantine-color-text);
   outline: none;
+  unicode-bidi: plaintext;
 }
 
 .input textarea:disabled {

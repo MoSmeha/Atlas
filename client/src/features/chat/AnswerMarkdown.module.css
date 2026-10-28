@@ -10,7 +10,8 @@
   line-height: 1.75;
 }
 
-.muted {
+.muted,
+.root.muted strong {
   color: var(--mantine-color-dimmed);
 }
 
