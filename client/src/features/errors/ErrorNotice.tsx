@@ -1,15 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Group, Stack, Text } from '@mantine/core';
 import { IconAlertCircle, IconAlertTriangle, IconInfoCircle } from '@tabler/icons-react';
-import type { ApiErrorCode } from '../../api/ApiError';
-import { type ErrorTone, errorCopy } from './errorCopy';
-
-/** Anything with an error code and a message: an ApiError, an ErrorDetail or a chat turn's error. */
-export interface NoticeError {
-  code: ApiErrorCode;
-  message: string;
-  retryAfterSeconds?: number | null;
-}
+import { type ErrorTone, type NoticeError, errorCopy } from './errorCopy';
 
 interface ErrorNoticeProps {
   error: NoticeError;
@@ -23,11 +15,11 @@ const toneIcon = { error: IconAlertCircle, warning: IconAlertTriangle, neutral: 
 
 /** A plain-language error: what went wrong, what to do next, and a retry button when one helps. */
 export function ErrorNotice({ error, onRetry, retryLabel = 'Ask again' }: ErrorNoticeProps) {
-  const { title, advice, tone, retryable } = errorCopy(error.code);
+  const { title, detail, tone, retryable } = errorCopy(error);
   const color = toneColor[tone];
   const Icon = toneIcon[tone];
   const wait = useCountdown(error.retryAfterSeconds ?? 0);
-  const message = error.message.trim() === '' ? advice : error.message;
+  const showRetry = onRetry !== undefined && retryable;
 
   return (
     <Alert
@@ -43,18 +35,22 @@ export function ErrorNotice({ error, onRetry, retryLabel = 'Ask again' }: ErrorN
         icon: { color: `var(--mantine-color-${color}-7)` },
       }}
     >
-      <Stack gap="xs" align="flex-start">
-        <Text fz="sm" c="gray.8">
-          {message}
-        </Text>
-        {onRetry && retryable && (
-          <Group gap="xs">
-            <Button variant="default" size="xs" onClick={onRetry} disabled={wait > 0}>
-              {wait > 0 ? `${retryLabel} in ${wait} s` : retryLabel}
-            </Button>
-          </Group>
-        )}
-      </Stack>
+      {(detail !== '' || showRetry) && (
+        <Stack gap="xs" align="flex-start">
+          {detail !== '' && (
+            <Text fz="sm" c="gray.8">
+              {detail}
+            </Text>
+          )}
+          {showRetry && (
+            <Group gap="xs">
+              <Button variant="default" size="xs" onClick={onRetry} disabled={wait > 0}>
+                {wait > 0 ? `${retryLabel} in ${wait} s` : retryLabel}
+              </Button>
+            </Group>
+          )}
+        </Stack>
+      )}
     </Alert>
   );
 }

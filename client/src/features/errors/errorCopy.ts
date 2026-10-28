@@ -1,100 +1,134 @@
 import type { ApiErrorCode } from '../../api/ApiError';
 
+/** Anything with an error code and a message: an ApiError, an ErrorDetail or a chat turn's error. */
+export interface NoticeError {
+  code: ApiErrorCode;
+  message: string;
+  retryAfterSeconds?: number | null;
+}
+
 export type ErrorTone = 'error' | 'warning' | 'neutral';
 
 export interface ErrorCopy {
   /** What went wrong, in a few plain words. */
   title: string;
-  /** What to do next, used when the server sent no message of its own. */
-  advice: string;
+  /** What to do next; empty when the title says it all. */
+  detail: string;
   /** Red for failures, amber for waits that pass on their own, gray for things the user chose. */
   tone: ErrorTone;
   /** Asking the same question again can work. */
   retryable: boolean;
 }
 
-const copy: Record<ApiErrorCode, ErrorCopy> = {
+interface Entry extends Omit<ErrorCopy, 'detail'> {
+  detail: string | ((error: NoticeError) => string);
+}
+
+const copy: Record<ApiErrorCode, Entry> = {
   missing_api_key: {
-    title: 'Atlas has no OpenAI API key',
-    advice: 'Add OPENAI_API_KEY to the .env file, then restart the Atlas server.',
+    title: 'OpenAI key missing',
+    detail: 'Add OPENAI_API_KEY to .env and restart Atlas.',
     tone: 'error',
     retryable: false,
   },
   folder_not_found: {
     title: 'Folder not found',
-    advice: 'Check the path. It must be a folder on the computer running Atlas.',
+    detail: 'Check the path. It must be a folder on the computer running Atlas.',
     tone: 'error',
     retryable: false,
   },
   folder_empty: {
-    title: 'The folder has no files',
-    advice: 'Pick a folder that holds PDF or Excel files.',
+    title: 'The folder has no PDF or Excel files',
+    detail: 'Pick a folder that holds PDF or Excel files.',
     tone: 'warning',
     retryable: false,
   },
   not_indexed: {
     title: 'No folder is loaded',
-    advice: 'Load a folder of PDF and Excel files, then ask again.',
+    detail: 'Load a folder of PDF and Excel files, then ask again.',
     tone: 'warning',
     retryable: false,
   },
   document_not_found: {
     title: 'That file is no longer in the folder',
-    advice: 'It may have been moved or deleted. Load the folder again.',
+    detail: 'It may have been moved or deleted. Load the folder again.',
     tone: 'error',
     retryable: false,
   },
   result_not_found: {
     title: 'That result is no longer available',
-    advice: 'Ask the question again to get a fresh table.',
+    detail: 'Ask the question again to get a fresh table.',
     tone: 'warning',
     retryable: true,
   },
   rate_limited: {
     title: 'OpenAI is busy',
-    advice: 'Wait a few seconds, then ask again.',
+    detail: (error) => `Wait ${waitText(error.retryAfterSeconds)}, then ask again.`,
     tone: 'warning',
     retryable: true,
   },
   model_refusal: {
     title: 'The model would not answer this',
-    advice: 'Try asking in different words.',
+    detail: 'Try asking in different words.',
     tone: 'warning',
     retryable: false,
   },
   model_error: {
     title: 'The model ran into a problem',
-    advice: 'Ask again. If it keeps happening, pick another model.',
+    // The server names the cause (a timeout, no connection, no quota), which says what to do.
+    detail: (error) => sentence(error.message) || 'Ask again. If it keeps happening, pick another model.',
     tone: 'error',
     retryable: true,
   },
   stopped: {
     title: 'Stopped',
-    advice: 'Atlas did not finish this answer.',
+    detail: '',
     tone: 'neutral',
     retryable: true,
   },
   invalid_request: {
     title: 'Atlas could not take that request',
-    advice: 'Check what you typed, then try again.',
+    detail: (error) => sentence(error.message) || 'Check what you typed, then try again.',
     tone: 'error',
     retryable: false,
   },
   internal: {
     title: 'Something went wrong in Atlas',
-    advice: 'Try again, and reload the page if it keeps happening.',
+    detail: 'Try again, and reload the page if it keeps happening.',
     tone: 'error',
     retryable: true,
   },
   unreachable: {
     title: 'No connection to Atlas',
-    advice: 'Check that the Atlas server is running, then try again.',
+    detail: 'Check that the Atlas server is running, then try again.',
     tone: 'error',
     retryable: true,
   },
 };
 
-/** The title, advice and tone shown for an error code. */
-export function errorCopy(code: ApiErrorCode): ErrorCopy {
-  return copy[code];
+/** The title, next step and tone shown for an error. */
+export function errorCopy(error: NoticeError): ErrorCopy {
+  const { detail, ...rest } = copy[error.code];
+  return { ...rest, detail: typeof detail === 'function' ? detail(error) : detail };
+}
+
+/** The error as one plain line, title then next step, for inline messages and notifications. */
+export function errorMessage(error: NoticeError): string {
+  const { title, detail } = errorCopy(error);
+  return detail === '' ? sentence(title) : `${sentence(title)} ${detail}`;
+}
+
+/** "20 seconds", "1 second", "3 minutes", or "a few seconds" when the server gave no time. */
+function waitText(seconds: number | null | undefined): string {
+  if (seconds == null || !Number.isFinite(seconds) || seconds <= 0) return 'a few seconds';
+  const whole = Math.ceil(seconds);
+  if (whole < 90) return whole === 1 ? '1 second' : `${whole} seconds`;
+  return `${Math.ceil(whole / 60)} minutes`;
+}
+
+/** Trims text and ends it with a full stop unless it already ends a sentence. Empty stays empty. */
+function sentence(text: string): string {
+  const trimmed = text.trim();
+  if (trimmed === '') return '';
+  return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
 }
