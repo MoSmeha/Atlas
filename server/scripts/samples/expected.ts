@@ -1,33 +1,23 @@
 import { completionDate, type GeneratedPdf } from './contractMainWorks';
+import {
+  equipmentFacts,
+  itemsAboveAcrossBoqs,
+  ledgerFacts,
+  phase2BoqFacts,
+  programmeFacts,
+  provisionalSumsFacts,
+  THRESHOLD,
+} from './expectedTables';
 import { SUMMARY_SHEET, type BillLayout, type BoqLayout } from './lib/boqLayout';
 import { addDays, day, isoDate, longDate, ordinal } from './lib/dates';
 import { dueDate, dueText } from './lib/due';
 import { formatAmount, lineAmount, sumAmounts } from './lib/money';
 import { diffRevisions } from './lib/revisionDiff';
+import { excelRows, pdfPage, type ExcelSource, type PdfSource } from './lib/sources';
 import { contract, parties, project, SAMPLE_FOLDER } from './project';
+import type { SampleSet } from './sampleSet';
 
-export interface ExpectedInput {
-  contract: GeneratedPdf;
-  boqRev0: BoqLayout;
-  boqRev1: BoqLayout;
-}
-
-interface PdfSource {
-  kind: 'pdf';
-  document: string;
-  page: number;
-  quote: string | null;
-}
-
-interface ExcelSource {
-  kind: 'excel';
-  document: string;
-  sheet: string;
-  rowFrom: number;
-  rowTo: number;
-}
-
-const THRESHOLD = 1_000_000;
+export type ExpectedInput = SampleSet;
 
 /**
  * Ground truth for the sample folder, assembled from the same data the documents were written from.
@@ -55,6 +45,11 @@ export function buildExpected(input: ExpectedInput) {
           { kind: 'excel', status: 'ok', sheets: [SUMMARY_SHEET, ...layout.bills.map((bill) => bill.bill.sheet)] },
         ]),
       ),
+      [input.boqPhase2.fileName]: { kind: 'pdf', status: 'ok', pages: input.boqPhase2.pageCount },
+      [input.equipment.fileName]: { kind: 'excel', status: 'ok', sheets: input.equipment.sheets },
+      [input.programme.fileName]: { kind: 'excel', status: 'ok', sheets: [input.programme.sheet] },
+      [input.provisionalSums.fileName]: { kind: 'excel', status: 'ok', sheets: [input.provisionalSums.sheet] },
+      [input.ledger.fileName]: { kind: 'excel', status: 'ok', sheets: [input.ledger.sheet] },
     },
     facts: contractFacts(input.contract),
     schedule: contractSchedule(input.contract),
@@ -63,6 +58,12 @@ export function buildExpected(input: ExpectedInput) {
     arithmeticErrors: boqs.flatMap(arithmeticErrors),
     wrongSubtotals: boqs.flatMap(wrongSubtotals),
     revisionDiff: diffRevisions(input.boqRev0, input.boqRev1),
+    boqPhase2: phase2BoqFacts(input.boqPhase2),
+    itemsAboveSar1mAcrossBoqs: itemsAboveAcrossBoqs(input.boqRev0, input.boqRev1, input.boqPhase2),
+    equipmentImports: equipmentFacts(input.equipment),
+    programme: programmeFacts(input.programme, input.contract),
+    provisionalSums: provisionalSumsFacts(input.provisionalSums),
+    costLedger: ledgerFacts(input.ledger),
   };
 }
 
@@ -71,7 +72,7 @@ export type Expected = ReturnType<typeof buildExpected>;
 function pdfSource(pdf: GeneratedPdf, key: string, quote: string | null = null): PdfSource {
   const page = pdf.pages[key];
   if (page === undefined) throw new Error(`The contract has no mark ${key}`);
-  return { kind: 'pdf', document: pdf.fileName, page, quote };
+  return pdfPage(pdf.fileName, page, quote);
 }
 
 function percentOfPrice(percent: number): number {
@@ -224,7 +225,7 @@ function contractSchedule(pdf: GeneratedPdf) {
 }
 
 function excelSource(layout: BoqLayout, sheet: string, rowFrom: number, rowTo = rowFrom): ExcelSource {
-  return { kind: 'excel', document: layout.revision.fileName, sheet, rowFrom, rowTo };
+  return excelRows(layout.revision.fileName, sheet, rowFrom, rowTo);
 }
 
 function boqTotals(layout: BoqLayout) {

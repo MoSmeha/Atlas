@@ -34,6 +34,40 @@
         "Superstructure",
         "MEP"
       ]
+    },
+    "BOQ_Phase2_Facade.pdf": {
+      "kind": "pdf",
+      "status": "ok",
+      "pages": 3
+    },
+    "Equipment_Imports.xlsx": {
+      "kind": "excel",
+      "status": "ok",
+      "sheets": [
+        "Imported Equipment",
+        "Regional Supply"
+      ]
+    },
+    "Programme_Milestones.xlsx": {
+      "kind": "excel",
+      "status": "ok",
+      "sheets": [
+        "Programme"
+      ]
+    },
+    "Provisional_Sums.xlsx": {
+      "kind": "excel",
+      "status": "ok",
+      "sheets": [
+        "Provisional Sums"
+      ]
+    },
+    "Cost_Ledger_10k.xlsx": {
+      "kind": "excel",
+      "status": "ok",
+      "sheets": [
+        "Ledger"
+      ]
     }
   },
   "facts": {
@@ -1580,5 +1614,3042 @@
         "delta": 435700
       }
     ]
+  },
+  "boqPhase2": {
+    "file": "BOQ_Phase2_Facade.pdf",
+    "pages": 3,
+    "currency": "SAR",
+    "basis": "Sum of the Amount column over item rows only; section headings, \"Carried forward\", \"Brought forward\" and the total line are excluded.",
+    "itemRows": 43,
+    "totals": [
+      {
+        "currency": "SAR",
+        "amount": 40096972.5
+      }
+    ],
+    "statedTotal": {
+      "currency": "SAR",
+      "amount": 40096972.5,
+      "label": "Total carried to Summary",
+      "source": {
+        "kind": "pdf",
+        "document": "BOQ_Phase2_Facade.pdf",
+        "page": 3,
+        "quote": "40,096,972.50"
+      }
+    },
+    "headerRepeatedOnPages": [
+      1,
+      2,
+      3
+    ],
+    "carriedForward": [
+      {
+        "page": 1,
+        "amount": 26549872.5,
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "26,549,872.50"
+        }
+      },
+      {
+        "page": 2,
+        "amount": 37776472.5,
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 2,
+          "quote": "37,776,472.50"
+        }
+      }
+    ],
+    "broughtForward": [
+      {
+        "page": 2,
+        "amount": 26549872.5,
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 2,
+          "quote": "26,549,872.50"
+        }
+      },
+      {
+        "page": 3,
+        "amount": 37776472.5,
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 3,
+          "quote": "37,776,472.50"
+        }
+      }
+    ],
+    "multiLineItems": [
+      "4.1.01",
+      "4.1.02",
+      "4.1.03",
+      "4.1.04",
+      "4.1.05",
+      "4.1.09",
+      "4.2.01",
+      "4.2.02",
+      "4.2.03",
+      "4.2.04",
+      "4.2.05",
+      "4.3.01",
+      "4.3.02",
+      "4.3.03",
+      "4.3.04",
+      "4.3.05",
+      "4.4.01",
+      "4.4.02",
+      "4.5.02",
+      "4.6.01",
+      "4.6.02",
+      "4.6.04",
+      "4.7.01",
+      "4.7.05"
+    ],
+    "rowsAboveSar1m": [
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "page": 1,
+        "item": "4.1.01",
+        "description": "Natural granite cladding, 40 mm thick, flamed finish, fixed on stainless steel brackets and an aluminium subframe, including anchors, cutting and drilling",
+        "amount": 8083000,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "8,083,000.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "page": 1,
+        "item": "4.1.02",
+        "description": "Glass fibre reinforced concrete (GRC) feature screens, 25 mm thick, geometric pattern inspired by traditional mashrabiya, on galvanised steel frames, including fixings",
+        "amount": 4746600,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "4,746,600.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "page": 1,
+        "item": "4.1.03",
+        "description": "Shopfront glazing to retail units, 12 mm toughened laminated glass in structurally glazed aluminium frames",
+        "amount": 2877600,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "2,877,600.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "page": 1,
+        "item": "4.2.01",
+        "description": "Structural steel framing to the crown, grade S355, including connections, shop primer and intumescent coating for 90 minutes fire resistance",
+        "amount": 4117300,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "4,117,300.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "page": 1,
+        "item": "4.2.02",
+        "description": "Laminated glass fins, 2 x 12 mm heat-strengthened glass, 6 m high, with stainless steel shoes and silicone joints",
+        "amount": 1261920,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "1,261,920.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "page": 2,
+        "item": "4.3.01",
+        "description": "Main entrance canopy, 18 m x 9 m, cantilevered steel structure with laminated glass roof, including drainage and lighting",
+        "amount": 1685000,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 2,
+          "quote": "1,685,000.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "page": 2,
+        "item": "4.4.01",
+        "description": "Vertical aluminium fins, 450 mm deep, to the west and south elevations of Levels 5 to 16, including brackets",
+        "amount": 1919700,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 2,
+          "quote": "1,919,700.00"
+        }
+      }
+    ],
+    "rowsAtExactlySar1m": [
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "page": 1,
+        "item": "4.2.05",
+        "description": "Architectural lighting to the crown: linear LED fittings, DMX controllers, drivers and cabling, complete",
+        "amount": 1000000,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "1,000,000.00"
+        }
+      }
+    ],
+    "items": [
+      {
+        "page": 1,
+        "item": "4.1.01",
+        "section": "4.1",
+        "description": "Natural granite cladding, 40 mm thick, flamed finish, fixed on stainless steel brackets and an aluminium subframe, including anchors, cutting and drilling",
+        "unit": "m2",
+        "quantity": 6850,
+        "rate": 1180,
+        "amount": 8083000,
+        "descriptionLines": 3
+      },
+      {
+        "page": 1,
+        "item": "4.1.02",
+        "section": "4.1",
+        "description": "Glass fibre reinforced concrete (GRC) feature screens, 25 mm thick, geometric pattern inspired by traditional mashrabiya, on galvanised steel frames, including fixings",
+        "unit": "m2",
+        "quantity": 3240,
+        "rate": 1465,
+        "amount": 4746600,
+        "descriptionLines": 3
+      },
+      {
+        "page": 1,
+        "item": "4.1.03",
+        "section": "4.1",
+        "description": "Shopfront glazing to retail units, 12 mm toughened laminated glass in structurally glazed aluminium frames",
+        "unit": "m2",
+        "quantity": 2180,
+        "rate": 1320,
+        "amount": 2877600,
+        "descriptionLines": 2
+      },
+      {
+        "page": 1,
+        "item": "4.1.04",
+        "section": "4.1",
+        "description": "Aluminium soffit panels to the podium overhang, 3 mm, powder coated",
+        "unit": "m2",
+        "quantity": 1140,
+        "rate": 545,
+        "amount": 621300,
+        "descriptionLines": 2
+      },
+      {
+        "page": 1,
+        "item": "4.1.05",
+        "section": "4.1",
+        "description": "Aluminium louvre screens to the podium car park ventilation openings, powder coated, with insect mesh",
+        "unit": "m2",
+        "quantity": 1460,
+        "rate": 640,
+        "amount": 934400,
+        "descriptionLines": 2
+      },
+      {
+        "page": 1,
+        "item": "4.1.06",
+        "section": "4.1",
+        "description": "Stainless steel feature trims to window heads and jambs",
+        "unit": "m",
+        "quantity": 3950,
+        "rate": 185,
+        "amount": 730750,
+        "descriptionLines": 1
+      },
+      {
+        "page": 1,
+        "item": "4.1.07",
+        "section": "4.1",
+        "description": "Mineral wool insulation, 100 mm thick, behind the cladding",
+        "unit": "m2",
+        "quantity": 6850,
+        "rate": 48.5,
+        "amount": 332225,
+        "descriptionLines": 1
+      },
+      {
+        "page": 1,
+        "item": "4.1.08",
+        "section": "4.1",
+        "description": "Fire barriers at slab edges and cavity closers at every floor",
+        "unit": "m",
+        "quantity": 2240,
+        "rate": 96,
+        "amount": 215040,
+        "descriptionLines": 1
+      },
+      {
+        "page": 1,
+        "item": "4.1.09",
+        "section": "4.1",
+        "description": "Breather membrane and vapour control layer behind the cladding",
+        "unit": "m2",
+        "quantity": 6850,
+        "rate": 22.75,
+        "amount": 155837.5,
+        "descriptionLines": 2
+      },
+      {
+        "page": 1,
+        "item": "4.2.01",
+        "section": "4.2",
+        "description": "Structural steel framing to the crown, grade S355, including connections, shop primer and intumescent coating for 90 minutes fire resistance",
+        "unit": "t",
+        "quantity": 418,
+        "rate": 9850,
+        "amount": 4117300,
+        "descriptionLines": 3
+      },
+      {
+        "page": 1,
+        "item": "4.2.02",
+        "section": "4.2",
+        "description": "Laminated glass fins, 2 x 12 mm heat-strengthened glass, 6 m high, with stainless steel shoes and silicone joints",
+        "unit": "nr",
+        "quantity": 264,
+        "rate": 4780,
+        "amount": 1261920,
+        "descriptionLines": 2
+      },
+      {
+        "page": 1,
+        "item": "4.2.03",
+        "section": "4.2",
+        "description": "Perforated aluminium panels to the crown screen, 3 mm, with a backlit pattern",
+        "unit": "m2",
+        "quantity": 1920,
+        "rate": 495,
+        "amount": 950400,
+        "descriptionLines": 2
+      },
+      {
+        "page": 1,
+        "item": "4.2.04",
+        "section": "4.2",
+        "description": "Crown access walkways, galvanised steel grating with safety rails",
+        "unit": "m",
+        "quantity": 380,
+        "rate": 1150,
+        "amount": 437000,
+        "descriptionLines": 2
+      },
+      {
+        "page": 1,
+        "item": "4.2.05",
+        "section": "4.2",
+        "description": "Architectural lighting to the crown: linear LED fittings, DMX controllers, drivers and cabling, complete",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 1000000,
+        "amount": 1000000,
+        "descriptionLines": 2
+      },
+      {
+        "page": 1,
+        "item": "4.2.06",
+        "section": "4.2",
+        "description": "Lightning protection bonding to the crown steelwork",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 86500,
+        "amount": 86500,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.3.01",
+        "section": "4.3",
+        "description": "Main entrance canopy, 18 m x 9 m, cantilevered steel structure with laminated glass roof, including drainage and lighting",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 1685000,
+        "amount": 1685000,
+        "descriptionLines": 3
+      },
+      {
+        "page": 2,
+        "item": "4.3.02",
+        "section": "4.3",
+        "description": "Automatic revolving doors, three-wing, 2.4 m diameter, with night shutters",
+        "unit": "nr",
+        "quantity": 4,
+        "rate": 186500,
+        "amount": 746000,
+        "descriptionLines": 2
+      },
+      {
+        "page": 2,
+        "item": "4.3.03",
+        "section": "4.3",
+        "description": "Automatic sliding doors, frameless glass, with safety sensors",
+        "unit": "nr",
+        "quantity": 8,
+        "rate": 42800,
+        "amount": 342400,
+        "descriptionLines": 2
+      },
+      {
+        "page": 2,
+        "item": "4.3.04",
+        "section": "4.3",
+        "description": "Secondary entrance canopies, aluminium with polycarbonate roof",
+        "unit": "nr",
+        "quantity": 3,
+        "rate": 128000,
+        "amount": 384000,
+        "descriptionLines": 2
+      },
+      {
+        "page": 2,
+        "item": "4.3.05",
+        "section": "4.3",
+        "description": "Frameless glass balustrade to podium terraces, 1.1 m high",
+        "unit": "m",
+        "quantity": 420,
+        "rate": 1240,
+        "amount": 520800,
+        "descriptionLines": 2
+      },
+      {
+        "page": 2,
+        "item": "4.3.06",
+        "section": "4.3",
+        "description": "Entrance matwells with stainless steel frames",
+        "unit": "nr",
+        "quantity": 12,
+        "rate": 6450,
+        "amount": 77400,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.3.07",
+        "section": "4.3",
+        "description": "Backing panels for building signage at the entrances",
+        "unit": "m2",
+        "quantity": 96,
+        "rate": 1350,
+        "amount": 129600,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.4.01",
+        "section": "4.4",
+        "description": "Vertical aluminium fins, 450 mm deep, to the west and south elevations of Levels 5 to 16, including brackets",
+        "unit": "m",
+        "quantity": 4860,
+        "rate": 395,
+        "amount": 1919700,
+        "descriptionLines": 2
+      },
+      {
+        "page": 2,
+        "item": "4.4.02",
+        "section": "4.4",
+        "description": "Horizontal sunshades to the serviced apartment balconies, Levels 17 to 28",
+        "unit": "m",
+        "quantity": 2140,
+        "rate": 445,
+        "amount": 952300,
+        "descriptionLines": 2
+      },
+      {
+        "page": 2,
+        "item": "4.4.03",
+        "section": "4.4",
+        "description": "Acoustic louvres to plant rooms, 300 mm deep",
+        "unit": "m2",
+        "quantity": 640,
+        "rate": 980,
+        "amount": 627200,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.4.04",
+        "section": "4.4",
+        "description": "Perforated metal screening to rooftop plant",
+        "unit": "m2",
+        "quantity": 860,
+        "rate": 610,
+        "amount": 524600,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.4.05",
+        "section": "4.4",
+        "description": "Bird deterrent spikes and mesh to fins and ledges",
+        "unit": "m",
+        "quantity": 2400,
+        "rate": 38,
+        "amount": 91200,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.5.01",
+        "section": "4.5",
+        "description": "Silicone weather seals to all facade joints",
+        "unit": "m",
+        "quantity": 18600,
+        "rate": 24.5,
+        "amount": 455700,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.5.02",
+        "section": "4.5",
+        "description": "Facade performance testing by an independent laboratory: air, water, structural and seismic tests on a full-size test panel",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 465000,
+        "amount": 465000,
+        "descriptionLines": 3
+      },
+      {
+        "page": 2,
+        "item": "4.5.03",
+        "section": "4.5",
+        "description": "Site water tests to installed facade joints, 5% of joints",
+        "unit": "nr",
+        "quantity": 120,
+        "rate": 1350,
+        "amount": 162000,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.5.04",
+        "section": "4.5",
+        "description": "Thermal and condensation analysis, with reports",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 95000,
+        "amount": 95000,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.5.05",
+        "section": "4.5",
+        "description": "Mast climbing work platforms to the podium facade",
+        "unit": "month",
+        "quantity": 14,
+        "rate": 38500,
+        "amount": 539000,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.5.06",
+        "section": "4.5",
+        "description": "Facade cleaning on completion",
+        "unit": "m2",
+        "quantity": 32400,
+        "rate": 4.25,
+        "amount": 137700,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.6.01",
+        "section": "4.6",
+        "description": "Facade design development, shop drawings and structural calculations for every element in this Bill",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 985000,
+        "amount": 985000,
+        "descriptionLines": 2
+      },
+      {
+        "page": 2,
+        "item": "4.6.02",
+        "section": "4.6",
+        "description": "Visual mock-up of one podium bay with granite cladding and a GRC screen",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 285000,
+        "amount": 285000,
+        "descriptionLines": 2
+      },
+      {
+        "page": 2,
+        "item": "4.6.03",
+        "section": "4.6",
+        "description": "Samples, prototypes and material testing",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 64000,
+        "amount": 64000,
+        "descriptionLines": 1
+      },
+      {
+        "page": 2,
+        "item": "4.6.04",
+        "section": "4.6",
+        "description": "Operation and maintenance manuals and warranties for the facade",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 38000,
+        "amount": 38000,
+        "descriptionLines": 2
+      },
+      {
+        "page": 3,
+        "item": "4.7.01",
+        "section": "4.7",
+        "description": "Facade subcontractor site establishment, offices and stores",
+        "unit": "month",
+        "quantity": 18,
+        "rate": 24500,
+        "amount": 441000,
+        "descriptionLines": 2
+      },
+      {
+        "page": 3,
+        "item": "4.7.02",
+        "section": "4.7",
+        "description": "Tower crane time allocated to facade installation",
+        "unit": "month",
+        "quantity": 12,
+        "rate": 68000,
+        "amount": 816000,
+        "descriptionLines": 1
+      },
+      {
+        "page": 3,
+        "item": "4.7.03",
+        "section": "4.7",
+        "description": "Facade engineer and installation supervisor on Site",
+        "unit": "month",
+        "quantity": 18,
+        "rate": 32000,
+        "amount": 576000,
+        "descriptionLines": 1
+      },
+      {
+        "page": 3,
+        "item": "4.7.04",
+        "section": "4.7",
+        "description": "Protection of the installed facade until handover",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 145000,
+        "amount": 145000,
+        "descriptionLines": 1
+      },
+      {
+        "page": 3,
+        "item": "4.7.05",
+        "section": "4.7",
+        "description": "Temporary hoarding and protective gantries at street level during facade works",
+        "unit": "month",
+        "quantity": 16,
+        "rate": 18750,
+        "amount": 300000,
+        "descriptionLines": 2
+      },
+      {
+        "page": 3,
+        "item": "4.7.06",
+        "section": "4.7",
+        "description": "Removal of facade packaging and waste off Site",
+        "unit": "item",
+        "quantity": 1,
+        "rate": 42500,
+        "amount": 42500,
+        "descriptionLines": 1
+      }
+    ]
+  },
+  "itemsAboveSar1mAcrossBoqs": {
+    "threshold": 1000000,
+    "currency": "SAR",
+    "rule": "Item rows strictly above SAR 1,000,000.00, amounts as written in each file; totals, sub-totals and carried-forward lines are excluded.",
+    "countByFile": {
+      "BOQ_Phase1_Rev0.xlsx": 25,
+      "BOQ_Phase1_Rev1.xlsx": 25,
+      "BOQ_Phase2_Facade.pdf": 7
+    },
+    "items": [
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "1.1.02",
+        "description": "Bulk excavation in rock-like ground down to formation level -16.50 m, including disposal off Site",
+        "amount": 4032000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 9,
+          "rowTo": 9
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "1.2.01",
+        "description": "Secant pile shoring wall, 880 mm diameter piles, average 22 m deep",
+        "amount": 2597000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 17,
+          "rowTo": 17
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "1.2.02",
+        "description": "Temporary ground anchors to the shoring wall, three rows",
+        "amount": 1617000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 18,
+          "rowTo": 18
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "1.2.03",
+        "description": "Bored cast-in-place piles, 1200 mm diameter, 30 m deep",
+        "amount": 3852000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 19,
+          "rowTo": 19
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "1.3.02",
+        "description": "Raft foundation concrete grade C50, sulphate resisting, 2.5 m thick",
+        "amount": 11760000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 27,
+          "rowTo": 27
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "1.3.03",
+        "description": "High-yield steel reinforcement to the raft",
+        "amount": 8280000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 28,
+          "rowTo": 28
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "1.3.04",
+        "description": "Basement retaining walls, concrete grade C45",
+        "amount": 2349600,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 29,
+          "rowTo": 29
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "1.3.05",
+        "description": "High-yield steel reinforcement to basement walls",
+        "amount": 1638750,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 30,
+          "rowTo": 30
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "2.1.01",
+        "description": "Reinforced concrete columns, grade C60, ground floor to Level 28",
+        "amount": 2842000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 8,
+          "rowTo": 8
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "2.1.02",
+        "description": "Core walls, grade C60, slip-formed",
+        "amount": 4650250,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 9,
+          "rowTo": 9
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "2.1.03",
+        "description": "Post-tensioned flat slabs, 280 mm thick, grade C45",
+        "amount": 8036000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 10,
+          "rowTo": 10
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "2.1.04",
+        "description": "High-yield steel reinforcement to columns, walls and slabs",
+        "amount": 11968000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 11,
+          "rowTo": 11
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "2.1.05",
+        "description": "Post-tensioning tendons, including stressing and grouting",
+        "amount": 2401000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 12,
+          "rowTo": 12
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "2.1.06",
+        "description": "Formwork to slab soffits",
+        "amount": 2816000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 13,
+          "rowTo": 13
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "2.2.02",
+        "description": "100 mm hollow concrete blockwork to internal partitions",
+        "amount": 1080400,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 18,
+          "rowTo": 18
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "2.3.01",
+        "description": "Unitised curtain wall, double glazed with low-e coating",
+        "amount": 20590000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 24,
+          "rowTo": 24
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "2.3.04",
+        "description": "Building maintenance unit (BMU) to the roof",
+        "amount": 2950000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 27,
+          "rowTo": 27
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "3.1.01",
+        "description": "Air-cooled chillers, 450 TR each, with controls",
+        "amount": 4140000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 8,
+          "rowTo": 8
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "3.1.03",
+        "description": "Air handling units, double skin",
+        "amount": 2664000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 10,
+          "rowTo": 10
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "3.1.04",
+        "description": "Fan coil units, ceiling concealed",
+        "amount": 3306000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 11,
+          "rowTo": 11
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "3.1.06",
+        "description": "Galvanised steel ductwork with insulation",
+        "amount": 2891000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 13,
+          "rowTo": 13
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "3.2.02",
+        "description": "Standby diesel generators, 2,000 kVA",
+        "amount": 3300000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 19,
+          "rowTo": 19
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "3.2.04",
+        "description": "Sub-main and final circuit cabling",
+        "amount": 4250000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 21,
+          "rowTo": 21
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "3.2.05",
+        "description": "LED light fittings, including emergency fittings",
+        "amount": 2464000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 22,
+          "rowTo": 22
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev0.xlsx",
+        "item": "3.3.04",
+        "description": "Wet pipe sprinkler system, complete with heads",
+        "amount": 2688000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev0.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 30,
+          "rowTo": 30
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "1.1.02",
+        "description": "Bulk excavation in rock-like ground down to formation level -16.50 m, including disposal off Site",
+        "amount": 4263000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 9,
+          "rowTo": 9
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "1.2.01",
+        "description": "Secant pile shoring wall, 880 mm diameter piles, average 22 m deep",
+        "amount": 2597000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 17,
+          "rowTo": 17
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "1.2.02",
+        "description": "Temporary ground anchors to the shoring wall, three rows",
+        "amount": 1617000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 18,
+          "rowTo": 18
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "1.2.03",
+        "description": "Bored cast-in-place piles, 1200 mm diameter, 30 m deep",
+        "amount": 3852000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 19,
+          "rowTo": 19
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "1.3.02",
+        "description": "Raft foundation concrete grade C50, sulphate resisting, 2.5 m thick",
+        "amount": 11760000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 27,
+          "rowTo": 27
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "1.3.03",
+        "description": "High-yield steel reinforcement to the raft",
+        "amount": 8664000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 28,
+          "rowTo": 28
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "1.3.04",
+        "description": "Basement retaining walls, concrete grade C45",
+        "amount": 2349600,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 29,
+          "rowTo": 29
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "1.3.05",
+        "description": "High-yield steel reinforcement to basement walls",
+        "amount": 1638750,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 30,
+          "rowTo": 30
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "1.3.07",
+        "description": "Bituminous waterproofing membrane, two layers, under the raft and to walls",
+        "amount": 1043800,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Substructure",
+          "rowFrom": 32,
+          "rowTo": 32
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "2.1.01",
+        "description": "Reinforced concrete columns, grade C60, ground floor to Level 28",
+        "amount": 2842000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 8,
+          "rowTo": 8
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "2.1.02",
+        "description": "Core walls, grade C60, slip-formed",
+        "amount": 4650250,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 9,
+          "rowTo": 9
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "2.1.03",
+        "description": "Post-tensioned flat slabs, 280 mm thick, grade C45",
+        "amount": 8036000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 10,
+          "rowTo": 10
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "2.1.04",
+        "description": "High-yield steel reinforcement to columns, walls and slabs",
+        "amount": 11968000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 11,
+          "rowTo": 11
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "2.1.05",
+        "description": "Post-tensioning tendons, including stressing and grouting",
+        "amount": 2401000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 12,
+          "rowTo": 12
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "2.1.06",
+        "description": "Formwork to slab soffits",
+        "amount": 2816000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 13,
+          "rowTo": 13
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "2.3.01",
+        "description": "Unitised curtain wall, double glazed with low-e coating",
+        "amount": 19809000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 24,
+          "rowTo": 24
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "2.3.04",
+        "description": "Building maintenance unit (BMU) to the roof",
+        "amount": 2950000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "Superstructure",
+          "rowFrom": 27,
+          "rowTo": 27
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "3.1.01",
+        "description": "Air-cooled chillers, 450 TR each, with controls",
+        "amount": 4140000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 8,
+          "rowTo": 8
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "3.1.03",
+        "description": "Air handling units, double skin",
+        "amount": 2664000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 10,
+          "rowTo": 10
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "3.1.04",
+        "description": "Fan coil units, ceiling concealed",
+        "amount": 3532200,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 11,
+          "rowTo": 11
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "3.1.06",
+        "description": "Galvanised steel ductwork with insulation",
+        "amount": 2891000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 13,
+          "rowTo": 13
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "3.2.02",
+        "description": "Standby diesel generators, 2,000 kVA",
+        "amount": 3440000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 19,
+          "rowTo": 19
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "3.2.04",
+        "description": "Sub-main and final circuit cabling",
+        "amount": 4250000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 21,
+          "rowTo": 21
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "3.2.05",
+        "description": "LED light fittings, including emergency fittings",
+        "amount": 2464000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 22,
+          "rowTo": 22
+        }
+      },
+      {
+        "file": "BOQ_Phase1_Rev1.xlsx",
+        "item": "3.3.04",
+        "description": "Wet pipe sprinkler system, complete with heads",
+        "amount": 2688000,
+        "currency": "SAR",
+        "source": {
+          "kind": "excel",
+          "document": "BOQ_Phase1_Rev1.xlsx",
+          "sheet": "MEP",
+          "rowFrom": 31,
+          "rowTo": 31
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "item": "4.1.01",
+        "description": "Natural granite cladding, 40 mm thick, flamed finish, fixed on stainless steel brackets and an aluminium subframe, including anchors, cutting and drilling",
+        "amount": 8083000,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "8,083,000.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "item": "4.1.02",
+        "description": "Glass fibre reinforced concrete (GRC) feature screens, 25 mm thick, geometric pattern inspired by traditional mashrabiya, on galvanised steel frames, including fixings",
+        "amount": 4746600,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "4,746,600.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "item": "4.1.03",
+        "description": "Shopfront glazing to retail units, 12 mm toughened laminated glass in structurally glazed aluminium frames",
+        "amount": 2877600,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "2,877,600.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "item": "4.2.01",
+        "description": "Structural steel framing to the crown, grade S355, including connections, shop primer and intumescent coating for 90 minutes fire resistance",
+        "amount": 4117300,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "4,117,300.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "item": "4.2.02",
+        "description": "Laminated glass fins, 2 x 12 mm heat-strengthened glass, 6 m high, with stainless steel shoes and silicone joints",
+        "amount": 1261920,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 1,
+          "quote": "1,261,920.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "item": "4.3.01",
+        "description": "Main entrance canopy, 18 m x 9 m, cantilevered steel structure with laminated glass roof, including drainage and lighting",
+        "amount": 1685000,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 2,
+          "quote": "1,685,000.00"
+        }
+      },
+      {
+        "file": "BOQ_Phase2_Facade.pdf",
+        "item": "4.4.01",
+        "description": "Vertical aluminium fins, 450 mm deep, to the west and south elevations of Levels 5 to 16, including brackets",
+        "amount": 1919700,
+        "currency": "SAR",
+        "source": {
+          "kind": "pdf",
+          "document": "BOQ_Phase2_Facade.pdf",
+          "page": 2,
+          "quote": "1,919,700.00"
+        }
+      }
+    ],
+    "latestRevisions": {
+      "files": [
+        "BOQ_Phase1_Rev1.xlsx",
+        "BOQ_Phase2_Facade.pdf"
+      ],
+      "count": 32,
+      "items": [
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "1.1.02",
+          "description": "Bulk excavation in rock-like ground down to formation level -16.50 m, including disposal off Site",
+          "amount": 4263000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Substructure",
+            "rowFrom": 9,
+            "rowTo": 9
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "1.2.01",
+          "description": "Secant pile shoring wall, 880 mm diameter piles, average 22 m deep",
+          "amount": 2597000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Substructure",
+            "rowFrom": 17,
+            "rowTo": 17
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "1.2.02",
+          "description": "Temporary ground anchors to the shoring wall, three rows",
+          "amount": 1617000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Substructure",
+            "rowFrom": 18,
+            "rowTo": 18
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "1.2.03",
+          "description": "Bored cast-in-place piles, 1200 mm diameter, 30 m deep",
+          "amount": 3852000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Substructure",
+            "rowFrom": 19,
+            "rowTo": 19
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "1.3.02",
+          "description": "Raft foundation concrete grade C50, sulphate resisting, 2.5 m thick",
+          "amount": 11760000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Substructure",
+            "rowFrom": 27,
+            "rowTo": 27
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "1.3.03",
+          "description": "High-yield steel reinforcement to the raft",
+          "amount": 8664000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Substructure",
+            "rowFrom": 28,
+            "rowTo": 28
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "1.3.04",
+          "description": "Basement retaining walls, concrete grade C45",
+          "amount": 2349600,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Substructure",
+            "rowFrom": 29,
+            "rowTo": 29
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "1.3.05",
+          "description": "High-yield steel reinforcement to basement walls",
+          "amount": 1638750,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Substructure",
+            "rowFrom": 30,
+            "rowTo": 30
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "1.3.07",
+          "description": "Bituminous waterproofing membrane, two layers, under the raft and to walls",
+          "amount": 1043800,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Substructure",
+            "rowFrom": 32,
+            "rowTo": 32
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "2.1.01",
+          "description": "Reinforced concrete columns, grade C60, ground floor to Level 28",
+          "amount": 2842000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Superstructure",
+            "rowFrom": 8,
+            "rowTo": 8
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "2.1.02",
+          "description": "Core walls, grade C60, slip-formed",
+          "amount": 4650250,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Superstructure",
+            "rowFrom": 9,
+            "rowTo": 9
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "2.1.03",
+          "description": "Post-tensioned flat slabs, 280 mm thick, grade C45",
+          "amount": 8036000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Superstructure",
+            "rowFrom": 10,
+            "rowTo": 10
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "2.1.04",
+          "description": "High-yield steel reinforcement to columns, walls and slabs",
+          "amount": 11968000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Superstructure",
+            "rowFrom": 11,
+            "rowTo": 11
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "2.1.05",
+          "description": "Post-tensioning tendons, including stressing and grouting",
+          "amount": 2401000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Superstructure",
+            "rowFrom": 12,
+            "rowTo": 12
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "2.1.06",
+          "description": "Formwork to slab soffits",
+          "amount": 2816000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Superstructure",
+            "rowFrom": 13,
+            "rowTo": 13
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "2.3.01",
+          "description": "Unitised curtain wall, double glazed with low-e coating",
+          "amount": 19809000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Superstructure",
+            "rowFrom": 24,
+            "rowTo": 24
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "2.3.04",
+          "description": "Building maintenance unit (BMU) to the roof",
+          "amount": 2950000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "Superstructure",
+            "rowFrom": 27,
+            "rowTo": 27
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "3.1.01",
+          "description": "Air-cooled chillers, 450 TR each, with controls",
+          "amount": 4140000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "MEP",
+            "rowFrom": 8,
+            "rowTo": 8
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "3.1.03",
+          "description": "Air handling units, double skin",
+          "amount": 2664000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "MEP",
+            "rowFrom": 10,
+            "rowTo": 10
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "3.1.04",
+          "description": "Fan coil units, ceiling concealed",
+          "amount": 3532200,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "MEP",
+            "rowFrom": 11,
+            "rowTo": 11
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "3.1.06",
+          "description": "Galvanised steel ductwork with insulation",
+          "amount": 2891000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "MEP",
+            "rowFrom": 13,
+            "rowTo": 13
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "3.2.02",
+          "description": "Standby diesel generators, 2,000 kVA",
+          "amount": 3440000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "MEP",
+            "rowFrom": 19,
+            "rowTo": 19
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "3.2.04",
+          "description": "Sub-main and final circuit cabling",
+          "amount": 4250000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "MEP",
+            "rowFrom": 21,
+            "rowTo": 21
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "3.2.05",
+          "description": "LED light fittings, including emergency fittings",
+          "amount": 2464000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "MEP",
+            "rowFrom": 22,
+            "rowTo": 22
+          }
+        },
+        {
+          "file": "BOQ_Phase1_Rev1.xlsx",
+          "item": "3.3.04",
+          "description": "Wet pipe sprinkler system, complete with heads",
+          "amount": 2688000,
+          "currency": "SAR",
+          "source": {
+            "kind": "excel",
+            "document": "BOQ_Phase1_Rev1.xlsx",
+            "sheet": "MEP",
+            "rowFrom": 31,
+            "rowTo": 31
+          }
+        },
+        {
+          "file": "BOQ_Phase2_Facade.pdf",
+          "item": "4.1.01",
+          "description": "Natural granite cladding, 40 mm thick, flamed finish, fixed on stainless steel brackets and an aluminium subframe, including anchors, cutting and drilling",
+          "amount": 8083000,
+          "currency": "SAR",
+          "source": {
+            "kind": "pdf",
+            "document": "BOQ_Phase2_Facade.pdf",
+            "page": 1,
+            "quote": "8,083,000.00"
+          }
+        },
+        {
+          "file": "BOQ_Phase2_Facade.pdf",
+          "item": "4.1.02",
+          "description": "Glass fibre reinforced concrete (GRC) feature screens, 25 mm thick, geometric pattern inspired by traditional mashrabiya, on galvanised steel frames, including fixings",
+          "amount": 4746600,
+          "currency": "SAR",
+          "source": {
+            "kind": "pdf",
+            "document": "BOQ_Phase2_Facade.pdf",
+            "page": 1,
+            "quote": "4,746,600.00"
+          }
+        },
+        {
+          "file": "BOQ_Phase2_Facade.pdf",
+          "item": "4.1.03",
+          "description": "Shopfront glazing to retail units, 12 mm toughened laminated glass in structurally glazed aluminium frames",
+          "amount": 2877600,
+          "currency": "SAR",
+          "source": {
+            "kind": "pdf",
+            "document": "BOQ_Phase2_Facade.pdf",
+            "page": 1,
+            "quote": "2,877,600.00"
+          }
+        },
+        {
+          "file": "BOQ_Phase2_Facade.pdf",
+          "item": "4.2.01",
+          "description": "Structural steel framing to the crown, grade S355, including connections, shop primer and intumescent coating for 90 minutes fire resistance",
+          "amount": 4117300,
+          "currency": "SAR",
+          "source": {
+            "kind": "pdf",
+            "document": "BOQ_Phase2_Facade.pdf",
+            "page": 1,
+            "quote": "4,117,300.00"
+          }
+        },
+        {
+          "file": "BOQ_Phase2_Facade.pdf",
+          "item": "4.2.02",
+          "description": "Laminated glass fins, 2 x 12 mm heat-strengthened glass, 6 m high, with stainless steel shoes and silicone joints",
+          "amount": 1261920,
+          "currency": "SAR",
+          "source": {
+            "kind": "pdf",
+            "document": "BOQ_Phase2_Facade.pdf",
+            "page": 1,
+            "quote": "1,261,920.00"
+          }
+        },
+        {
+          "file": "BOQ_Phase2_Facade.pdf",
+          "item": "4.3.01",
+          "description": "Main entrance canopy, 18 m x 9 m, cantilevered steel structure with laminated glass roof, including drainage and lighting",
+          "amount": 1685000,
+          "currency": "SAR",
+          "source": {
+            "kind": "pdf",
+            "document": "BOQ_Phase2_Facade.pdf",
+            "page": 2,
+            "quote": "1,685,000.00"
+          }
+        },
+        {
+          "file": "BOQ_Phase2_Facade.pdf",
+          "item": "4.4.01",
+          "description": "Vertical aluminium fins, 450 mm deep, to the west and south elevations of Levels 5 to 16, including brackets",
+          "amount": 1919700,
+          "currency": "SAR",
+          "source": {
+            "kind": "pdf",
+            "document": "BOQ_Phase2_Facade.pdf",
+            "page": 2,
+            "quote": "1,919,700.00"
+          }
+        }
+      ]
+    },
+    "notes": [
+      "BOQ_Phase1_Rev0.xlsx and BOQ_Phase1_Rev1.xlsx are two revisions of the same Phase 1 bills, so most Phase 1 items appear in both; latestRevisions lists each bill once.",
+      "Item 4.2.05 in BOQ_Phase2_Facade.pdf is exactly SAR 1,000,000.00, so it is not above the threshold.",
+      "Equipment_Imports.xlsx (USD, EUR, AED), Provisional_Sums.xlsx and Cost_Ledger_10k.xlsx are not BOQs; their large amounts are under their own keys."
+    ]
+  },
+  "equipmentImports": {
+    "file": "Equipment_Imports.xlsx",
+    "sheets": [
+      "Imported Equipment",
+      "Regional Supply"
+    ],
+    "rule": "Each table is in its own currency. Totals are per currency; they are never added together or converted.",
+    "totalsByCurrency": [
+      {
+        "currency": "USD",
+        "amount": 2052438
+      },
+      {
+        "currency": "EUR",
+        "amount": 3500700.4
+      },
+      {
+        "currency": "AED",
+        "amount": 1854700
+      }
+    ],
+    "tables": [
+      {
+        "table": "Table A",
+        "title": "Table A - Equipment priced in US Dollars (USD)",
+        "sheet": "Imported Equipment",
+        "currency": "USD",
+        "titleRow": 5,
+        "headerRow": 6,
+        "itemRows": 7,
+        "total": {
+          "currency": "USD",
+          "amount": 2052438
+        },
+        "statedTotal": {
+          "currency": "USD",
+          "amount": 2052438,
+          "label": "Total Table A (USD)",
+          "source": {
+            "kind": "excel",
+            "document": "Equipment_Imports.xlsx",
+            "sheet": "Imported Equipment",
+            "rowFrom": 14,
+            "rowTo": 14
+          }
+        },
+        "source": {
+          "kind": "excel",
+          "document": "Equipment_Imports.xlsx",
+          "sheet": "Imported Equipment",
+          "rowFrom": 7,
+          "rowTo": 13
+        },
+        "items": [
+          {
+            "ref": "IE-A01",
+            "equipment": "Medium voltage ring main units, 13.8 kV",
+            "supplier": "Westbrook Power Systems Inc.",
+            "origin": "United States",
+            "quantity": 4,
+            "unit": "nr",
+            "unitPrice": 86500,
+            "amount": 346000,
+            "currency": "USD",
+            "row": 7
+          },
+          {
+            "ref": "IE-A02",
+            "equipment": "Cast resin transformers, 2,500 kVA",
+            "supplier": "Westbrook Power Systems Inc.",
+            "origin": "United States",
+            "quantity": 6,
+            "unit": "nr",
+            "unitPrice": 64200,
+            "amount": 385200,
+            "currency": "USD",
+            "row": 8
+          },
+          {
+            "ref": "IE-A03",
+            "equipment": "Variable refrigerant flow outdoor units for the retail podium",
+            "supplier": "Pacific Climate Corp.",
+            "origin": "Japan",
+            "quantity": 24,
+            "unit": "nr",
+            "unitPrice": 18750.5,
+            "amount": 450012,
+            "currency": "USD",
+            "row": 9
+          },
+          {
+            "ref": "IE-A04",
+            "equipment": "Building management system controllers and software licences",
+            "supplier": "Lakeshore Controls LLC",
+            "origin": "United States",
+            "quantity": 1,
+            "unit": "lot",
+            "unitPrice": 412000,
+            "amount": 412000,
+            "currency": "USD",
+            "row": 10
+          },
+          {
+            "ref": "IE-A05",
+            "equipment": "Access control and CCTV head-end equipment",
+            "supplier": "Lakeshore Controls LLC",
+            "origin": "United States",
+            "quantity": 1,
+            "unit": "lot",
+            "unitPrice": 268400,
+            "amount": 268400,
+            "currency": "USD",
+            "row": 11
+          },
+          {
+            "ref": "IE-A06",
+            "equipment": "Fire pump controllers, listed for fire service",
+            "supplier": "Redline Fire Equipment Inc.",
+            "origin": "United States",
+            "quantity": 3,
+            "unit": "nr",
+            "unitPrice": 21900,
+            "amount": 65700,
+            "currency": "USD",
+            "row": 12
+          },
+          {
+            "ref": "IE-A07",
+            "equipment": "Kitchen exhaust ecology units for food court tenants",
+            "supplier": "Pacific Climate Corp.",
+            "origin": "Malaysia",
+            "quantity": 8,
+            "unit": "nr",
+            "unitPrice": 15640.75,
+            "amount": 125126,
+            "currency": "USD",
+            "row": 13
+          }
+        ]
+      },
+      {
+        "table": "Table B",
+        "title": "Table B - Equipment priced in Euros (EUR)",
+        "sheet": "Imported Equipment",
+        "currency": "EUR",
+        "titleRow": 17,
+        "headerRow": 18,
+        "itemRows": 6,
+        "total": {
+          "currency": "EUR",
+          "amount": 3500700.4
+        },
+        "statedTotal": {
+          "currency": "EUR",
+          "amount": 3500700.4,
+          "label": "Total Table B (EUR)",
+          "source": {
+            "kind": "excel",
+            "document": "Equipment_Imports.xlsx",
+            "sheet": "Imported Equipment",
+            "rowFrom": 25,
+            "rowTo": 25
+          }
+        },
+        "source": {
+          "kind": "excel",
+          "document": "Equipment_Imports.xlsx",
+          "sheet": "Imported Equipment",
+          "rowFrom": 19,
+          "rowTo": 24
+        },
+        "items": [
+          {
+            "ref": "IE-B01",
+            "equipment": "Passenger lifts, 21 persons, 4.0 m/s, machine-room-less",
+            "supplier": "Alpenlift GmbH",
+            "origin": "Germany",
+            "quantity": 14,
+            "unit": "nr",
+            "unitPrice": 168500,
+            "amount": 2359000,
+            "currency": "EUR",
+            "row": 19
+          },
+          {
+            "ref": "IE-B02",
+            "equipment": "Service lifts, 2,000 kg",
+            "supplier": "Alpenlift GmbH",
+            "origin": "Germany",
+            "quantity": 2,
+            "unit": "nr",
+            "unitPrice": 142000,
+            "amount": 284000,
+            "currency": "EUR",
+            "row": 20
+          },
+          {
+            "ref": "IE-B03",
+            "equipment": "Escalators, 30 degree, 1,000 mm step width",
+            "supplier": "Alpenlift GmbH",
+            "origin": "Austria",
+            "quantity": 4,
+            "unit": "nr",
+            "unitPrice": 96800,
+            "amount": 387200,
+            "currency": "EUR",
+            "row": 21
+          },
+          {
+            "ref": "IE-B04",
+            "equipment": "Architectural facade lighting controllers and fittings for the crown",
+            "supplier": "Lumen Nord S.p.A.",
+            "origin": "Italy",
+            "quantity": 1,
+            "unit": "lot",
+            "unitPrice": 236000,
+            "amount": 236000,
+            "currency": "EUR",
+            "row": 22
+          },
+          {
+            "ref": "IE-B05",
+            "equipment": "Heat recovery wheels for fresh air handling units",
+            "supplier": "Nordvent AB",
+            "origin": "Sweden",
+            "quantity": 6,
+            "unit": "nr",
+            "unitPrice": 24350,
+            "amount": 146100,
+            "currency": "EUR",
+            "row": 23
+          },
+          {
+            "ref": "IE-B06",
+            "equipment": "Acoustic louvres for plant rooms",
+            "supplier": "Nordvent AB",
+            "origin": "Denmark",
+            "quantity": 1,
+            "unit": "lot",
+            "unitPrice": 88400.4,
+            "amount": 88400.4,
+            "currency": "EUR",
+            "row": 24
+          }
+        ]
+      },
+      {
+        "table": "Table C",
+        "title": "Table C - Equipment supplied from the UAE, priced in UAE Dirhams (AED)",
+        "sheet": "Regional Supply",
+        "currency": "AED",
+        "titleRow": 5,
+        "headerRow": 6,
+        "itemRows": 3,
+        "total": {
+          "currency": "AED",
+          "amount": 1854700
+        },
+        "statedTotal": {
+          "currency": "AED",
+          "amount": 1854700,
+          "label": "Total Table C (AED)",
+          "source": {
+            "kind": "excel",
+            "document": "Equipment_Imports.xlsx",
+            "sheet": "Regional Supply",
+            "rowFrom": 10,
+            "rowTo": 10
+          }
+        },
+        "source": {
+          "kind": "excel",
+          "document": "Equipment_Imports.xlsx",
+          "sheet": "Regional Supply",
+          "rowFrom": 7,
+          "rowTo": 9
+        },
+        "items": [
+          {
+            "ref": "IE-C01",
+            "equipment": "Pre-insulated chilled water pipe, factory supply",
+            "supplier": "Gulf Coast Pipe Systems FZE",
+            "origin": "United Arab Emirates",
+            "quantity": 1,
+            "unit": "lot",
+            "unitPrice": 640000,
+            "amount": 640000,
+            "currency": "AED",
+            "row": 7
+          },
+          {
+            "ref": "IE-C02",
+            "equipment": "Fire rated ductwork, 2 hours",
+            "supplier": "Gulf Coast Pipe Systems FZE",
+            "origin": "United Arab Emirates",
+            "quantity": 2400,
+            "unit": "m2",
+            "unitPrice": 185.5,
+            "amount": 445200,
+            "currency": "AED",
+            "row": 8
+          },
+          {
+            "ref": "IE-C03",
+            "equipment": "Low voltage switchgear panels, assembled under licence",
+            "supplier": "Creekside Switchgear LLC",
+            "origin": "United Arab Emirates",
+            "quantity": 18,
+            "unit": "nr",
+            "unitPrice": 42750,
+            "amount": 769500,
+            "currency": "AED",
+            "row": 9
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "Tables A and B share the sheet \"Imported Equipment\", separated by empty rows, each with its own title, header and total row.",
+      "IE-B01 is above one million in euros, but it is not an SAR amount and must not appear in an \"above SAR 1M\" list."
+    ]
+  },
+  "programme": {
+    "file": "Programme_Milestones.xlsx",
+    "sheet": "Programme",
+    "headerRow": 5,
+    "dataDate": "2026-10-01",
+    "durationRule": "Calendar days from Planned Start to Planned Finish, counting both days.",
+    "milestones": [
+      {
+        "id": "M1",
+        "milestone": "Baseline Programme accepted by the Engineer",
+        "plannedStart": "2026-02-01",
+        "plannedFinish": "2026-03-01",
+        "durationDays": 29,
+        "responsibleParty": "Qimam Ridge Contracting Company",
+        "deliverable": "Baseline Programme in Primavera P6 format",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 6,
+          "rowTo": 6
+        }
+      },
+      {
+        "id": "M2",
+        "milestone": "Design Submission 1 (shoring, piling and substructure)",
+        "plannedStart": "2026-02-15",
+        "plannedFinish": "2026-04-15",
+        "durationDays": 60,
+        "responsibleParty": "Qimam Ridge Contracting Company",
+        "deliverable": "Design Submission 1 drawings and calculations",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 7,
+          "rowTo": 7
+        }
+      },
+      {
+        "id": "M3",
+        "milestone": "Design Submission 2 (superstructure, facade and MEP)",
+        "plannedStart": "2026-04-16",
+        "plannedFinish": "2026-08-31",
+        "durationDays": 138,
+        "responsibleParty": "Qimam Ridge Contracting Company",
+        "deliverable": "Design Submission 2 drawings, calculations and specifications",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 8,
+          "rowTo": 8
+        }
+      },
+      {
+        "id": "P2-01",
+        "milestone": "Phase 2 facade package Bill of Quantities issued",
+        "plannedStart": "2026-09-01",
+        "plannedFinish": "2026-09-14",
+        "durationDays": 14,
+        "responsibleParty": "Dune Line Engineering Consultants",
+        "deliverable": "Bill of Quantities - Phase 2, Bill No. 4 Facade Package",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 9,
+          "rowTo": 9
+        }
+      },
+      {
+        "id": "M4",
+        "milestone": "Facade visual mock-up completed and approved",
+        "plannedStart": "2026-09-01",
+        "plannedFinish": "2026-11-30",
+        "durationDays": 91,
+        "responsibleParty": "Rawasi Facade Systems Co. (facade subcontractor)",
+        "deliverable": "Facade Mock-up Test Report",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 10,
+          "rowTo": 10
+        }
+      },
+      {
+        "id": "M5",
+        "milestone": "Basement raft foundation completed",
+        "plannedStart": "2026-06-01",
+        "plannedFinish": "2027-03-31",
+        "durationDays": 304,
+        "responsibleParty": "Qimam Ridge Contracting Company",
+        "deliverable": "Raft pour records and concrete test certificates",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 11,
+          "rowTo": 11
+        }
+      },
+      {
+        "id": "P2-02",
+        "milestone": "Podium granite cladding and GRC screens installed",
+        "plannedStart": "2027-05-02",
+        "plannedFinish": "2027-11-30",
+        "durationDays": 213,
+        "responsibleParty": "Rawasi Facade Systems Co. (facade subcontractor)",
+        "deliverable": "Installation inspection records, podium",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 12,
+          "rowTo": 12
+        }
+      },
+      {
+        "id": "M6",
+        "milestone": "Topping out: Level 28 roof slab cast",
+        "plannedStart": "2027-04-01",
+        "plannedFinish": "2027-12-29",
+        "durationDays": 273,
+        "responsibleParty": "Qimam Ridge Contracting Company",
+        "deliverable": "Structural frame completion record",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 13,
+          "rowTo": 13
+        }
+      },
+      {
+        "id": "M7",
+        "milestone": "MEP testing and commissioning started",
+        "plannedStart": "2028-03-01",
+        "plannedFinish": "2028-03-01",
+        "durationDays": 1,
+        "responsibleParty": "Qimam Ridge Contracting Company",
+        "deliverable": "MEP Testing and Commissioning Plan",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 14,
+          "rowTo": 14
+        }
+      },
+      {
+        "id": "P2-03",
+        "milestone": "Tower crown steelwork and glass fins installed",
+        "plannedStart": "2028-01-05",
+        "plannedFinish": "2028-04-30",
+        "durationDays": 117,
+        "responsibleParty": "Rawasi Facade Systems Co. (facade subcontractor)",
+        "deliverable": "Installation inspection records, crown",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 15,
+          "rowTo": 15
+        }
+      },
+      {
+        "id": "M8",
+        "milestone": "MEP testing and commissioning completed",
+        "plannedStart": "2028-03-01",
+        "plannedFinish": "2028-05-31",
+        "durationDays": 92,
+        "responsibleParty": "Qimam Ridge Contracting Company",
+        "deliverable": "Commissioning reports witnessed by the Engineer",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 16,
+          "rowTo": 16
+        }
+      },
+      {
+        "id": "M9",
+        "milestone": "Handover: Taking-Over of the Works",
+        "plannedStart": "2028-07-01",
+        "plannedFinish": "2028-07-31",
+        "durationDays": 31,
+        "responsibleParty": "Sarab Crest Real Estate Development Company",
+        "deliverable": "As-built Drawings; Operation and Maintenance Manuals",
+        "source": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 17,
+          "rowTo": 17
+        }
+      }
+    ],
+    "againstContract": [
+      {
+        "id": "M1",
+        "title": "Baseline Programme accepted by the Engineer",
+        "contractDate": "2026-03-01",
+        "plannedFinish": "2026-03-01",
+        "daysAfterContractDate": 0,
+        "status": "on time",
+        "contractSource": {
+          "kind": "pdf",
+          "document": "Contract_Main_Works.pdf",
+          "page": 6,
+          "quote": null
+        },
+        "programmeSource": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 6,
+          "rowTo": 6
+        }
+      },
+      {
+        "id": "M2",
+        "title": "Design Submission 1 (shoring, piling and substructure)",
+        "contractDate": "2026-04-15",
+        "plannedFinish": "2026-04-15",
+        "daysAfterContractDate": 0,
+        "status": "on time",
+        "contractSource": {
+          "kind": "pdf",
+          "document": "Contract_Main_Works.pdf",
+          "page": 6,
+          "quote": null
+        },
+        "programmeSource": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 7,
+          "rowTo": 7
+        }
+      },
+      {
+        "id": "M3",
+        "title": "Design Submission 2 (superstructure, facade and MEP)",
+        "contractDate": "2026-08-31",
+        "plannedFinish": "2026-08-31",
+        "daysAfterContractDate": 0,
+        "status": "on time",
+        "contractSource": {
+          "kind": "pdf",
+          "document": "Contract_Main_Works.pdf",
+          "page": 6,
+          "quote": null
+        },
+        "programmeSource": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 8,
+          "rowTo": 8
+        }
+      },
+      {
+        "id": "M4",
+        "title": "Facade visual mock-up completed and approved",
+        "contractDate": "2026-11-30",
+        "plannedFinish": "2026-11-30",
+        "daysAfterContractDate": 0,
+        "status": "on time",
+        "contractSource": {
+          "kind": "pdf",
+          "document": "Contract_Main_Works.pdf",
+          "page": 6,
+          "quote": null
+        },
+        "programmeSource": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 10,
+          "rowTo": 10
+        }
+      },
+      {
+        "id": "M5",
+        "title": "Basement raft foundation completed",
+        "contractDate": "2027-03-31",
+        "plannedFinish": "2027-03-31",
+        "daysAfterContractDate": 0,
+        "status": "on time",
+        "contractSource": {
+          "kind": "pdf",
+          "document": "Contract_Main_Works.pdf",
+          "page": 6,
+          "quote": null
+        },
+        "programmeSource": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 11,
+          "rowTo": 11
+        }
+      },
+      {
+        "id": "M6",
+        "title": "Topping out: Level 28 roof slab cast",
+        "contractDate": "2027-12-15",
+        "plannedFinish": "2027-12-29",
+        "daysAfterContractDate": 14,
+        "status": "late",
+        "contractSource": {
+          "kind": "pdf",
+          "document": "Contract_Main_Works.pdf",
+          "page": 6,
+          "quote": null
+        },
+        "programmeSource": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 13,
+          "rowTo": 13
+        }
+      },
+      {
+        "id": "M7",
+        "title": "MEP testing and commissioning started",
+        "contractDate": "2028-03-01",
+        "plannedFinish": "2028-03-01",
+        "daysAfterContractDate": 0,
+        "status": "on time",
+        "contractSource": {
+          "kind": "pdf",
+          "document": "Contract_Main_Works.pdf",
+          "page": 6,
+          "quote": null
+        },
+        "programmeSource": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 14,
+          "rowTo": 14
+        }
+      },
+      {
+        "id": "M8",
+        "title": "MEP testing and commissioning completed",
+        "contractDate": "2028-05-31",
+        "plannedFinish": "2028-05-31",
+        "daysAfterContractDate": 0,
+        "status": "on time",
+        "contractSource": {
+          "kind": "pdf",
+          "document": "Contract_Main_Works.pdf",
+          "page": 6,
+          "quote": null
+        },
+        "programmeSource": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 16,
+          "rowTo": 16
+        }
+      },
+      {
+        "id": "M9",
+        "title": "Handover: Taking-Over of the Works",
+        "contractDate": "2028-07-31",
+        "plannedFinish": "2028-07-31",
+        "daysAfterContractDate": 0,
+        "status": "on time",
+        "contractSource": {
+          "kind": "pdf",
+          "document": "Contract_Main_Works.pdf",
+          "page": 6,
+          "quote": null
+        },
+        "programmeSource": {
+          "kind": "excel",
+          "document": "Programme_Milestones.xlsx",
+          "sheet": "Programme",
+          "rowFrom": 17,
+          "rowTo": 17
+        }
+      }
+    ]
+  },
+  "provisionalSums": {
+    "file": "Provisional_Sums.xlsx",
+    "sheet": "Provisional Sums",
+    "headerRow": 5,
+    "amountsAreText": true,
+    "items": [
+      {
+        "ref": "PS-01",
+        "description": "Utility authority connection works at the main substation interface",
+        "text": "SAR 1.2M",
+        "amount": 1200000,
+        "currency": "SAR",
+        "row": 6,
+        "source": {
+          "kind": "excel",
+          "document": "Provisional_Sums.xlsx",
+          "sheet": "Provisional Sums",
+          "rowFrom": 6,
+          "rowTo": 6
+        }
+      },
+      {
+        "ref": "PS-02",
+        "description": "Public art installation at the podium plaza",
+        "text": "SAR 850K",
+        "amount": 850000,
+        "currency": "SAR",
+        "row": 7,
+        "source": {
+          "kind": "excel",
+          "document": "Provisional_Sums.xlsx",
+          "sheet": "Provisional Sums",
+          "rowFrom": 7,
+          "rowTo": 7
+        }
+      },
+      {
+        "ref": "PS-03",
+        "description": "أعمال الخط العربي والزخارف على واجهة المدخل الرئيسي",
+        "text": "٣٢٠٬٠٠٠ ر.س",
+        "amount": 320000,
+        "currency": "SAR",
+        "row": 8,
+        "source": {
+          "kind": "excel",
+          "document": "Provisional_Sums.xlsx",
+          "sheet": "Provisional Sums",
+          "rowFrom": 8,
+          "rowTo": 8
+        }
+      },
+      {
+        "ref": "PS-04",
+        "description": "Civil defence and telecom authority inspections and approvals",
+        "text": "١٬٢٥٠٬٠٠٠ ريال",
+        "amount": 1250000,
+        "currency": "SAR",
+        "row": 9,
+        "source": {
+          "kind": "excel",
+          "document": "Provisional_Sums.xlsx",
+          "sheet": "Provisional Sums",
+          "rowFrom": 9,
+          "rowTo": 9
+        }
+      },
+      {
+        "ref": "PS-05",
+        "description": "Specialist signage and wayfinding",
+        "text": "SR 475,000/-",
+        "amount": 475000,
+        "currency": "SAR",
+        "row": 10,
+        "source": {
+          "kind": "excel",
+          "document": "Provisional_Sums.xlsx",
+          "sheet": "Provisional Sums",
+          "rowFrom": 10,
+          "rowTo": 10
+        }
+      },
+      {
+        "ref": "PS-06",
+        "description": "Unforeseen ground conditions below the raft foundation",
+        "text": "١٫٥ مليون ريال",
+        "amount": 1500000,
+        "currency": "SAR",
+        "row": 11,
+        "source": {
+          "kind": "excel",
+          "document": "Provisional_Sums.xlsx",
+          "sheet": "Provisional Sums",
+          "rowFrom": 11,
+          "rowTo": 11
+        }
+      },
+      {
+        "ref": "PS-07",
+        "description": "Testing by an independent laboratory beyond the tests measured in the Bills",
+        "text": "SAR 185,000.00",
+        "amount": 185000,
+        "currency": "SAR",
+        "row": 12,
+        "source": {
+          "kind": "excel",
+          "document": "Provisional_Sums.xlsx",
+          "sheet": "Provisional Sums",
+          "rowFrom": 12,
+          "rowTo": 12
+        }
+      }
+    ],
+    "totals": [
+      {
+        "currency": "SAR",
+        "amount": 5780000
+      }
+    ],
+    "aboveSar1m": [
+      {
+        "ref": "PS-01",
+        "text": "SAR 1.2M",
+        "amount": 1200000,
+        "row": 6
+      },
+      {
+        "ref": "PS-04",
+        "text": "١٬٢٥٠٬٠٠٠ ريال",
+        "amount": 1250000,
+        "row": 9
+      },
+      {
+        "ref": "PS-06",
+        "text": "١٫٥ مليون ريال",
+        "amount": 1500000,
+        "row": 11
+      }
+    ],
+    "arabicDescriptions": [
+      "PS-03"
+    ],
+    "source": {
+      "kind": "excel",
+      "document": "Provisional_Sums.xlsx",
+      "sheet": "Provisional Sums",
+      "rowFrom": 6,
+      "rowTo": 12
+    }
+  },
+  "costLedger": {
+    "file": "Cost_Ledger_10k.xlsx",
+    "sheet": "Ledger",
+    "headerRow": 1,
+    "firstDataRow": 2,
+    "lastDataRow": 10001,
+    "dataRows": 10000,
+    "columns": [
+      "Date",
+      "Cost Code",
+      "Description",
+      "Vendor",
+      "Amount (SAR)"
+    ],
+    "dateRange": {
+      "from": "2026-02-01",
+      "to": "2026-10-15"
+    },
+    "totals": [
+      {
+        "currency": "SAR",
+        "amount": 83147809.59
+      }
+    ],
+    "rowsAboveSar1m": {
+      "count": 13,
+      "total": 23554793.71,
+      "rows": [
+        {
+          "row": 314,
+          "date": "2026-02-09",
+          "costCode": "NGT-04-410",
+          "vendor": "Zujaj Glass Processing",
+          "description": "Progress payment: Curtain wall units, invoice ZUJ-53746",
+          "amount": 1017811.55
+        },
+        {
+          "row": 1507,
+          "date": "2026-03-11",
+          "costCode": "NGT-03-310",
+          "vendor": "Al Wadi Ready Mix Co.",
+          "description": "Progress payment: Ready-mix concrete C50, invoice AL -43636",
+          "amount": 2290034.47
+        },
+        {
+          "row": 1795,
+          "date": "2026-03-19",
+          "costCode": "NGT-02-220",
+          "vendor": "Asas Piling Contractors",
+          "description": "Progress payment: Pile cap breaking, invoice ASA-44864",
+          "amount": 1148363.61
+        },
+        {
+          "row": 2539,
+          "date": "2026-04-07",
+          "costCode": "NGT-03-320",
+          "vendor": "Najm Steel Trading",
+          "description": "Progress payment: Couplers and tie wire, invoice NAJ-34002",
+          "amount": 2131829.39
+        },
+        {
+          "row": 2849,
+          "date": "2026-04-15",
+          "costCode": "NGT-03-310",
+          "vendor": "Sakhr Concrete Products",
+          "description": "Progress payment: Blinding concrete C15, invoice SAK-64621",
+          "amount": 1302381.94
+        },
+        {
+          "row": 2894,
+          "date": "2026-04-16",
+          "costCode": "NGT-02-210",
+          "vendor": "Jabal Plant Hire",
+          "description": "Progress payment: Dewatering pump hire, invoice JAB-68442",
+          "amount": 1449465.02
+        },
+        {
+          "row": 3700,
+          "date": "2026-05-07",
+          "costCode": "NGT-02-210",
+          "vendor": "Raml Earthworks Est.",
+          "description": "Progress payment: Shoring monitoring, invoice RAM-54932",
+          "amount": 1717180.11
+        },
+        {
+          "row": 3705,
+          "date": "2026-05-07",
+          "costCode": "NGT-02-220",
+          "vendor": "Asas Piling Contractors",
+          "description": "Progress payment: Pile testing, invoice ASA-91983",
+          "amount": 1066282.19
+        },
+        {
+          "row": 4933,
+          "date": "2026-06-07",
+          "costCode": "NGT-03-320",
+          "vendor": "Hadid Rebar Fabrication",
+          "description": "Progress payment: Couplers and tie wire, invoice HAD-60894",
+          "amount": 2825138.57
+        },
+        {
+          "row": 5250,
+          "date": "2026-06-15",
+          "costCode": "NGT-03-310",
+          "vendor": "Al Wadi Ready Mix Co.",
+          "description": "Progress payment: Concrete pumping, invoice AL -27488",
+          "amount": 1513376.82
+        },
+        {
+          "row": 6843,
+          "date": "2026-07-26",
+          "costCode": "NGT-04-410",
+          "vendor": "Rawasi Facade Systems Co.",
+          "description": "Progress payment: Facade brackets and fixings, invoice RAW-45123",
+          "amount": 2320035.1
+        },
+        {
+          "row": 7466,
+          "date": "2026-08-11",
+          "costCode": "NGT-05-510",
+          "vendor": "Thalj Cooling Solutions",
+          "description": "Progress payment: Ductwork supply, invoice THA-92618",
+          "amount": 2461429.67
+        },
+        {
+          "row": 9091,
+          "date": "2026-09-22",
+          "costCode": "NGT-03-310",
+          "vendor": "Sakhr Concrete Products",
+          "description": "Progress payment: Blinding concrete C15, invoice SAK-90086",
+          "amount": 2311465.27
+        }
+      ]
+    },
+    "rowsAtExactlySar1m": [
+      {
+        "row": 6002,
+        "date": "2026-07-05",
+        "costCode": "NGT-02-210",
+        "vendor": "Raml Earthworks Est.",
+        "description": "Progress payment: milestone release, invoice RAM-39650",
+        "amount": 1000000
+      }
+    ],
+    "creditNotes": {
+      "count": 91,
+      "total": -714605.01
+    },
+    "largestEntry": {
+      "row": 4933,
+      "date": "2026-06-07",
+      "costCode": "NGT-03-320",
+      "vendor": "Hadid Rebar Fabrication",
+      "description": "Progress payment: Couplers and tie wire, invoice HAD-60894",
+      "amount": 2825138.57
+    },
+    "byCostCode": [
+      {
+        "costCode": "NGT-01-100",
+        "rows": 786,
+        "total": 772102.34
+      },
+      {
+        "costCode": "NGT-02-210",
+        "rows": 804,
+        "total": 10184270.84
+      },
+      {
+        "costCode": "NGT-02-220",
+        "rows": 877,
+        "total": 10085527.43
+      },
+      {
+        "costCode": "NGT-03-310",
+        "rows": 847,
+        "total": 15226810.52
+      },
+      {
+        "costCode": "NGT-03-320",
+        "rows": 831,
+        "total": 12996075.95
+      },
+      {
+        "costCode": "NGT-03-330",
+        "rows": 839,
+        "total": 1975373.37
+      },
+      {
+        "costCode": "NGT-04-410",
+        "rows": 795,
+        "total": 13319937.84
+      },
+      {
+        "costCode": "NGT-05-510",
+        "rows": 843,
+        "total": 10584561.81
+      },
+      {
+        "costCode": "NGT-05-520",
+        "rows": 846,
+        "total": 3140167.26
+      },
+      {
+        "costCode": "NGT-05-530",
+        "rows": 826,
+        "total": 1151937.68
+      },
+      {
+        "costCode": "NGT-06-610",
+        "rows": 863,
+        "total": 2581054.53
+      },
+      {
+        "costCode": "NGT-07-710",
+        "rows": 843,
+        "total": 1129990.02
+      }
+    ],
+    "source": {
+      "kind": "excel",
+      "document": "Cost_Ledger_10k.xlsx",
+      "sheet": "Ledger",
+      "rowFrom": 1,
+      "rowTo": 10001
+    }
   }
 }
