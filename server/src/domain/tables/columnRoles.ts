@@ -4,7 +4,10 @@ import type { ColumnRole } from '../table';
 
 /** Header labels for each role in English and Arabic, compared after normalizeLabel. */
 const SYNONYMS: Record<ColumnRole, readonly string[]> = {
-  item_code: ['item', 'item no', 'item number', 'item code', 'item ref', 'no', 'ref', 'ref no', 'reference', 'code', 'bill no', 'البند', 'رقم البند', 'رقم', 'م'],
+  item_code: [
+    'item', 'item no', 'item number', 'item code', 'item ref', 'no', 'ref', 'ref no', 'reference', 'code', 'bill no',
+    's no', 'sr no', 'sl no', 's n', 'serial no', 'البند', 'رقم البند', 'رقم', 'م',
+  ],
   description: ['description', 'item description', 'description of work', 'description of works', 'particulars', 'الوصف', 'البيان', 'وصف البند', 'وصف الأعمال'],
   unit: ['unit', 'units', 'uom', 'u o m', 'unit of measure', 'الوحدة', 'وحدة القياس'],
   quantity: ['qty', 'quantity', 'quantities', 'الكمية', 'الكميات'],
