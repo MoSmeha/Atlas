@@ -15,10 +15,10 @@ function count(text: string, pattern: RegExp): number {
  */
 export function foldArabic(text: string): string {
   return text
-    .replace(/[ً-ٰٟـ]/g, '')
-    .replace(/[آأإٱ]/g, 'ا')
-    .replace(/[ىی]/g, 'ي')
-    .replace(/ک/g, 'ك');
+    .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+    .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627')
+    .replace(/[\u0649\u06CC]/g, '\u064A')
+    .replace(/\u06A9/g, '\u0643');
 }
 
 /** Language of a document's text from the share of Arabic letters among Arabic and Latin letters; null when there are no letters. */
@@ -37,7 +37,7 @@ export function detectLanguage(text: string): Language | null {
  * so "كم إجمالي BOQ-Phase1.xlsx؟" is Arabic. When the words are close to evenly split, the first word decides.
  */
 export function isArabic(text: string): boolean {
-  if (text.includes('؟')) return true;
+  if (text.includes('\u061F')) return true;
   const words = text
     .split(/\s+/)
     .filter((word) => !CODE_LIKE.test(word))

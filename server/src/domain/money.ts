@@ -1,7 +1,7 @@
 /** Zero-width and direction marks that PDF and Excel text often carries around Arabic numbers. */
-const INVISIBLE = /[​-‏‪-‮⁦-⁩؜]/g;
+const INVISIBLE = /[\u200B-\u200F\u202A-\u202E\u2066-\u2069\u061C]/g;
 /** A leading minus (also the Unicode minus and the en dash PDFs use for it) or plus. */
-const SIGN = /^([-+−–])\s*/;
+const SIGN = /^([-+\u2212\u2013])\s*/;
 /** Thousands groups with one separator used throughout: "1,250,000", "1.250.000", "1 250 000", "1'250'000". */
 const GROUPED = /^\d{1,3}([,. '])\d{3}(?:\1\d{3})*$/;
 
@@ -12,7 +12,7 @@ export interface NumberOptions {
 
 /** Turns Arabic-Indic and Extended Arabic-Indic digits into ASCII, "٫" into "." and "٬" into ",". */
 export function normalizeDigits(text: string): string {
-  return text.replace(/[٠-٩٫٬۰-۹]/g, (char) => {
+  return text.replace(/[\u0660-\u0669\u066B\u066C\u06F0-\u06F9]/g, (char) => {
     const code = char.charCodeAt(0);
     if (code === 0x066b) return '.';
     if (code === 0x066c) return ',';
@@ -72,7 +72,7 @@ function decimalToNumber(decimal: string, power: number, negative: boolean): num
 export function parseNumber(text: string, options: NumberOptions = {}): number | null {
   let rest = cleanNumberText(text);
   let power = 0;
-  if (options.percent === true && /[%٪]$/.test(rest)) {
+  if (options.percent === true && /[%\u066A]$/.test(rest)) {
     rest = rest.slice(0, -1).trimEnd();
     power = -2;
   }

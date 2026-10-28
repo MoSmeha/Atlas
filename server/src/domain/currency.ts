@@ -12,8 +12,8 @@ export const CURRENCY_ALIASES: Record<CurrencyCode, readonly string[]> = {
   SAR: [
     'SAR', 'SR', 'S.R.', 'S.R', 'Saudi Riyal', 'Saudi Riyals', 'Riyal', 'Riyals',
     'ر.س', 'ر.س.', 'ريال', 'ريالا', 'ريالات', 'ريال سعودي', 'ريالات سعودية',
-    '﷼', // RIAL SIGN
-    '⃁', // SAUDI RIYAL SIGN
+    '\uFDFC', // RIAL SIGN
+    '\u20C1', // SAUDI RIYAL SIGN
   ],
   USD: [
     'USD', 'US$', '$', 'US Dollar', 'US Dollars', 'U.S. Dollar', 'U.S. Dollars',
