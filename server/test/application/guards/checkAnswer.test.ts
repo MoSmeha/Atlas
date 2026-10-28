@@ -121,6 +121,36 @@ describe('checkAnswer', () => {
     expect(verdict.value.sources).toEqual([{ kind: 'excel', document: 'BOQ.xlsx', sheet: 'Bill 1', rowFrom: 5, rowTo: 254 }]);
   });
 
+  it('hides the meta columns from the attached table, keeping the saved result whole', async () => {
+    const { onSubmit, session } = setup('List the items');
+    const saved = session.saveResult({
+      title: 'Items',
+      columns: ['item_code', 'amount', '_row', '_page', '_is_total', '_section'],
+      rows: [
+        ['A1', 1000, 5, null, 0, 'Bill 1'],
+        ['A2', 1000, 6, null, 0, 'Bill 1'],
+      ],
+      sources: [{ kind: 'excel', document: 'BOQ.xlsx', sheet: 'Bill 1', rowFrom: 5, rowTo: 6 }],
+      tool: 'query_tables',
+      detail: 'SELECT item_code, amount, _row, _page, _is_total, _section FROM boq_1',
+    });
+    const verdict = await onSubmit(answer({ markdown: 'Two items.', result_id: saved.id, sources: [] }));
+    if (!verdict.accepted) throw new Error(verdict.feedback);
+
+    expect(verdict.value.table).toEqual({
+      resultId: 'r1',
+      title: 'Items',
+      columns: ['item_code', 'amount'],
+      rows: [
+        ['A1', 1000],
+        ['A2', 1000],
+      ],
+      totalRows: 2,
+    });
+    expect(verdict.value.sources).toEqual([{ kind: 'excel', document: 'BOQ.xlsx', sheet: 'Bill 1', rowFrom: 5, rowTo: 6 }]);
+    expect(session.result('r1')?.columns).toHaveLength(6);
+  });
+
   it('accepts with warnings after two rejections, leaving out invalid sources', async () => {
     const { onSubmit } = setup();
     const flawed = answer({ markdown: 'The price is SAR 48,250,000, or SAR 52,110,000 with VAT.', sources: [contractPage, { ...contractPage, page: 9 }] });

@@ -94,6 +94,21 @@ describe('describeTurn', () => {
     expect(text).toContain('Result r4 "Superstructure items" (1 row, not shown to the user):');
   });
 
+  it('repeats the attached result as saved, with the _row values the user did not see', () => {
+    const session = new Session('s');
+    session.saveResult({
+      title: 'Items',
+      columns: ['item_code', 'amount', '_row'],
+      rows: [['A1', 2000000, 5]],
+      sources: [],
+      tool: 'query_tables',
+      detail: null,
+    });
+    const table = { resultId: 'r1', title: 'Items', columns: ['item_code', 'amount'], rows: [['A1', 2000000]], totalRows: 1 };
+
+    expect(describe1(answer('A1.', { table }), ['r1'], session)).toBe('A1.\n\nResult r1 "Items" (1 row):\nitem_code | amount | _row\nA1 | 2000000 | 5');
+  });
+
   it('keeps only the latest unattached results', () => {
     const session = new Session('s');
     const ids = Array.from({ length: 5 }, (_, i) =>

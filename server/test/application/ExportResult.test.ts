@@ -43,6 +43,29 @@ describe('ExportResult', () => {
     });
   });
 
+  it('leaves out the meta columns but keeps the sources they gave', async () => {
+    const exporter = new FakeExporter();
+    const useCase = new ExportResult(exporter, new FakeClock('2026-10-28T14:05:09'));
+    const session = new Session('s1');
+    const saved = session.saveResult({
+      title: 'Items',
+      columns: ['item_code', 'amount', '_row', '_page', '_section', 'excel_row'],
+      rows: [['A1', 2000000, 5, null, 'Bill 1', 5]],
+      sources,
+      tool: 'query_tables',
+      detail: null,
+    });
+    await useCase.execute({ session, resultId: saved.id, format: 'xlsx', exportsDir: '/exports' });
+
+    expect(exporter.exported[0]?.table).toEqual({
+      title: 'Items',
+      columns: ['item_code', 'amount', 'excel_row'],
+      rows: [['A1', 2000000, 5]],
+      sources,
+    });
+    expect(session.result(saved.id)?.columns).toEqual(['item_code', 'amount', '_row', '_page', '_section', 'excel_row']);
+  });
+
   it('passes the format through', async () => {
     const { exporter, useCase, session, saved } = setup();
     const file = await useCase.execute({ session, resultId: saved.id, format: 'csv', exportsDir: '/exports' });
