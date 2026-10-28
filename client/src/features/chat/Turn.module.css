@@ -1,0 +1,36 @@
+.turn {
+  scroll-margin-top: calc(var(--app-shell-header-offset, 0rem) + var(--mantine-spacing-lg));
+}
+
+.question {
+  color: var(--mantine-color-bright);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+
+/* Finished parts settle in under the streamed answer once, as the answer completes. Timing comes from the theme. */
+.settle {
+  animation-name: settle;
+  animation-fill-mode: both;
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settle {
+    animation: none;
+  }
+}
+
+.settle:empty {
+  display: none;
+}
