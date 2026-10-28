@@ -19,6 +19,8 @@ export function openSse<T>(reply: FastifyReply): SseChannel<T> {
     connection: 'keep-alive',
     'x-accel-buffering': 'no',
   });
+  // Without this the browser sees nothing until the first event, which on a quiet stream is the heartbeat.
+  res.flushHeaders();
 
   const controller = new AbortController();
   let open = true;
