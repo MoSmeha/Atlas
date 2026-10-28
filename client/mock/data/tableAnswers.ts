@@ -127,10 +127,13 @@ export function quotesAnswer(context: ScriptContext): Script {
   const rows = [...totals].map(([currency, { count, amount }]) => [currency, count, amount]);
   const listed = [...totals].map(([currency, { amount }]) => `**${currency} ${amount.toLocaleString('en-US')}**`).join(', ');
   const first = quotes[0]?.row ?? 3;
+  const perCurrency = sqlStep('SELECT currency, COUNT(*), SUM(amount) FROM supplier_quotes GROUP BY currency ORDER BY SUM(amount) DESC', rows.length);
   return {
     steps: [
       listStep(context.documents),
-      sqlStep('SELECT currency, COUNT(*), SUM(amount) FROM supplier_quotes GROUP BY currency ORDER BY SUM(amount) DESC', rows.length),
+      perCurrency,
+      // The model asks for the same rows again; the server refuses a repeated call without running it.
+      { ...perCurrency, durationMs: 0, failure: { status: 'refused', error: 'Skipped: the same request as an earlier step.' } },
     ],
     draft: null,
     chunkMs: 35,
