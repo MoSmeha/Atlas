@@ -14,6 +14,7 @@ export interface PdfColumn {
   x1: number;
 }
 
+/** A header found on a page: its columns and the lines it takes up. */
 export interface PdfHeader {
   /** Columns from left to right. */
   columns: PdfColumn[];

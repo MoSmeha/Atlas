@@ -163,7 +163,7 @@ function followedByRow(context: Context, i: number): boolean {
 }
 
 /** A short title in capitals or title case, without the punctuation that ends a sentence or a wrapped line. */
-export function looksLikeHeading(text: string): boolean {
+function looksLikeHeading(text: string): boolean {
   const words = text.split(' ');
   if (text.length > MAX_HEADING_LENGTH || words.length > MAX_HEADING_WORDS || /[.,;]$/.test(text)) return false;
   if (isCapitals(text)) return true;
