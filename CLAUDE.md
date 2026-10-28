@@ -34,7 +34,7 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 - Commit one file or one small change at a time: `<scope>: <what changed>`, at most 8 words. Scopes: setup, shared, server, ingestion, agent, tools, client, tests, docs, fix.
 - No empty or whitespace-only commits, and no AI attribution anywhere.
 - Parallel agents each use their own worktree and branch, stage only the paths they changed (never `git add -A`), and never touch `main`. One coordinator merges.
-- Push to origin only when the owner asks for it.
+- When a unit is done and verified: push the branch, merge it into main with `--no-ff`, push main, delete the local branch (the owner approved pushing for this repo).
 
 ## Windows notes
 
@@ -51,5 +51,6 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 ## Current state
 
 - Step 1 done: workspace, shared schemas, server skeleton with health route and error hook, settings, JSONL logging, model config, ports, fakes.
-- Model IDs in `server/config/models.json` come from the OpenAI docs (2026-10-28): `gpt-6-astra` / `gpt-6.1-sol` / `gpt-6-luna`. Not yet confirmed against the account: no API key in `.env` yet. Run `pnpm models` once it is there.
+- Model IDs in `server/config/models.json` are confirmed against the account with `pnpm models` (2026-10-28): frontier `gpt-6-astra`, balanced `gpt-6.1-sol`, small `gpt-6-luna`, embeddings `text-embedding-3-small`. The key is in `.env`.
+- Design direction set with the impeccable skill: `client/PRODUCT.md` and the direction contract in `client/.impeccable/surfaces/client.md` (category standard at the craft of Claude.ai, Perplexity, Linear). DESIGN.md is written at the polish pass.
 - Next: steps 2 to 5 in parallel (ingestion, agent, remaining tools, client).
