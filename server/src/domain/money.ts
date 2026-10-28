@@ -105,9 +105,9 @@ const ARABIC = /\p{Script=Arabic}/u;
 function readAmount(text: string, hasCurrency: boolean): number | null {
   const body = text.replace(/\s*\/-$/, '');
   const scaled = SCALE.exec(body);
-  const power = scaled === null ? 0 : (SCALE_WORDS.find(([p]) => scaled.groups?.[`p${p}`] !== undefined)?.[0] ?? 0);
   const number = scaled === null ? body : (scaled.groups?.number ?? '');
-  if (scaled !== null && number === '') return hasCurrency && ARABIC.test(scaled[0]) ? 10 ** power : null;
+  const power = scaled === null ? 0 : (SCALE_WORDS.find(([p]) => scaled.groups?.[`p${p}`] !== undefined)?.[0] ?? 0);
+  if (number === '') return hasCurrency && ARABIC.test(body) ? 10 ** power : null;
   const decimal = readDecimal(number);
   return decimal === null ? null : decimalToNumber(decimal, power, false);
 }

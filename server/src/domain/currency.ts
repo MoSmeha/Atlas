@@ -21,7 +21,10 @@ export const CURRENCY_ALIASES: Record<CurrencyCode, readonly string[]> = {
   ],
   EUR: ['EUR', '€', 'Euro', 'Euros', 'يورو'],
   AED: ['AED', 'Dirham', 'Dirhams', 'UAE Dirham', 'UAE Dirhams', 'د.إ', 'درهم', 'دراهم', 'درهم إماراتي'],
-  GBP: ['GBP', '£', 'Pound Sterling', 'Pounds Sterling', 'British Pound', 'British Pounds', 'جنيه إسترليني', 'الجنيه الإسترليني'],
+  GBP: [
+    'GBP', '£', 'Pound Sterling', 'Pounds Sterling', 'British Pound', 'British Pounds',
+    'جنيه إسترليني', 'الجنيه الإسترليني',
+  ],
 };
 
 /** Upper case only: "Sr." is "Senior", not riyals. */
@@ -56,6 +59,7 @@ function codeOf(match: RegExpExecArray): CurrencyCode {
   return code;
 }
 
+/** True only for a canonical code such as "SAR"; use currencyCode for aliases like "SR". */
 export function isCurrencyCode(value: string): value is CurrencyCode {
   return (CURRENCY_CODES as readonly string[]).includes(value);
 }
