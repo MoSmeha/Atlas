@@ -1,11 +1,14 @@
 import multipart from '@fastify/multipart';
 import Fastify from 'fastify';
 import { registerErrorHandler } from './errorHandler';
+import { chatRoutes, type ChatDeps } from './routes/chat';
 import { documentsRoutes, type DocumentsDeps } from './routes/documents';
 import { exportsRoutes, type ExportsDeps } from './routes/exports';
 import { folderRoutes, type FolderDeps } from './routes/folder';
 import { healthRoutes, type HealthDeps } from './routes/health';
+import { modelsRoutes, type ModelsDeps } from './routes/models';
 import { MAX_UPLOAD_FILES, uploadsRoutes, type UploadsDeps } from './routes/uploads';
+import { usageRoutes, type UsageDeps } from './routes/usage';
 import { serializerCompiler, validatorCompiler, type ZodTypeProvider } from './zod';
 
 export interface ApiDeps {
@@ -14,6 +17,9 @@ export interface ApiDeps {
   folder: FolderDeps;
   documents: DocumentsDeps;
   uploads: UploadsDeps;
+  chat: ChatDeps;
+  models: ModelsDeps;
+  usage: UsageDeps;
 }
 
 /** Builds the Fastify app with every feature's routes. Tests call this and use `inject`. */
@@ -29,6 +35,9 @@ export function buildApp(deps: ApiDeps) {
   app.register(folderRoutes, { deps: deps.folder });
   app.register(documentsRoutes, { deps: deps.documents });
   app.register(uploadsRoutes, { deps: deps.uploads });
+  app.register(chatRoutes, { deps: deps.chat });
+  app.register(modelsRoutes, { deps: deps.models });
+  app.register(usageRoutes, { deps: deps.usage });
 
   return app;
 }

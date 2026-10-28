@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildApp, type ApiDeps } from './api/app';
+import { AskQuestion } from './application/AskQuestion';
 import { ExportResult } from './application/ExportResult';
 import { IndexFolder } from './application/indexing/IndexFolder';
 import type { Lineup } from './application/models/pickLineup';
@@ -21,6 +22,7 @@ import { OpenAiEmbeddingClient } from './infrastructure/openai/OpenAiEmbeddingCl
 import { OpenAiModelClient } from './infrastructure/openai/OpenAiModelClient';
 import { resolveLineup } from './infrastructure/openai/resolveLineup';
 import { ExcelJsReader } from './infrastructure/readers/ExcelJsReader';
+import { MupdfPageRenderer } from './infrastructure/readers/MupdfPageRenderer';
 import { MupdfReader } from './infrastructure/readers/MupdfReader';
 import { loadSettings, repoRoot, type Settings } from './infrastructure/settings';
 import { SystemClock } from './infrastructure/SystemClock';
@@ -43,6 +45,9 @@ export interface Container {
   /** The loaded folder, its index and its status. */
   workspace: Workspace;
   indexFolder: IndexFolder;
+  /** Chats by session id: turns, saved results and spend. */
+  sessions: SessionStore;
+  askQuestion: AskQuestion;
   api: ApiDeps;
 }
 
@@ -69,6 +74,22 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     clock,
     maxFileBytes: settings.maxFileBytes,
   });
+  const askQuestion = new AskQuestion({
+    workspace,
+    sessions,
+    modelClient,
+    embeddings,
+    renderer: new MupdfPageRenderer(),
+    exporter,
+    clock,
+    logger,
+    lineup,
+    answerTier: modelConfig.answerTier,
+    reasoningEffort: modelConfig.reasoningEffort,
+    maxRounds: settings.maxRounds,
+    exportsDir: settings.exportsDir,
+  });
+  const apiKeyPresent = settings.openAiApiKey !== null;
   return {
     settings,
     modelConfig,
@@ -80,12 +101,17 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     fs,
     workspace,
     indexFolder,
+    sessions,
+    askQuestion,
     api: {
-      health: { version: VERSION, apiKeyPresent: settings.openAiApiKey !== null },
+      health: { version: VERSION, apiKeyPresent },
       exports: { sessions, exportResult: new ExportResult(exporter, clock), exportsDir: settings.exportsDir },
       folder: { indexFolder, workspace, repoRoot },
       documents: { workspace },
       uploads: { indexFolder, uploadsDir: join(settings.dataDir, 'uploads'), maxFileBytes: settings.maxFileBytes },
+      chat: { askQuestion, sessions, workspace, apiKeyPresent },
+      models: { lineup, answerTier: modelConfig.answerTier },
+      usage: { sessions },
     },
   };
 }
