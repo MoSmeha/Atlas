@@ -26,5 +26,5 @@ eval-runs/
 .DS_Store
 Thumbs.db
 
-# Impeccable decision-page runtime state
+# Impeccable decision-page runtime state, at any depth
 **/.impeccable/questions/
