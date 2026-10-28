@@ -30,6 +30,8 @@ interface Label {
 const MIN_ROLES = 3;
 /** Share of a header's words that must be in labels naming a role, so a sentence about rates is not a header. */
 const MIN_ROLE_WORDS = 0.6;
+/** A quick first check: share of words that name a role on their own ("Description of Works" has one in three). */
+const MIN_SINGLE_ROLE_WORDS = 0.4;
 const MAX_HEADER_WORDS = 30;
 /** Longest label in words, as in "Total Amount (SAR)". */
 const MAX_LABEL_WORDS = 5;
@@ -92,13 +94,14 @@ export function sameColumns(a: readonly PdfColumn[], b: readonly PdfColumn[]): b
 
 function headerColumns(line: PageLine): PdfColumn[] | null {
   if (line.words.length > MAX_HEADER_WORDS) return null;
-  if (line.words.filter((word) => roleOf(word.text) !== null).length < MIN_ROLES) return null;
+  const roleWords = line.words.filter((word) => roleOf(word.text) !== null).length;
+  if (roleWords < MIN_ROLES || roleWords < MIN_SINGLE_ROLE_WORDS * line.words.length) return null;
   const labels = wordRuns(line).flatMap(splitLabels);
   if (labels.some((label) => cellNumber(wordText(label.words)) !== null)) return null;
   const named = labels.filter((label) => label.role !== null);
   if (new Set(named.map((label) => label.role)).size < MIN_ROLES) return null;
-  const roleWords = named.reduce((count, label) => count + label.words.length, 0);
-  if (roleWords < MIN_ROLE_WORDS * line.words.length) return null;
+  const labelWords = named.reduce((count, label) => count + label.words.length, 0);
+  if (labelWords < MIN_ROLE_WORDS * line.words.length) return null;
   return withUniqueRoles(attachNotes(labels).map(toColumn));
 }
 

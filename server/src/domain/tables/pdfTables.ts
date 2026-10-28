@@ -19,11 +19,16 @@ interface Page {
   lines: DocLine[];
 }
 
+/** A line the table took, and where it is: the index of its page in the document and of the line on the page. */
+interface Taken {
+  line: TableLine;
+  page: number;
+  index: number;
+}
+
 /** What reading one page of a table gave, and whether the table may go on to the next page. */
 interface PageRun {
-  taken: TableLine[];
-  /** Index of the last line the table used, or -1. */
-  last: number;
+  taken: Taken[];
   next: boolean;
 }
 
@@ -35,7 +40,8 @@ const TOP_ZONE = 0.25;
 const SAME_SPOT = 4;
 /** A gap of more line heights than this ends the table on that page. */
 const MAX_GAP_LINES = 4;
-const MAX_SKIPPED = 4;
+/** Lines at the top of a following page that are not running headers found elsewhere: a page title, say. */
+const MAX_SKIPPED = 2;
 /** Lines looked at below a page's first lines to see whether rows follow. */
 const LOOKAHEAD = 4;
 const MAX_TITLE_LINES = 3;
@@ -93,7 +99,9 @@ function documentPages(pages: readonly PdfPage[]): Page[] {
     for (const line of lines) {
       if (!inMargin(line, page.height)) continue;
       const key = furnitureKey(line);
-      spots.set(key, [...(spots.get(key) ?? []), { page: page.number, top: line.top }]);
+      const found = spots.get(key);
+      if (found === undefined) spots.set(key, [{ page: page.number, top: line.top }]);
+      else found.push({ page: page.number, top: line.top });
     }
   }
   return read.map(({ page, lines }) => ({
@@ -121,22 +129,43 @@ function readTable(doc: readonly Page[], start: number, header: PdfHeader, title
   const first = doc[start];
   if (first === undefined) return null;
   const layout = columnLayout(header.columns, [...first.lines.slice(header.last + 1), ...(doc[start + 1]?.lines ?? [])]);
-  const lines: TableLine[] = [];
-  let end = { page: start, line: header.last };
+  const taken: Taken[] = [];
   for (let p = start; p < doc.length; p++) {
     const page = doc[p];
     if (page === undefined) break;
-    const run = readPage(page, p === start ? header.last + 1 : 0, layout, p > start);
-    lines.push(...run.taken);
-    if (run.taken.length > 0) end = { page: p, line: run.last };
+    const run = readPage(page, p, p === start ? header.last + 1 : 0, layout, p > start);
+    taken.push(...run.taken);
     if (!run.next) break;
   }
+  const kept = taken.slice(0, keptLength(taken, layout));
+  const last = kept.at(-1);
+  if (last === undefined) return null;
   const rtl = isRtl(header);
   const columns = sourceColumns(header);
-  const rows = assembleRows(rtl ? lines.map((line) => ({ ...line, cells: line.cells.toReversed() })) : lines, columns);
+  const lines = kept.map(({ line }) => (rtl ? { ...line, cells: line.cells.toReversed() } : line));
+  const rows = assembleRows(lines, columns);
   if (rows.length === 0) return null;
   const place = { title, sheet: null, pageFrom: first.number, pageTo: rows.at(-1)?.page ?? first.number };
-  return { table: buildTable(place, columns, rows), end };
+  return { table: buildTable(place, columns, rows), end: { page: last.page, line: last.index } };
+}
+
+/** Plain text after a gap at the end of a table is a note or the next table's title, not more of the last row. */
+function keptLength(taken: readonly Taken[], layout: ColumnLayout): number {
+  let kept = taken.length;
+  for (let k = taken.length - 1; k > 0; k--) {
+    const line = taken[k]?.line;
+    const above = taken[k - 1]?.line;
+    if (line === undefined || above === undefined || !isPlainText(line.cells, layout)) break;
+    if (above.page === line.page && line.top - above.bottom > line.height) kept = k;
+  }
+  return kept;
+}
+
+function isPlainText(cells: readonly string[], layout: ColumnLayout): boolean {
+  return cells.every((text, i) => {
+    const role = layout.columns[i]?.role ?? null;
+    return text === '' || ((role === 'item_code' || role === 'description') && cellNumber(text) === null);
+  });
 }
 
 /**
@@ -144,10 +173,9 @@ function readTable(doc: readonly Page[], start: number, header: PdfHeader, title
  * top are skipped. The table stops at another header, or at a line that does not fit or comes after a wide gap; it
  * may go on to the next page when only running footers or the bottom margin follow.
  */
-function readPage(page: Page, from: number, layout: ColumnLayout, following: boolean): PageRun {
+function readPage(page: Page, pageIndex: number, from: number, layout: ColumnLayout, following: boolean): PageRun {
   const { lines } = page;
-  const taken: TableLine[] = [];
-  let last = -1;
+  const taken: Taken[] = [];
   let skipped = 0;
   let previous: PageLine | undefined = following ? undefined : lines[from - 1];
   for (let i = from; i < lines.length; i++) {
@@ -155,9 +183,8 @@ function readPage(page: Page, from: number, layout: ColumnLayout, following: boo
     if (line === undefined) break;
     const header = readHeader(lines, i);
     if (header !== null) {
-      if (!following || taken.length > 0 || !sameColumns(header.columns, layout.columns)) return { taken, last, next: false };
+      if (!following || taken.length > 0 || !sameColumns(header.columns, layout.columns)) return { taken, next: false };
       i = header.last;
-      last = i;
       previous = lines[i];
       continue;
     }
@@ -165,16 +192,16 @@ function readPage(page: Page, from: number, layout: ColumnLayout, following: boo
     if (line.furniture && !hasNumber(cells, layout)) continue;
     const gap = previous !== undefined && line.top - previous.bottom > MAX_GAP_LINES * line.height;
     if (following && taken.length === 0 && (cells === null || !rowsFollow(lines, i, layout))) {
-      if (skipped >= MAX_SKIPPED || (!line.furniture && line.top > TOP_ZONE * page.height)) return { taken, last, next: false };
+      if (skipped >= MAX_SKIPPED || line.top > TOP_ZONE * page.height || isSentence(lineText(line))) return { taken, next: false };
       skipped++;
       continue;
     }
-    if (cells === null || gap) return { taken, last, next: onlyFooter(page, i) };
-    taken.push({ page: page.number, top: line.top, bottom: line.bottom, height: line.height, cells });
+    if (cells === null || gap) return { taken, next: onlyFooter(page, i) };
+    taken.push({ line: { page: page.number, top: line.top, bottom: line.bottom, height: line.height, cells }, page: pageIndex, index: i });
     previous = line;
-    last = i;
   }
-  return { taken, last, next: true };
+  // A following page that adds nothing (prose, a picture) breaks the table.
+  return { taken, next: !following || taken.length > 0 };
 }
 
 function hasNumber(cells: readonly string[] | null, layout: ColumnLayout): boolean {
