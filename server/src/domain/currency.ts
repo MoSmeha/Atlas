@@ -15,10 +15,13 @@ export const CURRENCY_ALIASES: Record<CurrencyCode, readonly string[]> = {
     '﷼', // RIAL SIGN
     '⃁', // SAUDI RIYAL SIGN
   ],
-  USD: ['USD', 'US$', '$', 'US Dollar', 'US Dollars', 'U.S. Dollar', 'U.S. Dollars', 'دولار أمريكي'],
+  USD: [
+    'USD', 'US$', '$', 'US Dollar', 'US Dollars', 'U.S. Dollar', 'U.S. Dollars',
+    'دولار أمريكي', 'دولارات أمريكية', 'الدولار الأمريكي',
+  ],
   EUR: ['EUR', '€', 'Euro', 'Euros', 'يورو'],
   AED: ['AED', 'Dirham', 'Dirhams', 'UAE Dirham', 'UAE Dirhams', 'د.إ', 'درهم', 'دراهم', 'درهم إماراتي'],
-  GBP: ['GBP', '£', 'Pound Sterling', 'Pounds Sterling', 'British Pound', 'British Pounds', 'جنيه إسترليني'],
+  GBP: ['GBP', '£', 'Pound Sterling', 'Pounds Sterling', 'British Pound', 'British Pounds', 'جنيه إسترليني', 'الجنيه الإسترليني'],
 };
 
 /** Upper case only: "Sr." is "Senior", not riyals. */
