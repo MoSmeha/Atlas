@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import { ErrorBody } from '@atlas/shared';
 import { ApiError, isAbortError, unreachableMessage } from './ApiError';
+import { parseJson } from './parseJson';
 
 type Method = 'GET' | 'POST' | 'DELETE';
 
@@ -69,12 +70,4 @@ function withQuery(path: string, query: RequestOptions['query']): string {
   }
   const search = params.toString();
   return search === '' ? path : `${path}?${search}`;
-}
-
-function parseJson(text: string): unknown {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return undefined;
-  }
 }
