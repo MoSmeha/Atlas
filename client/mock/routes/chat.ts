@@ -6,6 +6,9 @@ import { type SseChannel, delay, openSse, readJson, sendError } from '../http';
 import { PARAM, type Route, route } from '../router';
 import { state } from '../state';
 
+/** Rows an answer carries, as the real server caps them; the saved result keeps every row for export. */
+const MAX_TABLE_ROWS = 200;
+
 let questionCount = 0;
 
 /** Asking a question, streamed like the real agent, and clearing a chat. */
@@ -43,9 +46,10 @@ export const chatRoutes: Route[] = [
 
     const saved: ResultTable | null = table ? { ...table, resultId: state.sessions.nextResultId(request.sessionId) } : null;
     if (saved) state.sessions.saveResult(request.sessionId, saved);
+    const shown = saved ? { ...saved, rows: saved.rows.slice(0, MAX_TABLE_ROWS) } : null;
     const usage = usageFor(model, scaled(script.tokens, model.tier === 'small'), Date.now() - started);
     state.sessions.record(request.sessionId, usage);
-    channel.send({ type: 'answer', answer: { ...answer, table: saved }, usage });
+    channel.send({ type: 'answer', answer: { ...answer, table: shown }, usage });
     channel.close();
   }),
 
