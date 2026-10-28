@@ -89,6 +89,7 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     maxRounds: settings.maxRounds,
     exportsDir: settings.exportsDir,
   });
+  const apiKeyPresent = settings.openAiApiKey !== null;
   return {
     settings,
     modelConfig,
@@ -103,11 +104,12 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     sessions,
     askQuestion,
     api: {
-      health: { version: VERSION, apiKeyPresent: settings.openAiApiKey !== null },
+      health: { version: VERSION, apiKeyPresent },
       exports: { sessions, exportResult: new ExportResult(exporter, clock), exportsDir: settings.exportsDir },
       folder: { indexFolder, workspace, repoRoot },
       documents: { workspace },
       uploads: { indexFolder, uploadsDir: join(settings.dataDir, 'uploads'), maxFileBytes: settings.maxFileBytes },
+      chat: { askQuestion, sessions, workspace, apiKeyPresent },
       models: { lineup, answerTier: modelConfig.answerTier },
       usage: { sessions },
     },

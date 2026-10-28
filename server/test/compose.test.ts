@@ -36,6 +36,15 @@ describe('compose', () => {
     expect(response.json()).toMatchObject({ ok: true, apiKeyPresent: false });
   });
 
+  it('refuses a chat question with 503 missing_api_key when there is no key', async () => {
+    const container = await compose(noKey);
+    expect(container.api.chat.askQuestion).toBe(container.askQuestion);
+    const app = buildApp(container.api);
+    const response = await app.inject({ method: 'POST', url: '/api/chat', payload: { sessionId: 's1', question: 'What is the total?' } });
+    expect(response.statusCode).toBe(503);
+    expect(response.json().error.code).toBe('missing_api_key');
+  });
+
   it('wires AskQuestion to the shared sessions; without a key it answers missing_api_key and logs it', async () => {
     const container = await compose(noKey);
     expect(container.api.exports.sessions).toBe(container.sessions);
