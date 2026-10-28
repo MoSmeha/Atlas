@@ -79,7 +79,7 @@ const OBLIGATION = new RegExp(
 );
 /** Text allowed between a Hijri date and the Gregorian date that restates it: "(", "corresponding to", "الموافق". */
 const DATE_PAIR_GAP = new RegExp(
-  `^[\\s(),\\-\\u2013\\u2014/|:]*(?:(?:corresponding\\s+to|equivalent\\s+to|i\\.e\\.?|${arabicPattern('و')}?${arabicPattern('الموافق')}(?:\\s*${arabicPattern('ل')})?|${arabicPattern('يوافق')})[\\s(),\\-\\u2013\\u2014:]*)?$`,
+  `^[\\s(),\\-\\u2013\\u2014/|:]*(?:(?:corresponding\\s+to|equivalent\\s+to|i\\.e\\.?|(?:${arabicPattern('و')})?${arabicPattern('الموافق')}(?:\\s*${arabicPattern('ل')})?|${arabicPattern('يوافق')})[\\s(),\\-\\u2013\\u2014:]*)?$`,
   'iu',
 );
 
@@ -98,7 +98,7 @@ export function findScheduleCandidates(pages: readonly SchedulePage[]): Schedule
         const key = `${fields.document}\n${fields.match}\n${fields.sentence}`;
         if (seen.has(key)) continue;
         seen.add(key);
-        candidates.push({ ...fields, id: `c${candidates.length + 1}`, page: page.page });
+        candidates.push({ id: `c${candidates.length + 1}`, ...fields, page: page.page });
       }
     }
   }
