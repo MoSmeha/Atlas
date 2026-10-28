@@ -77,6 +77,8 @@ export interface DocumentIndex {
   find(nameOrPath: string): DocumentSummary | null;
   setClassification(path: string, classification: Classification | null): void;
 
+  /** How many chunks still have no embedding. */
+  pendingEmbeddingCount(): number;
   pendingEmbeddings(limit: number): { chunkId: number; text: string }[];
   saveEmbeddings(items: { chunkId: number; vector: Float32Array }[]): void;
   keywordSearch(query: string, options: { document: string | null; limit: number }): SearchHit[];

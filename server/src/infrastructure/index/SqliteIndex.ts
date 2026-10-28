@@ -117,6 +117,11 @@ export class SqliteIndex implements DocumentIndex {
     this.db.prepare('UPDATE documents SET classification = ? WHERE path = ?').run(value, path);
   }
 
+  pendingEmbeddingCount(): number {
+    const row = this.db.prepare('SELECT COUNT(*) AS count FROM chunks WHERE embedding IS NULL').get() as { count: number };
+    return row.count;
+  }
+
   pendingEmbeddings(limit: number): { chunkId: number; text: string }[] {
     const rows = this.db.prepare('SELECT id AS chunkId, text FROM chunks WHERE embedding IS NULL ORDER BY id LIMIT ?').all(limit);
     return rows as { chunkId: number; text: string }[];
