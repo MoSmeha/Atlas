@@ -26,13 +26,15 @@ describe('ToolOutputLog', () => {
       { code: 'A1', amount: 2_000_000 },
       { code: 'B2', amount: 2_000_000 },
     ]);
+    expect(log.calls).toEqual(['lookup', 'lookup']);
   });
 
-  it('keeps nothing for a failed call and lets the error through', async () => {
+  it('keeps no output for a failed call, still names it, and lets the error through', async () => {
     const log = new ToolOutputLog();
     const [watched] = log.watch([lookup]);
     await expect(watched?.run({ code: 'BAD' }, makeToolContext())).rejects.toBeInstanceOf(ToolError);
     expect(log.outputs).toEqual([]);
+    expect(log.calls).toEqual(['lookup']);
   });
 
   it('keeps the name, description and parameters of each tool', () => {

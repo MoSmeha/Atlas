@@ -25,7 +25,8 @@ export const exportTable = defineTool({
         exportsDir: context.exportsDir,
       });
       return {
-        output: { file: file.fileName, path: file.path },
+        // The file name only: the answer names the file, never its folder on this machine.
+        output: { file: file.fileName },
         summary: `Exported ${args.result_id} to ${basename(context.exportsDir)}/${file.fileName}`,
       };
     } catch (error) {

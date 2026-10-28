@@ -23,8 +23,9 @@ export const submitAnswerParameters = z.strictObject({
   markdown: z
     .string()
     .describe(
-      'The answer the user reads, in Markdown, short and direct. Every number in it must appear in a tool output or the question. ' +
-        'Never type a table: attach one with result_id.',
+      'The answer the user reads, in Markdown: the direct answer first, short and in plain words. Every number in it must appear ' +
+        'in a tool output or the question. Never type a table: attach one with result_id. Never write sources or file paths ' +
+        'in it: sources go in sources and are listed under the answer.',
     ),
   result_id: z
     .string()
