@@ -7,4 +7,5 @@ export * from './schemas/chat';
 export * from './schemas/folder';
 export * from './schemas/sheets';
 export * from './schemas/exports';
+export * from './schemas/health';
 export * from './routes';
