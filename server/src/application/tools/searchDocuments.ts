@@ -3,7 +3,8 @@ import type { DocumentSummary } from '@atlas/shared';
 import { reciprocalRankFusion } from '../../domain/ranking';
 import { snippetAround } from '../../domain/snippet';
 import { AppError } from '../errors';
-import type { DocumentIndex, SearchHit } from '../ports/DocumentIndex';
+import type { SearchHit } from '../ports/DocumentIndex';
+import { findDocument } from './findDocument';
 import { defineTool, ToolError, type ToolContext } from './Tool';
 
 const DEFAULT_LIMIT = 8;
@@ -65,7 +66,10 @@ export const searchDocuments = defineTool({
   async run(args, context) {
     const query = args.query.trim();
     if (query === '') throw new ToolError('The query is empty. Give the words or question to look for.');
-    const scope = args.document === null ? null : findDocument(context.index, args.document);
+    const scope =
+      args.document === null
+        ? null
+        : findDocument(context.index, args.document, 'Use one of these names, or null to search every document.');
     const limit = args.limit ?? DEFAULT_LIMIT;
     const options = { document: scope?.path ?? null, limit: limit * CANDIDATES_PER_PASSAGE };
 
@@ -91,20 +95,6 @@ export const searchDocuments = defineTool({
     return { output, summary: summarize(passages, scope, semantic.unavailable !== null) };
   },
 });
-
-function findDocument(index: DocumentIndex, name: string): DocumentSummary {
-  const found = index.find(name.trim());
-  if (found) return found;
-  const loaded = index
-    .documents()
-    .map((doc) => doc.path)
-    .toSorted((a, b) => a.localeCompare(b));
-  if (loaded.length === 0) throw new ToolError(`No loaded document matches "${name}": no documents are loaded.`);
-  throw new ToolError(
-    `No loaded document matches "${name}". Loaded documents: ${loaded.join(', ')}. ` +
-      'Use one of these names, or null to search every document.',
-  );
-}
 
 /** Embeds the query and runs vector search; on any failure other than a stop, reports why instead. */
 async function semanticSearch(
