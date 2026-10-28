@@ -1,14 +1,19 @@
-import { type Script, type ScriptContext, listStep, unreadable } from './script';
+import { type Script, type ScriptContext, listStep, toolInput, unreadable } from './script';
 
 const contract = '01 Contract/Contract_Agreement_RUH-NKT.pdf';
 const spec = '03 Specifications/Technical_Specification_Div03_Concrete.pdf';
 
 function searchStep(query: string, found: string) {
-  return { name: 'search_documents', inputSummary: `"${query}"`, resultSummary: found, durationMs: 340 };
+  return { name: 'search_documents', inputSummary: toolInput({ query, document: null, limit: null }), resultSummary: found, durationMs: 340 };
 }
 
 function readStep(path: string, page: number) {
-  return { name: 'read_pages', inputSummary: `${path.split('/').pop()}, page ${page}`, resultSummary: '1 page', durationMs: 65 };
+  return {
+    name: 'read_pages',
+    inputSummary: toolInput({ document: path, from: page, to: page }),
+    resultSummary: `Read page ${page} of ${path}`,
+    durationMs: 65,
+  };
 }
 
 const textTokens = { input: 14_820, cached: 9_216, output: 610, reasoning: 256 };

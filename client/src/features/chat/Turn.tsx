@@ -6,6 +6,7 @@ import { AnswerNotice } from './AnswerNotice';
 import { AnswerWarnings } from './AnswerWarnings';
 import { PendingLine } from './PendingLine';
 import { StoppedNote } from './StoppedNote';
+import { Trace } from './Trace';
 import { isArabicText } from './arabicText';
 import type { Turn as ChatTurn } from './chatReducer';
 import classes from './Turn.module.css';
@@ -20,7 +21,7 @@ const settleTiming = { animationDuration: `${motion.durationMs}ms`, animationTim
 
 /**
  * One question and its answer: the question as a heading-weight line, then the streamed answer,
- * then the parts that arrive with the finished answer.
+ * then the parts that arrive with the finished answer, and last "How I found this".
  */
 export function Turn({ turn, onRetry }: TurnProps) {
   const { answer, status } = turn;
@@ -74,7 +75,7 @@ export function Turn({ turn, onRetry }: TurnProps) {
         </Stack>
       )}
 
-      {/* Slot (feature/client-trace): collapsed "How I found this" from turn.steps, shown while streaming too. */}
+      <Trace steps={turn.steps} streaming={streaming} durationMs={turn.usage?.durationMs ?? null} />
     </Stack>
   );
 }
