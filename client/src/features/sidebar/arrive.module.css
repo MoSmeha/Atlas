@@ -1,0 +1,17 @@
+/* A finished part settling in: the motion in theme.ts (180ms, exponential ease-out). */
+.arrive {
+  animation: arrive 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrive {
+    animation: none;
+  }
+}

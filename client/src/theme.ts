@@ -260,8 +260,8 @@ export const theme = createTheme({
 
 /**
  * Light-scheme surface tokens on top of Mantine's defaults: near-white page ground, readable
- * dimmed and placeholder text (at least 4.5:1), and neutral light badges that stay visible
- * on the cooler sidebar.
+ * dimmed and placeholder text (at least 4.5:1), neutral light badges that stay visible on the
+ * cooler sidebar, and warning and error badges drawn as shade 9 on shade 1.
  */
 export const cssVariablesResolver: CSSVariablesResolver = () => ({
   variables: {},
@@ -274,6 +274,12 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--mantine-color-gray-light': 'var(--mantine-color-gray-2)',
     '--mantine-color-gray-light-hover': 'var(--mantine-color-gray-3)',
     '--mantine-color-gray-light-color': 'var(--mantine-color-gray-8)',
+    '--mantine-color-yellow-light': 'var(--mantine-color-yellow-1)',
+    '--mantine-color-yellow-light-hover': 'var(--mantine-color-yellow-2)',
+    '--mantine-color-yellow-light-color': 'var(--mantine-color-yellow-9)',
+    '--mantine-color-red-light': 'var(--mantine-color-red-1)',
+    '--mantine-color-red-light-hover': 'var(--mantine-color-red-2)',
+    '--mantine-color-red-light-color': 'var(--mantine-color-red-9)',
   },
   dark: {},
 });

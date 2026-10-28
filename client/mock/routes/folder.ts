@@ -14,7 +14,8 @@ export const folderRoutes: Route[] = [
     if (!parsed.success) return sendError(res, 'invalid_request', 'Type the path of a folder to load.');
     const { path } = parsed.data;
     if (MISSING.test(path)) return sendError(res, 'folder_not_found', `Folder not found: ${path}`);
-    if (EMPTY.test(path)) return sendError(res, 'folder_empty', `The folder ${path} is empty.`);
+    // Same wording as the real server's errors.folderEmpty, with a few other files skipped.
+    if (EMPTY.test(path)) return sendError(res, 'folder_empty', `No PDF or Excel files in ${path} (2 other files skipped).`);
     sendJson(res, 200, state.workspace.load(path));
   }),
 

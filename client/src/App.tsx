@@ -1,6 +1,8 @@
 import { AppShell } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { useIndexEvents } from './api/useIndexEvents';
 import { ChatThread } from './features/chat/ChatThread';
+import { Sidebar } from './features/sidebar/Sidebar';
 import { SlotPlaceholder } from './shell/SlotPlaceholder';
 import { TopBar } from './shell/TopBar';
 import { shellLayout } from './shell/layout';
@@ -8,6 +10,7 @@ import { shellLayout } from './shell/layout';
 /** The app frame: top bar, document sidebar, and the centred conversation column. */
 export function App() {
   const [navOpened, { toggle: toggleNav }] = useDisclosure(false);
+  const indexEvents = useIndexEvents();
 
   return (
     <AppShell
@@ -23,11 +26,7 @@ export function App() {
       </AppShell.Header>
 
       <AppShell.Navbar p="md">
-        <SlotPlaceholder
-          label="Folder path, dropzone and document register"
-          owner="feature/client-sidebar"
-          grow
-        />
+        <Sidebar activity={indexEvents.activity} />
       </AppShell.Navbar>
 
       <AppShell.Main>
