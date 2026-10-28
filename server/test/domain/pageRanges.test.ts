@@ -32,12 +32,16 @@ describe('describePages', () => {
     expect(describePages([3, 3])).toBe('page 3');
   });
 
-  it('names a run of pages as a range', () => {
+  it('names a run of three or more pages as a range', () => {
     expect(describePages([5, 3, 4])).toBe('pages 3 to 5');
+  });
+
+  it('names two neighbouring pages one by one', () => {
+    expect(describePages([3, 4])).toBe('pages 3 and 4');
   });
 
   it('joins ranges and single pages with commas and "and"', () => {
     expect(describePages([2, 4])).toBe('pages 2 and 4');
-    expect(describePages([1, 2, 3, 7, 9, 10])).toBe('pages 1 to 3, 7 and 9 to 10');
+    expect(describePages([1, 2, 3, 7, 9, 10])).toBe('pages 1 to 3, 7, 9 and 10');
   });
 });
