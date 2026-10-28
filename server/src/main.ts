@@ -3,6 +3,8 @@ import { pathToFileURL } from 'node:url';
 import { buildApp, type ApiDeps } from './api/app';
 import { AskQuestion } from './application/AskQuestion';
 import { ExportResult } from './application/ExportResult';
+import { classificationStep } from './application/indexing/classificationStep';
+import { ClassifyDocument } from './application/indexing/ClassifyDocument';
 import { IndexFolder } from './application/indexing/IndexFolder';
 import type { Lineup } from './application/models/pickLineup';
 import type { Clock } from './application/ports/Clock';
@@ -64,6 +66,7 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
   const embeddings = openAi === null ? null : new OpenAiEmbeddingClient(openAi, modelConfig.embedding);
   const lineup = await resolveLineup(modelClient, modelConfig);
   const workspace = new Workspace();
+  const classifier = modelClient === null ? null : new ClassifyDocument(modelClient, lineup.small.id);
   const indexFolder = new IndexFolder({
     fs,
     readers: [new MupdfReader(), new ExcelJsReader()],
@@ -73,6 +76,7 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     logger,
     clock,
     maxFileBytes: settings.maxFileBytes,
+    steps: [classificationStep({ classifier, logger, clock })],
   });
   const askQuestion = new AskQuestion({
     workspace,
