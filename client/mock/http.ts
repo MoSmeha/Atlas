@@ -56,6 +56,9 @@ export function openSse<T>(res: ServerResponse): SseChannel<T> {
     connection: 'keep-alive',
     'x-accel-buffering': 'no',
   });
+  // Node, and the Vite proxy after it, hold the headers until the first body byte. An opening
+  // comment sends them at once, so fetch() resolves as soon as the stream opens.
+  res.write(': open\n\n');
   let open = true;
   const heartbeat = setInterval(() => open && res.write(': ping\n\n'), 15_000);
   res.on('close', () => {

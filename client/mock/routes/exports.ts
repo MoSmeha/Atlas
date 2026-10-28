@@ -47,5 +47,6 @@ function csvCell(value: CellValue): string {
 }
 
 function slug(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'atlas-result';
+  const words = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 60);
+  return words.replace(/^-+|-+$/g, '') || 'atlas-result';
 }
