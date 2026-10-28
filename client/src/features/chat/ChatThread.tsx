@@ -9,10 +9,12 @@ import { Turn } from './Turn';
 import { askReadiness } from './askReadiness';
 import { useChat } from './useChat';
 import { useFollowScroll } from './useFollowScroll';
+import { useOpenedSource } from './useOpenedSource';
 
 /**
  * The conversation column: the empty state, then one turn per question, with the composer
  * docked at the bottom. The page scrolls to each new turn and follows its answer as it streams.
+ * Clicking an answer's source marks it open; the viewer (feature/client-viewer) shows `opened`.
  */
 export function ChatThread() {
   const { turns, streaming, ask, retry, stop } = useChat();
@@ -20,6 +22,7 @@ export function ChatThread() {
   const health = useHealth();
   const thread = useRef<HTMLDivElement>(null);
   useFollowScroll(thread, turns.at(-1)?.id ?? null, streaming);
+  const { opened, open: openSource } = useOpenedSource(turns);
 
   const readiness = askReadiness({
     status: folder.data,
@@ -42,7 +45,12 @@ export function ChatThread() {
           {turns.map((turn, index) => (
             <Fragment key={turn.id}>
               {index > 0 && <Divider color="gray.2" />}
-              <Turn turn={turn} onRetry={retry} />
+              <Turn
+                turn={turn}
+                onRetry={retry}
+                openedSource={opened?.turnId === turn.id ? opened.source : null}
+                onOpenSource={(source) => openSource(turn.id, source)}
+              />
             </Fragment>
           ))}
         </Stack>

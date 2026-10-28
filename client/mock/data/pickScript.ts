@@ -1,5 +1,5 @@
 import type { Script, ScriptContext } from './script';
-import { itemsOverAnswer, quotesAnswer, revisionsAnswer } from './tableAnswers';
+import { itemsOverAnswer, ledgerAnswer, quotesAnswer, revisionsAnswer } from './tableAnswers';
 import {
   concreteCoverAnswer,
   delayDamagesAnswer,
@@ -13,8 +13,9 @@ const ARABIC = /[؀-ۿ]/;
 
 /**
  * Picks the canned run for a question by its words. Try "retention", "delay damages", "concrete cover",
- * "items over SAR 1 million", "what changed between revisions", "quotations per currency", any Arabic
- * question, "slow" (to test Stop), "fail" (a rate-limit error), or anything else for "not found".
+ * "items over SAR 1 million", "ledger debits over SAR 240,000", "what changed between revisions",
+ * "quotations per currency", any Arabic question, "slow" (to test Stop), "fail" (a rate-limit error),
+ * or anything else for "not found".
  */
 export function pickScript(context: ScriptContext): Script {
   const q = context.question.toLowerCase();
@@ -25,6 +26,7 @@ export function pickScript(context: ScriptContext): Script {
   if (/delay|damages|penalt/.test(q)) return delayDamagesAnswer('en');
   if (/cover|specification/.test(q)) return concreteCoverAnswer();
   if (/chang|compare|revision|rev ?2/.test(q)) return revisionsAnswer(context);
+  if (/ledger|posting|debit|invoice/.test(q)) return ledgerAnswer(context);
   if (/quot|currenc|supplier/.test(q)) return quotesAnswer(context);
   if (/over|above|more than|greater|exceed|boq|bill|item/.test(q)) return itemsOverAnswer(context);
   return notFoundAnswer(context);

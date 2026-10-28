@@ -42,6 +42,8 @@ const programme: [string, string, string, string, number][] = [
   ['M1110', 'Milestone: substantial completion', '2028-07-31', '2028-07-31', 0],
 ];
 
+export const ledgerPath = '05 Commercial/General_Ledger_FY2026.xlsx';
+
 const ledgerAccounts = ['5100 Concrete', '5110 Reinforcement', '5200 Formwork', '5300 Labour', '5400 Plant hire', '6100 Site overheads'];
 
 /** Every cell of a sheet, top row first, as the viewer pages through it. Null for an unknown sheet. */
@@ -62,7 +64,7 @@ export function sheetGrid(path: string, sheet: string): CellValue[][] | null {
       ...quotes.map((q) => [q.supplier, q.item, q.currency, q.amount]),
     ];
   }
-  if (path === '05 Commercial/General_Ledger_FY2026.xlsx' && sheet === 'Ledger') return ledgerGrid();
+  if (path === ledgerPath && sheet === 'Ledger') return ledgerGrid();
   if (path === '02 BOQ/BOQ_Template_Empty.xlsx' && sheet === 'Sheet1') return [];
   return null;
 }
@@ -117,11 +119,18 @@ function ledgerGrid(): CellValue[][] {
       entry,
       day.toISOString().slice(0, 10),
       account,
-      `${isDebit ? 'Invoice' : 'Credit note'} ${String(40_000 + entry)}`,
+      ledgerDescription(entry, isDebit),
       isDebit ? amount : null,
       isDebit ? null : amount,
     ]);
   }
   ledger = rows;
   return rows;
+}
+
+/** "Invoice 40012" or "Credit note 40015"; every sixth posting is written in Arabic, as local suppliers write them. */
+function ledgerDescription(entry: number, isDebit: boolean): string {
+  const number = String(40_000 + entry);
+  if (entry % 6 === 0) return `${isDebit ? 'فاتورة مورد' : 'إشعار دائن'} ${number}`;
+  return `${isDebit ? 'Invoice' : 'Credit note'} ${number}`;
 }

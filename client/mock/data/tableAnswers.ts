@@ -1,7 +1,7 @@
 import type { CellValue, ExcelSource } from '@atlas/shared';
 import { type Bill, FIRST_ITEM_ROW, billSheet, boqItems, boqPath, round2 } from './boq';
 import { type Script, type ScriptContext, listStep, sar, toolInput } from './script';
-import { quotes } from './sheets';
+import { ledgerPath, quotes, sheetGrid } from './sheets';
 
 const tableTokens = { input: 18_430, cached: 12_288, output: 940, reasoning: 512 };
 
@@ -146,6 +146,55 @@ export function quotesAnswer(context: ScriptContext): Script {
         language: 'en',
         markdown: `The quotations are in ${totals.size} currencies, so each is totalled on its own and they are not added together: ${listed}.`,
         sources: [{ kind: 'excel', document: '05 Commercial/Supplier_Quotations.xlsx', sheet: 'Quotes', rowFrom: first, rowTo: first + quotes.length - 1 }],
+        unreadableFiles: [],
+        warnings: [],
+      },
+    },
+  };
+}
+
+/**
+ * Ledger debits over a threshold. The query runs over all 10,000 postings and matches more rows
+ * than an answer carries, so the table shows the first rows and the export has them all.
+ */
+export function ledgerAnswer(context: ScriptContext): Script {
+  const threshold = thresholdIn(context.question) ?? 240_000;
+  const grid = sheetGrid(ledgerPath, 'Ledger') ?? [];
+  const matches: { cells: CellValue[]; row: number; debit: number }[] = [];
+  for (const [index, cells] of grid.entries()) {
+    const debit = cells[4];
+    if (index > 0 && typeof debit === 'number' && debit > threshold) matches.push({ cells, row: index + 1, debit });
+  }
+  matches.sort((a, b) => b.debit - a.debit);
+  const total = round2(matches.reduce((sum, posting) => sum + posting.debit, 0));
+  const largest = matches[0];
+  const sources: ExcelSource[] = [{ kind: 'excel', document: ledgerPath, sheet: 'Ledger', rowFrom: 2, rowTo: grid.length }];
+  if (largest) sources.push({ kind: 'excel', document: ledgerPath, sheet: 'Ledger', rowFrom: largest.row, rowTo: largest.row });
+  return {
+    steps: [
+      listStep(context.documents),
+      sqlStep(`SELECT entry_no, date, account, description, debit FROM general_ledger WHERE debit > ${threshold} ORDER BY debit DESC`, matches.length),
+      sqlStep(`SELECT COUNT(*), SUM(debit) FROM general_ledger WHERE debit > ${threshold}`, 1),
+    ],
+    draft: null,
+    chunkMs: 35,
+    tokens: tableTokens,
+    outcome: {
+      type: 'answer',
+      table: {
+        title: `Ledger debits over ${sar(threshold)}`,
+        columns: ['Entry', 'Date', 'Account', 'Description', 'Debit (SAR)'],
+        rows: matches.map((posting) => posting.cells.slice(0, 5)),
+        totalRows: matches.length,
+      },
+      answer: {
+        kind: 'answer',
+        language: 'en',
+        markdown:
+          `**${matches.length} of ${(grid.length - 1).toLocaleString('en-US')} postings** in General_Ledger_FY2026.xlsx ` +
+          `are debits over ${sar(threshold)}, together **${sar(total)}**.` +
+          (largest ? ` The largest is entry ${String(largest.cells[0])} at ${sar(largest.debit)}.` : ''),
+        sources,
         unreadableFiles: [],
         warnings: [],
       },

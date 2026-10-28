@@ -30,5 +30,6 @@ server.listen(port, '127.0.0.1', () => {
   console.log(`Atlas mock API listening on http://127.0.0.1:${port}`);
   console.log('Any folder path loads the canned project; paths with "missing" or "empty" fail.');
   console.log('Questions: retention, delay damages, concrete cover, items over SAR 1 million, what changed,');
-  console.log('quotations per currency, any Arabic question, "slow" to try Stop, "fail" for a rate limit.');
+  console.log('ledger debits over SAR 240,000, quotations per currency, any Arabic question, "slow" to try Stop,');
+  console.log('"fail" for a rate limit.');
 });
