@@ -1,0 +1,14 @@
+{
+  "$comment": "Model IDs and prices (USD per 1M tokens) from developers.openai.com/api/docs/pricing, read 2026-10-28. Within each tier the first model the account can see is used, so newest goes first.",
+  "catalog": [
+    { "id": "gpt-6-astra", "tier": "frontier", "label": "GPT-6 Astra", "inputPrice": 10, "cachedInputPrice": 1, "outputPrice": 50 },
+    { "id": "gpt-6.1-sol", "tier": "balanced", "label": "GPT-6.1 Sol", "inputPrice": 2, "cachedInputPrice": 0.1, "outputPrice": 10 },
+    { "id": "gpt-6-luna", "tier": "small", "label": "GPT-6 Luna", "inputPrice": 0.1, "cachedInputPrice": 0.01, "outputPrice": 0.5 },
+    { "id": "gpt-5.6-sol", "tier": "frontier", "label": "GPT-5.6 Sol", "inputPrice": 4, "cachedInputPrice": 0.4, "outputPrice": 20 },
+    { "id": "gpt-5.6-terra", "tier": "balanced", "label": "GPT-5.6 Terra", "inputPrice": 2, "cachedInputPrice": 0.2, "outputPrice": 12 },
+    { "id": "gpt-5.6-luna", "tier": "small", "label": "GPT-5.6 Luna", "inputPrice": 0.2, "cachedInputPrice": 0.02, "outputPrice": 1.2 }
+  ],
+  "answerTier": "frontier",
+  "reasoningEffort": "medium",
+  "embedding": { "id": "text-embedding-3-small", "price": 0.02, "dimensions": 1536 }
+}
