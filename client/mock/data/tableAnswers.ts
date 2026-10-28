@@ -1,12 +1,12 @@
 import type { CellValue, ExcelSource } from '@atlas/shared';
 import { type Bill, FIRST_ITEM_ROW, billSheet, boqItems, boqPath, round2 } from './boq';
-import { type Script, type ScriptContext, listStep, sar } from './script';
+import { type Script, type ScriptContext, listStep, sar, toolInput } from './script';
 import { quotes } from './sheets';
 
 const tableTokens = { input: 18_430, cached: 12_288, output: 940, reasoning: 512 };
 
 function sqlStep(sql: string, rows: number) {
-  return { name: 'query_tables', inputSummary: sql, resultSummary: `${rows} row${rows === 1 ? '' : 's'}`, durationMs: 22 };
+  return { name: 'query_tables', inputSummary: toolInput({ sql }), resultSummary: `${rows} row${rows === 1 ? '' : 's'}`, durationMs: 22 };
 }
 
 /** "Which items in Bill 2 are over SAR 500,000?" The threshold runs over every row, in code. */
@@ -85,7 +85,12 @@ export function revisionsAnswer(context: ScriptContext): Script {
   return {
     steps: [
       listStep(context.documents),
-      { name: 'compare_revisions', inputSummary: 'BOQ_Phase2_Rev2.xlsx against BOQ_Phase2_Rev3.xlsx', resultSummary: `${rows.length} changed lines`, durationMs: 140 },
+      {
+        name: 'compare_revisions',
+        inputSummary: toolInput({ document_a: boqPath('rev2'), document_b: boqPath('rev3') }),
+        resultSummary: `${rows.length} changed lines`,
+        durationMs: 140,
+      },
     ],
     draft: 'Revision 3 adds about SAR 2.4 million compared with Revision 2, mostly from',
     chunkMs: 35,

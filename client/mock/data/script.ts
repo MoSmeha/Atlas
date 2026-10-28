@@ -35,11 +35,23 @@ export interface ScriptContext {
   documents: DocumentSummary[];
 }
 
+const MAX_INPUT_CHARS = 140;
+
+/**
+ * Tool arguments as the real server summarises them for the trace: one JSON line without the null
+ * fields, cut to about 140 characters with "…". No arguments give an empty string.
+ */
+export function toolInput(args: Record<string, unknown>): string {
+  const line = JSON.stringify(Object.fromEntries(Object.entries(args).filter(([, value]) => value !== null)));
+  if (line === '{}') return '';
+  return line.length <= MAX_INPUT_CHARS ? line : `${line.slice(0, MAX_INPUT_CHARS - 1).trimEnd()}…`;
+}
+
 export function listStep(documents: DocumentSummary[]): ScriptStep {
   const readable = documents.filter((d) => d.status === 'ok').length;
   return {
     name: 'list_documents',
-    inputSummary: 'All documents',
+    inputSummary: toolInput({}),
     resultSummary: `${documents.length} files, ${readable} readable`,
     durationMs: 18,
   };
