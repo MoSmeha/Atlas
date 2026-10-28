@@ -3,6 +3,7 @@ import { Group, Loader, Stack, Text } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 import { IconBan, IconUpload } from '@tabler/icons-react';
 import { useUpload } from '../../api/useUpload';
+import { errorMessage } from '../errors/errorCopy';
 
 /** The file types Atlas reads, by MIME type and extension, so a file with an unknown type still matches by name. */
 const ACCEPT = {
@@ -22,7 +23,9 @@ export function UploadDrop() {
   const message =
     rejected.length > 0
       ? `Not added: ${rejected.join(', ')}. Atlas reads PDF and Excel files (.pdf, .xlsx, .xlsm).`
-      : (upload.error?.message ?? null);
+      : upload.error
+        ? errorMessage(upload.error)
+        : null;
 
   return (
     <Stack gap={6}>
