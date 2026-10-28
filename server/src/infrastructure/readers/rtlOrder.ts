@@ -7,6 +7,10 @@ const LATIN = /\p{Script=Latin}/u;
 const LETTER = /\p{L}/u;
 const MARK = /\p{M}/u;
 const SPACE = /\s/u;
+/** Arabic-Indic digits, both sets. */
+const ARABIC_DIGIT = /[٠-٩۰-۹]/u;
+/** Joins Arabic-Indic digits into one number: the Arabic decimal and thousands separators, and , . : / as in times and dates. */
+const NUMBER_JOINER = /[٫٬,.:/]/u;
 /** Points; positions closer than this are the same position. */
 const SAME = 0.01;
 
@@ -25,14 +29,37 @@ export function lineDirection(text: string, page: Direction): Direction {
 }
 
 /**
- * One line's characters in reading order. mupdf gives each Arabic word in logical order with two slips,
- * both undone here: the characters of one glyph (lam-alef, the rial ligature, a letter with its diacritic)
- * come out reversed, and on a right-to-left line the runs of Arabic and of Latin text or digits are listed
- * from left to right.
+ * One line's characters in reading order. mupdf gives each Arabic word in logical order with three slips,
+ * all undone here: the characters of one glyph (lam-alef, the rial ligature, a letter with its diacritic)
+ * come out reversed, numbers in Arabic-Indic digits come out from right to left, and on a right-to-left line
+ * the runs of Arabic and of Latin text or digits are listed from left to right.
  */
 export function logicalOrder(chars: readonly RawChar[], direction: Direction): RawChar[] {
-  const ordered = unreverseClusters(chars);
+  const ordered = unreverseArabicNumbers(unreverseClusters(chars));
   return direction === 'rtl' ? orderRunsRightToLeft(ordered) : ordered;
+}
+
+/**
+ * mupdf marks Arabic-Indic digits right-to-left like the letters around them and lists them from right to left,
+ * so "٢٬٣٥٠٬٠٠٠" comes out as "٠٠٠٬٠٥٣٬٢" and "١٠:٣٠" as "٠٣:٠١". A number reads from left to right, so each
+ * such run is turned around.
+ */
+function unreverseArabicNumbers(chars: RawChar[]): RawChar[] {
+  const out: RawChar[] = [];
+  let index = 0;
+  while (index < chars.length) {
+    if (!isArabicDigit(chars[index])) {
+      out.push(chars[index]!);
+      index += 1;
+      continue;
+    }
+    let end = index + 1;
+    while (isArabicDigit(chars[end]) || (isJoiner(chars[end]) && isArabicDigit(chars[end + 1]))) end += 1;
+    const run = chars.slice(index, end);
+    out.push(...(run[0]!.x0 > run.at(-1)!.x0 ? run.reverse() : run));
+    index = end;
+  }
+  return out;
 }
 
 /**
@@ -100,6 +127,14 @@ function trimSpaces(run: RawChar[]): RawChar[] {
 
 function center(run: RawChar[]): number {
   return (Math.min(...run.map((char) => char.x0)) + Math.max(...run.map((char) => char.x1))) / 2;
+}
+
+function isArabicDigit(char: RawChar | undefined): boolean {
+  return char !== undefined && char.rtl && ARABIC_DIGIT.test(char.c);
+}
+
+function isJoiner(char: RawChar | undefined): boolean {
+  return char !== undefined && char.rtl && NUMBER_JOINER.test(char.c);
 }
 
 function isZeroWidth(char: RawChar): boolean {
