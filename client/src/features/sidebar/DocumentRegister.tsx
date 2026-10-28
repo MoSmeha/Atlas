@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Button, Group, ScrollArea, Stack, Text } from '@mantine/core';
 import { useFolderStatus } from '../../api/useFolderStatus';
+import { errorMessage } from '../errors/errorCopy';
 import { DocumentRow } from './DocumentRow';
 import { isIndexing } from './indexingNow';
 import { RegisterEmpty } from './RegisterEmpty';
@@ -23,7 +24,7 @@ export function DocumentRegister() {
     body = (
       <Stack gap="xs" align="flex-start" py="xs">
         <Text role="alert" fz="sm" c="var(--mantine-color-error)">
-          {status.error.message}
+          {errorMessage(status.error)}
         </Text>
         <Button variant="default" size="xs" loading={status.isFetching} onClick={() => void status.refetch()}>
           Try again
