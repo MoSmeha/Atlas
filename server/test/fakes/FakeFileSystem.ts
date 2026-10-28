@@ -1,5 +1,6 @@
 import { posix } from 'node:path';
 import type { FileEntry, FileSystem } from '../../src/application/ports/FileSystem';
+import { isIgnoredName } from '../../src/domain/fileTypes';
 
 interface FakeFile {
   data: Uint8Array;
@@ -29,7 +30,7 @@ export class FakeFileSystem implements FileSystem {
   async listFiles(root: string): Promise<FileEntry[]> {
     return [...this.files.keys()]
       .filter((path) => path.startsWith(`${root}/`))
-      .filter((path) => !posix.relative(root, path).split('/').some((part) => part.startsWith('.')))
+      .filter((path) => !posix.relative(root, path).split('/').some(isIgnoredName))
       .sort()
       .map((path) => this.entry(root, path));
   }
