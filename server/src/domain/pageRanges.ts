@@ -15,3 +15,11 @@ export function toPageRanges(pages: readonly number[]): PageRange[] {
   }
   return ranges;
 }
+
+/** Page numbers in plain words: "page 3", "pages 3 to 5", "pages 1 to 3 and 7". */
+export function describePages(pages: readonly number[]): string {
+  const parts = toPageRanges(pages).map(({ from, to }) => (from === to ? `${from}` : `${from} to ${to}`));
+  const last = parts.pop() ?? '';
+  const joined = parts.length === 0 ? last : `${parts.join(', ')} and ${last}`;
+  return `${new Set(pages).size === 1 ? 'page' : 'pages'} ${joined}`;
+}
