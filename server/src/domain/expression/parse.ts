@@ -39,9 +39,15 @@ const MAX_DEPTH = 50;
 const RESULT_ID = /^r\d+$/i;
 const ALLOWED = 'Use plain numbers, saved results such as r3.amount, and the functions sum, avg, min, max, count, round and abs.';
 
+/** The expression text with its syntax tree; spans in the tree point into `text`. */
+export interface ParsedExpression {
+  text: string;
+  root: Expr;
+}
+
 /** Parses arithmetic with + - * / ^ (right-associative), postfix %, unary minus, functions and result references. */
-export function parseExpression(text: string): Expr {
-  return new Parser(tokenize(text)).parse();
+export function parseExpression(text: string): ParsedExpression {
+  return { text, root: new Parser(tokenize(text)).parse() };
 }
 
 class Parser {
