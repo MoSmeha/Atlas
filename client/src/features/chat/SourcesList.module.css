@@ -7,7 +7,7 @@
 /* A quiet full-width row; its text lines up with the column edge, the hover ground bleeds past it. */
 .row {
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  grid-template-columns: 24px auto minmax(0, 1fr) auto;
   align-items: start;
   column-gap: var(--mantine-spacing-xs);
   width: calc(100% + 2 * var(--mantine-spacing-xs));
@@ -21,14 +21,14 @@
   transition: background-color 150ms ease-out;
 }
 
+/* One fixed width for 1 to 99, so the icons and names line up down the list. */
 .number {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
+  width: 24px;
   height: 18px;
   margin-top: 1px;
-  padding-inline: 4px;
   border-radius: var(--mantine-radius-xs);
   background-color: var(--mantine-color-gray-2);
   color: var(--mantine-color-gray-8);
@@ -62,6 +62,13 @@
   min-width: 0;
 }
 
+/* On a phone the place always sits under the name, so every row reads the same way. Mantine's xs breakpoint. */
+@media (max-width: 35.99375em) {
+  .line {
+    flex-direction: column;
+  }
+}
+
 .name {
   min-width: 0;
   max-width: 100%;
@@ -85,7 +92,7 @@
   margin-top: 2px;
   padding-inline-start: var(--mantine-spacing-xs);
   overflow: hidden;
-  border-inline-start: 2px solid var(--mantine-color-gray-3);
+  border-inline-start: 1px solid var(--mantine-color-gray-3);
   color: var(--mantine-color-gray-7);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;

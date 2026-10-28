@@ -17,8 +17,11 @@ export interface ResultColumn {
  */
 const UNGROUPED_LABEL = /(?:^|[^a-z])(?:year|code|id|no|ref|entry|row|page)(?:[^a-z]|$)/i;
 
-/** Columns whose decimals differ by more than this keep each number as written instead of padding. */
-const MAX_PADDED_DECIMALS = 2;
+/**
+ * An amount column with any decimals shows every value with this many: 40,096,972.5 reads
+ * 40,096,972.50 and a whole 138,283,555 beside it reads 138,283,555.00. Digits past it are never cut.
+ */
+const AMOUNT_DECIMALS = 2;
 
 /** The flag Atlas adds to every SQL table so sums can skip total rows; it means nothing on screen. Exports keep it. */
 const HIDDEN_COLUMNS = new Set(['_is_total']);
@@ -40,14 +43,16 @@ export function resultColumns(table: Pick<ResultTable, 'columns' | 'rows'>): Res
     const values = table.rows.map((row) => row[index] ?? null);
     if (HIDDEN_WHEN_EMPTY.has(key) && values.every((value) => value === null)) return [];
     const numbers = values.filter((value): value is number => typeof value === 'number');
-    const decimals = Math.max(0, ...numbers.map(fractionDigits));
+    const hasDecimals = numbers.some((value) => fractionDigits(value) > 0);
+    const group = !UNGROUPED_LABEL.test(name);
     return {
       index,
       label: columnLabel(name),
       numeric: numbers.length > 0 && values.every(isNumberOrEmpty),
       numbers: {
-        group: !UNGROUPED_LABEL.test(name),
-        fractionDigits: decimals <= MAX_PADDED_DECIMALS ? decimals : 0,
+        group,
+        // Whole-number amounts stay integers; codes and row numbers keep each number as written.
+        fractionDigits: group && hasDecimals ? AMOUNT_DECIMALS : 0,
       },
     };
   });
