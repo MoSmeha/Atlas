@@ -96,7 +96,7 @@ describe('AskQuestion', () => {
     expect(first?.tools.at(-1)?.name).toBe('submit_answer');
 
     const session = sessions.get('s1');
-    expect(session.turns).toEqual([{ question: 'Which items cost over 1,000,000?', answer: outcome.answer }]);
+    expect(session.turns).toEqual([{ question: 'Which items cost over 1,000,000?', answer: outcome.answer, resultIds: ['r1'] }]);
     expect(session.evidence.has(1000000)).toBe(true);
     expect(logger.questions).toEqual([
       expect.objectContaining({ sessionId: 's1', model: 'frontier-model', rounds: 2, answerKind: 'answer', error: null }),
@@ -134,6 +134,19 @@ describe('AskQuestion', () => {
     ]);
     expect(second.ok && second.answer.table?.resultId).toBe('r1');
     expect(second.ok && second.answer.warnings).toEqual([]);
+  });
+
+  it('tells the next question about results the answer did not attach', async () => {
+    const { model, question } = setup([
+      queryItems,
+      submits({ markdown: 'A1 is on row 5.', sources: [{ document: 'BOQ.xlsx', page: null, sheet: 'Bill 1', row_from: 5, row_to: 5, quote: null }] }),
+      submits({ markdown: 'Exported.', result_id: 'r1' }),
+    ]);
+    await question('Which items cost over 1,000,000?');
+    await question('Show that as a table.');
+
+    const replayed = model.requests[2]?.input[1];
+    expect(replayed).toMatchObject({ role: 'assistant', content: expect.stringContaining('Result r1 "Items over 1,000,000" (1 row, not shown to the user):') });
   });
 
   it('exports a result saved by an earlier question', async () => {

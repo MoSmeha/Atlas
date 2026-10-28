@@ -1,15 +1,25 @@
-import type { Answer, CellValue, ResultTable, Source } from '@atlas/shared';
+import type { CellValue, Source } from '@atlas/shared';
 import { sliceText } from '../../domain/text';
 import type { InputItem } from '../ports/ModelClient';
-import type { Session } from '../session/Session';
+import type { Session, Turn } from '../session/Session';
 
 /** Earlier turns the model sees with each question. */
 export const MEMORY_TURNS = 6;
-/** Rows of an earlier answer's table repeated to the model; the whole result stays usable by its id. */
+/** Rows of an earlier result repeated to the model; the whole result stays usable by its id. */
 export const MEMORY_ROWS = 5;
+/** Results of a turn that were not attached to its answer, repeated after the attached one, latest first kept. */
+export const MEMORY_OTHER_RESULTS = 3;
 const MAX_SOURCES = 10;
 const MAX_CELL_CHARS = 80;
 const MAX_ANSWER_CHARS = 4000;
+
+interface Rows {
+  id: string;
+  title: string | null;
+  columns: string[];
+  rows: CellValue[][];
+  totalRows: number;
+}
 
 /**
  * The input of a question's first turn: the chat's last MEMORY_TURNS turns, each as the user's question and the
@@ -18,32 +28,40 @@ const MAX_ANSWER_CHARS = 4000;
 export function conversationInput(session: Session, question: string): InputItem[] {
   const earlier = session.recentTurns(MEMORY_TURNS).flatMap((turn): InputItem[] => [
     { type: 'message', role: 'user', content: turn.question },
-    { type: 'message', role: 'assistant', content: describeAnswer(turn.answer) },
+    { type: 'message', role: 'assistant', content: describeTurn(turn, session) },
   ]);
   return [...earlier, { type: 'message', role: 'user', content: question }];
 }
 
 /**
- * An earlier answer as the model sees it again: the markdown, then the first rows of its table under the result
- * id, as in "Result r3 (first 5 of 42 rows):", then "Sources: ...".
+ * An earlier answer as the model sees it again: the markdown; the first rows of its table under the result id, as
+ * in "Result r3 (first 5 of 42 rows):"; the other results saved while answering, marked as not shown; then
+ * "Sources: ...".
  */
-export function describeAnswer(answer: Answer): string {
+export function describeTurn(turn: Turn, session: Session): string {
+  const { answer } = turn;
   const markdown = answer.markdown.trim();
   const parts = [markdown.length <= MAX_ANSWER_CHARS ? markdown : `${sliceText(markdown, MAX_ANSWER_CHARS - 1).trimEnd()}…`];
-  if (answer.table !== null) parts.push(describeResult(answer.table));
+  const attached = answer.table;
+  if (attached !== null) parts.push(describeResult({ ...attached, id: attached.resultId }, null));
+  const others = turn.resultIds
+    .filter((id) => id !== attached?.resultId)
+    .slice(-MEMORY_OTHER_RESULTS)
+    .flatMap((id) => session.result(id) ?? []);
+  for (const result of others) parts.push(describeResult({ ...result, totalRows: result.rows.length }, 'not shown to the user'));
   if (answer.sources.length > 0) parts.push(describeSources(answer.sources));
   return parts.join('\n\n');
 }
 
-function describeResult(table: ResultTable): string {
-  const title = table.title === null ? '' : ` "${cell(table.title)}"`;
-  const total = table.totalRows;
-  const shown = table.rows.slice(0, MEMORY_ROWS);
+function describeResult(result: Rows, note: string | null): string {
+  const title = result.title === null ? '' : ` "${cell(result.title)}"`;
+  const total = result.totalRows;
+  const shown = result.rows.slice(0, MEMORY_ROWS);
   const count =
     total === 0 ? 'no rows' : shown.length < total ? `first ${shown.length} of ${total} rows` : `${total} ${total === 1 ? 'row' : 'rows'}`;
-  const heading = `Result ${table.resultId}${title} (${count})`;
+  const heading = `Result ${result.id}${title} (${count}${note === null ? '' : `, ${note}`})`;
   if (shown.length === 0) return `${heading}.`;
-  const lines = [table.columns.map(cell), ...shown.map((row) => row.map(cell))].map((cells) => cells.join(' | '));
+  const lines = [result.columns.map(cell), ...shown.map((row) => row.map(cell))].map((cells) => cells.join(' | '));
   return [`${heading}:`, ...lines].join('\n');
 }
 

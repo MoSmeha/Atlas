@@ -90,6 +90,7 @@ export class AskQuestion {
       meter: this.deps.modelClient === null ? null : new UsageMeter(this.deps.modelClient),
     };
 
+    const earlierResults = question.session.resultIds().length;
     let run: AgentRun<Answer>;
     try {
       run = await this.run(question, input);
@@ -102,7 +103,8 @@ export class AskQuestion {
     }
 
     const usage = this.usage(question, startedAt);
-    question.session.addTurn({ question: input.question, answer: run.value }, usage);
+    const resultIds = question.session.resultIds().slice(earlierResults);
+    question.session.addTurn({ question: input.question, answer: run.value, resultIds }, usage);
     this.log(question, input, usage, { rounds: run.rounds, answerKind: run.value.kind, error: null });
     input.onEvent({ type: 'answer', answer: run.value, usage });
     return { ok: true, answer: run.value, usage };
