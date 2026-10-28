@@ -1,0 +1,40 @@
+/* One hairline frame around the rows; the title, export and row count sit outside it. */
+.frame {
+  overflow: hidden;
+  border: 1px solid var(--mantine-color-gray-3);
+  border-radius: var(--mantine-radius-md);
+  background-color: var(--mantine-color-white);
+}
+
+/* The sticky header keeps an opaque ground so rows never show through it while scrolling.
+   Long labels wrap onto a second line rather than pushing the table sideways. */
+.head th {
+  background-color: var(--mantine-color-gray-0);
+  vertical-align: bottom;
+  text-wrap: balance;
+}
+
+.frame .number {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* break-word, not anywhere: it keeps whole words in the column width the browser works out. */
+.text {
+  overflow-wrap: break-word;
+}
+
+/* On a narrow screen a long description keeps a readable width and the table scrolls sideways instead. */
+.frame .text {
+  min-width: 10rem;
+}
+
+/* Codes, units and short labels stay on one line. */
+.short {
+  white-space: nowrap;
+}
+
+.empty {
+  color: var(--mantine-color-gray-5);
+}
