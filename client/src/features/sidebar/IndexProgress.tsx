@@ -36,7 +36,7 @@ export function IndexProgress({ activity }: { activity: IndexActivity | null }) 
             transitionDuration={motion.durationMs}
             aria-label={`${shown.label}, step ${shown.step} of ${INDEX_STEP_COUNT}`}
           />
-          <Text fz="xs" c="dimmed" truncate="end" dir="auto" className="tabular-nums">
+          <Text fz="xs" c="dimmed" truncate="end" className="tabular-nums">
             {shown.message}
           </Text>
         </Stack>

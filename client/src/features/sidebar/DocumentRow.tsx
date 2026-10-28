@@ -16,7 +16,7 @@ export function DocumentRow({ document }: { document: DocumentSummary }) {
       <FileTypeIcon kind={document.kind} />
       <Stack gap={2} flex={1} miw={0}>
         <Tooltip label={document.path}>
-          <Text fz="sm" lh="xs" truncate="end" dir="auto">
+          <Text fz="sm" lh="xs" truncate="end">
             {document.name}
           </Text>
         </Tooltip>

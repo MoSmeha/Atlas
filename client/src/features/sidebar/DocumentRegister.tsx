@@ -47,7 +47,7 @@ export function DocumentRegister() {
   }
 
   return (
-    <Stack gap={4} flex={1} mih={0}>
+    <Stack gap={4} flex={1} mih={0} miw={0}>
       <Group justify="space-between" gap="xs" wrap="nowrap">
         <Text component="h2" fz="sm" fw={600} m={0}>
           Documents
@@ -58,7 +58,7 @@ export function DocumentRegister() {
           </Text>
         )}
       </Group>
-      <ScrollArea flex={1} mih={0} mx="calc(var(--mantine-spacing-md) * -1)" px="md">
+      <ScrollArea flex={1} mih={0} mx="calc(var(--mantine-spacing-md) * -1)" px="md" scrollbars="y">
         {body}
       </ScrollArea>
     </Stack>

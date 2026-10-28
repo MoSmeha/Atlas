@@ -39,7 +39,7 @@ export function SkippedLine() {
             <Group component="li" key={document.id} gap="xs" wrap="nowrap" align="flex-start">
               <FileTypeIcon kind={document.kind} size={16} />
               <Stack gap={2} miw={0}>
-                <Text fz="sm" lh="xs" dir="auto" style={{ overflowWrap: 'anywhere' }}>
+                <Text fz="sm" lh="xs" style={{ overflowWrap: 'anywhere' }}>
                   {document.name}
                 </Text>
                 <Text fz="xs" c="dimmed">
