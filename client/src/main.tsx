@@ -9,6 +9,7 @@ import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { App } from './App';
+import { ChatProvider } from './features/chat/ChatProvider';
 import { queryClient } from './queryClient';
 import { cssVariablesResolver, theme } from './theme';
 
@@ -25,7 +26,9 @@ createRoot(rootElement).render(
     >
       <Notifications position="bottom-right" limit={3} />
       <QueryClientProvider client={queryClient}>
-        <App />
+        <ChatProvider>
+          <App />
+        </ChatProvider>
       </QueryClientProvider>
     </MantineProvider>
   </StrictMode>,

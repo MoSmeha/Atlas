@@ -1,6 +1,6 @@
 import { AppShell } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { MainColumn } from './shell/MainColumn';
+import { ChatThread } from './features/chat/ChatThread';
 import { SlotPlaceholder } from './shell/SlotPlaceholder';
 import { TopBar } from './shell/TopBar';
 import { shellLayout } from './shell/layout';
@@ -31,9 +31,7 @@ export function App() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <MainColumn composer={<SlotPlaceholder label="Question box" owner="feature/client-chat" />}>
-          <SlotPlaceholder label="Suggested questions, then answers" owner="feature/client-chat" grow />
-        </MainColumn>
+        <ChatThread />
       </AppShell.Main>
     </AppShell>
   );
