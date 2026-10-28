@@ -18,6 +18,8 @@ export interface SavedResult {
 export interface Turn {
   question: string;
   answer: Answer;
+  /** Ids of the results the tools saved while answering, in order, attached to the answer or not. */
+  resultIds: string[];
 }
 
 /** One chat: its turns, its saved results and its spend. Lives in memory for the server's lifetime. */
@@ -44,6 +46,11 @@ export class Session {
 
   result(id: string): SavedResult | null {
     return this.results.get(id) ?? null;
+  }
+
+  /** Ids of every saved result, oldest first. */
+  resultIds(): string[] {
+    return [...this.results.keys()];
   }
 
   addTurn(turn: Turn, usage: Usage): void {
