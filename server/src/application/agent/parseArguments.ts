@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { agentMessages } from './agentMessages';
 
 export type ParsedArguments =
-  | { ok: true; args: unknown; json: unknown }
+  | { ok: true; args: Record<string, unknown>; json: unknown }
   | {
       ok: false;
       /** Sent back to the model as the call's output: what is wrong, plus the input it sent, to fix. */
