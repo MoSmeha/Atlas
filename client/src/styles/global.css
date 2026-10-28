@@ -1,0 +1,46 @@
+/* Browser surfaces Mantine does not draw. Zero-specificity selectors so Mantine components always win. */
+
+:where(html) {
+  color-scheme: light;
+  background-color: var(--mantine-color-body);
+}
+
+::selection {
+  background-color: var(--mantine-color-ink-2);
+  color: var(--mantine-color-ink-9);
+}
+
+:where(input, textarea, [contenteditable='true']) {
+  caret-color: var(--mantine-primary-color-filled);
+}
+
+:where(*) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mantine-color-gray-4) transparent;
+}
+
+:where(:focus-visible) {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
+}
+
+:where(a) {
+  color: var(--mantine-color-anchor);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+:where(mark) {
+  background-color: var(--mantine-color-ink-1);
+  color: inherit;
+  border-radius: var(--mantine-radius-xs);
+}
+
+:where(li)::marker {
+  color: var(--mantine-color-dimmed);
+}
+
+/* Figures in tables, totals and usage line up digit under digit. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

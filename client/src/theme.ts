@@ -1,4 +1,22 @@
-import { createTheme, rem, type CSSVariablesResolver, type MantineColorsTuple } from '@mantine/core';
+import {
+  ActionIcon,
+  AppShell,
+  Badge,
+  Button,
+  Combobox,
+  createTheme,
+  Menu,
+  Modal,
+  Notification,
+  Popover,
+  rem,
+  ScrollArea,
+  Table,
+  Title,
+  Tooltip,
+  type CSSVariablesResolver,
+  type MantineColorsTuple,
+} from '@mantine/core';
 
 /** Deep ink blue, the only brand hue. Shade 7 is the primary; OKLCH ramp at hue 260 to 265. */
 const ink: MantineColorsTuple = [
@@ -164,6 +182,72 @@ export const theme = createTheme({
   },
 
   other: { motion },
+
+  components: {
+    AppShell: AppShell.extend({
+      defaultProps: { transitionDuration: motion.durationMs, transitionTimingFunction: motion.easing },
+      styles: {
+        header: { backgroundColor: 'var(--mantine-color-gray-1)' },
+        navbar: { backgroundColor: 'var(--mantine-color-gray-1)' },
+      },
+    }),
+    // One badge size: 12px sentence-case label on a 20px chip. Neutral unless a status earns colour.
+    Badge: Badge.extend({
+      defaultProps: { variant: 'light', color: 'gray', radius: 'sm' },
+      vars: () => ({
+        root: {
+          '--badge-height': rem(20),
+          '--badge-fz': 'var(--mantine-font-size-xs)',
+          '--badge-padding-x': rem(6),
+        },
+      }),
+      styles: { root: { textTransform: 'none', letterSpacing: 0, fontWeight: 600 } },
+    }),
+    Button: Button.extend({
+      defaultProps: { size: 'sm', loaderProps: { type: 'dots' } },
+    }),
+    ActionIcon: ActionIcon.extend({
+      defaultProps: { variant: 'subtle', color: 'gray', size: 'lg' },
+    }),
+    Table: Table.extend({
+      defaultProps: {
+        fz: 'sm',
+        verticalSpacing: 'xs',
+        horizontalSpacing: 'sm',
+        highlightOnHover: true,
+        tabularNums: true,
+      },
+      styles: {
+        th: { color: 'var(--mantine-color-dimmed)', fontWeight: 600, whiteSpace: 'nowrap' },
+      },
+    }),
+    Tooltip: Tooltip.extend({
+      defaultProps: {
+        openDelay: 400,
+        multiline: true,
+        maw: rem(320),
+        fz: 'xs',
+        transitionProps: { transition: 'fade', duration: 150 },
+      },
+    }),
+    Modal: Modal.extend({
+      defaultProps: {
+        centered: true,
+        radius: 'lg',
+        shadow: 'lg',
+        padding: 'lg',
+        overlayProps: { backgroundOpacity: 0.32 },
+        transitionProps: { transition: 'pop', duration: motion.durationMs, timingFunction: motion.easing },
+      },
+      styles: { title: { fontWeight: 600, fontSize: 'var(--mantine-font-size-lg)' } },
+    }),
+    Menu: Menu.extend({ defaultProps: { shadow: 'md', radius: 'md' } }),
+    Popover: Popover.extend({ defaultProps: { shadow: 'md', radius: 'md' } }),
+    Combobox: Combobox.extend({ defaultProps: { shadow: 'md', radius: 'md' } }),
+    Notification: Notification.extend({ defaultProps: { radius: 'md', withBorder: true } }),
+    ScrollArea: ScrollArea.extend({ defaultProps: { scrollbarSize: 8, type: 'hover' } }),
+    Title: Title.extend({ styles: { root: { letterSpacing: '-0.01em' } } }),
+  },
 });
 
 /**
