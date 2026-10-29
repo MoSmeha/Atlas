@@ -81,7 +81,7 @@ const STRATEGY: Advice[] = [
   },
   {
     tools: ['query_tables'],
-    text: 'Any number, list or total: query_tables. Its description lists every table and its columns.',
+    text: 'Any number, list or total: query_tables. Its description lists every table and its columns. The total of a BOQ, bill or ledger is the sum of its item rows in the bill sheets, never a summary sheet or a total line the document states; when a stated total differs from that sum, give both and say so.',
   },
   { tools: ['look_at_page'], text: 'Scanned pages and drawings have no text layer: look at them with look_at_page.' },
   {
