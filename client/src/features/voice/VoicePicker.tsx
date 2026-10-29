@@ -1,5 +1,7 @@
 import { Group, Select, Text } from '@mantine/core';
 import type { VoiceOption } from '@atlas/shared';
+import { useLanguage } from '../../i18n/useLanguage';
+import { callCopy } from './callCopy';
 import { voiceName } from './voiceChoice';
 
 interface VoicePickerProps {
@@ -14,25 +16,22 @@ interface VoicePickerProps {
   size?: 'sm' | 'md';
 }
 
-/** "Gulf · female": the dialect without the word Arabic, which the group heading already says. */
-function optionLabel(voice: VoiceOption): string {
-  const dialect = voice.language === 'ar' ? voice.label.replace(/ Arabic$/, '') : voice.label;
-  return `${dialect} · ${voice.gender}`;
-}
-
 /**
- * The call's voice, grouped by language, with each Arabic dialect's own name beside it. A call's voice is fixed when
- * it starts, so choosing another one mid-call reconnects in the new voice. While the server makes new voices, a
- * group's heading says how many of its voices are not ready yet.
+ * The call's voice, grouped by language. In English each Arabic dialect's own name sits beside it; in Arabic the
+ * option already is that name. A call's voice is fixed when it starts, so choosing another one mid-call reconnects in
+ * the new voice. While the server makes new voices, a group's heading says how many of its voices are not ready yet.
  */
 export function VoicePicker({ voices, preparing, voiceId, onChange, disabled, className, size = 'sm' }: VoicePickerProps) {
+  const { language } = useLanguage();
+  const copy = callCopy[language].picker;
   const byId = new Map(voices.map((voice) => [voice.id, voice]));
-  const group = (language: VoiceOption['language'], name: string) => {
-    const members = voices.filter((voice) => voice.language === language);
+  const group = (voiceLanguage: VoiceOption['language']) => {
+    const members = voices.filter((voice) => voice.language === voiceLanguage);
     const waiting = preparing ? members.filter((voice) => !voice.ready).length : 0;
+    const heading = copy.languages[voiceLanguage];
     return {
-      group: waiting === 0 ? name : `${name} · ${waiting} still preparing`,
-      items: members.map((voice) => ({ value: voice.id, label: optionLabel(voice) })),
+      group: waiting === 0 ? heading : copy.stillPreparing(heading, waiting),
+      items: members.map((voice) => ({ value: voice.id, label: copy.option(voice) })),
     };
   };
   const current = voiceId === null ? undefined : byId.get(voiceId);
@@ -41,8 +40,8 @@ export function VoicePicker({ voices, preparing, voiceId, onChange, disabled, cl
     <Select
       size={size}
       className={className}
-      aria-label={current === undefined ? 'Voice' : `Voice: ${voiceName(current)}`}
-      data={[group('en', 'English'), group('ar', 'Arabic')].filter((entry) => entry.items.length > 0)}
+      aria-label={current === undefined ? copy.label : copy.current(voiceName(current, language))}
+      data={[group('en'), group('ar')].filter((entry) => entry.items.length > 0)}
       value={voiceId}
       onChange={(value) => value !== null && onChange(value)}
       allowDeselect={false}
@@ -51,13 +50,13 @@ export function VoicePicker({ voices, preparing, voiceId, onChange, disabled, cl
       comboboxProps={{ position: 'top-start', width: 240 }}
       maxDropdownHeight={320}
       renderOption={({ option }) => {
-        const voice = byId.get(option.value);
+        const native = language === 'en' ? byId.get(option.value)?.nativeLabel : null;
         return (
           <Group gap="xs" justify="space-between" wrap="nowrap" w="100%">
             <Text fz="sm">{option.label}</Text>
-            {voice?.nativeLabel && (
+            {native && (
               <Text fz="sm" c="dimmed" dir="rtl" lang="ar">
-                {voice.nativeLabel}
+                {native}
               </Text>
             )}
           </Group>

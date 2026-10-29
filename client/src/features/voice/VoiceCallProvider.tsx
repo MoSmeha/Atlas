@@ -7,10 +7,12 @@ import { type LiveConnection, openLiveCall } from '../../api/liveCall';
 import { MicrophoneError } from '../../api/microphone';
 import { queryKeys } from '../../api/queryKeys';
 import { useVoices } from '../../api/useVoices';
+import type { Language } from '../../i18n/language';
+import { useLanguage } from '../../i18n/useLanguage';
 import { useSession } from '../../state/useSession';
 import { useChat } from '../chat/useChat';
 import { errorMessage } from '../errors/errorCopy';
-import { endedMessage, microphoneMessage } from './callCopy';
+import { callCopy, endedMessage, microphoneMessage } from './callCopy';
 import { type CallOutcome, CallSession, type CallView } from './CallSession';
 import { VoiceCallContext, type VoiceCallValue, type VoiceNotice } from './VoiceCallContext';
 import { chooseVoice, rememberedVoice, rememberVoice } from './voiceChoice';
@@ -19,6 +21,12 @@ interface OpenCall {
   session: CallSession;
   sessionId: string;
   connection: LiveConnection | null;
+}
+
+/** A notice not yet put into words, so it reads in the interface language even if that changes while it shows. */
+interface PendingNotice {
+  tone: VoiceNotice['tone'];
+  text: (language: Language) => string;
 }
 
 const noCall = () => () => undefined;
@@ -36,9 +44,10 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
   const { sessionId } = useSession();
   const voices = useVoices();
   const queryClient = useQueryClient();
+  const { language } = useLanguage();
   const [picked, setPicked] = useState<string | null>(rememberedVoice);
   const [open, setOpen] = useState<OpenCall | null>(null);
-  const [notice, setNotice] = useState<VoiceNotice | null>(null);
+  const [notice, setNotice] = useState<PendingNotice | null>(null);
   const openRef = useRef<OpenCall | null>(null);
   const chatRef = useRef(chat);
 
@@ -106,8 +115,10 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
           setOpen(null);
         }
         void report(outcome, current.sessionId);
-        const message = endedMessage(session.snapshot().endReason, data.idleSeconds, data.maxCallMinutes);
-        if (message !== null) setNotice({ tone: 'info', text: message });
+        const { endReason } = session.snapshot();
+        const { idleSeconds, maxCallMinutes } = data;
+        const ended = (wording: Language) => endedMessage(endReason, idleSeconds, maxCallMinutes, wording);
+        if (ended('en') !== null) setNotice({ tone: 'info', text: (wording) => ended(wording) ?? '' });
       });
       let connection: LiveConnection;
       try {
@@ -121,10 +132,10 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
         void session.end('failed');
         setNotice({
           tone: 'error',
-          text:
+          text: (wording) =>
             error instanceof MicrophoneError
-              ? microphoneMessage(error.problem)
-              : `Atlas could not start the call. ${errorMessage(toApiError(error))}`,
+              ? microphoneMessage(error.problem, wording)
+              : callCopy[wording].couldNotStart(errorMessage(toApiError(error), wording)),
         });
         return;
       }
@@ -200,7 +211,7 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       voiceId,
       chooseVoice: chooseVoiceAndRestart,
       call: call satisfies CallView | null,
-      notice,
+      notice: notice === null ? null : { tone: notice.tone, text: notice.text(language) },
       pricePerMinute: data?.callPricePerMinute ?? 0,
       levels: () => openRef.current?.session.levels() ?? silence,
       start,
@@ -208,7 +219,7 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       setMuted: (muted) => openRef.current?.session.setMuted(muted),
       stopQuestion: () => openRef.current?.session.stopQuestion(),
     }),
-    [data, voiceId, chooseVoiceAndRestart, call, notice, start, hangUp],
+    [data, voiceId, chooseVoiceAndRestart, call, notice, language, start, hangUp],
   );
 
   return <VoiceCallContext.Provider value={value}>{children}</VoiceCallContext.Provider>;
