@@ -14,8 +14,8 @@ interface ViewerTitleProps {
 }
 
 /**
- * The file's name and its place, with its folder under it when it has one.
- * Spans only, since the modal sets it inside its heading.
+ * The file's name and its place, with its folder under it when it has one. The name and folder keep
+ * their own direction inside an Arabic title. Spans only, since the modal sets it inside its heading.
  */
 export function ViewerTitle({ kind, path, place }: ViewerTitleProps) {
   const name = fileNameOf(path);
@@ -26,7 +26,7 @@ export function ViewerTitle({ kind, path, place }: ViewerTitleProps) {
       <FileTypeIcon kind={kind} size={22} />
       <span className={classes.titleText}>
         <span className={classes.titleLine}>
-          <Text component="span" fz="md" fw={600} c="gray.9" truncate miw={0}>
+          <Text component="span" fz="md" fw={600} c="gray.9" truncate miw={0} dir="auto">
             {name}
           </Text>
           <Text component="span" fz="sm" fw={400} c="dimmed" className="tabular-nums">
@@ -35,7 +35,7 @@ export function ViewerTitle({ kind, path, place }: ViewerTitleProps) {
         </span>
         {folder !== '' && (
           <Text component="span" fz="xs" fw={400} c="dimmed" truncate>
-            {folder}
+            <bdi>{folder}</bdi>
           </Text>
         )}
       </span>

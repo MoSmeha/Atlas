@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { Source } from '@atlas/shared';
-import { formatNumber } from '../chat/formatNumber';
-import { rowsText } from '../chat/sourcePlace';
+import { useCopy } from '../../i18n/useCopy';
 import { SourceViewer } from './SourceViewer';
 import { ViewerModal } from './ViewerModal';
 import { ViewerTitle } from './ViewerTitle';
+import { viewerCopy } from './viewerCopy';
 
 interface SourceViewerModalProps {
   /** The source to show; null closes the viewer. */
@@ -17,6 +17,7 @@ interface SourceViewerModalProps {
  * highlighted, or at the cited sheet rows.
  */
 export function SourceViewerModal({ source, onClose }: SourceViewerModalProps) {
+  const copy = useCopy(viewerCopy);
   // The last source stays on screen while the modal fades out.
   const [shown, setShown] = useState<Source | null>(source);
   if (source !== null && source !== shown) setShown(source);
@@ -26,7 +27,7 @@ export function SourceViewerModal({ source, onClose }: SourceViewerModalProps) {
       opened={source !== null}
       onClose={onClose}
       title={shown && <ViewerTitle kind={shown.kind} path={shown.document} place={<SourcePlace source={shown} />} />}
-      closeLabel="Close the source"
+      closeLabel={copy.closeSource}
     >
       {shown && <SourceViewer key={sourceKey(shown)} source={shown} />}
     </ViewerModal>
@@ -35,10 +36,13 @@ export function SourceViewerModal({ source, onClose }: SourceViewerModalProps) {
 
 /** "page 37", or "sheet Summary, rows 4–12". */
 function SourcePlace({ source }: { source: Source }) {
-  if (source.kind === 'pdf') return `page ${formatNumber(source.page)}`;
+  const copy = useCopy(viewerCopy);
+  if (source.kind === 'pdf') return copy.pagePlace(source.page);
   return (
     <>
-      sheet <bdi>{source.sheet}</bdi>, {rowsText(source)}
+      {copy.sheetPlace} <bdi>{source.sheet}</bdi>
+      {copy.listSeparator}
+      {copy.rows(source.rowFrom, source.rowTo)}
     </>
   );
 }

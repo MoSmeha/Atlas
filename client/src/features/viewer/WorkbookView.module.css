@@ -23,8 +23,8 @@
   white-space: nowrap;
 }
 
-/* The open sheet sits on white like the grid above it, with the ink rule Mantine draws on its edge. */
+/* The open sheet sits on the reading surface like the grid above it, with the ink rule Mantine draws on its edge. */
 .tab[data-active] {
-  background-color: var(--mantine-color-white);
+  background-color: var(--atlas-surface);
   color: var(--mantine-color-gray-9);
 }

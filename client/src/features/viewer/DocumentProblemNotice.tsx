@@ -2,9 +2,12 @@ import { Alert, Button, Stack, Text } from '@mantine/core';
 import { IconDownload, IconFileOff } from '@tabler/icons-react';
 import type { DocumentSummary } from '@atlas/shared';
 import { api } from '../../api/endpoints';
+import { useCopy } from '../../i18n/useCopy';
 import { noticeStyles } from '../errors/noticeStyles';
 import { statusLook } from '../sidebar/fileStatus';
+import { sidebarCopy } from '../sidebar/sidebarCopy';
 import { ViewerNotice } from './ViewerNotice';
+import { viewerCopy } from './viewerCopy';
 
 interface DocumentProblemNoticeProps {
   document: DocumentSummary;
@@ -14,13 +17,14 @@ interface DocumentProblemNoticeProps {
 
 /** In place of a file the viewer cannot draw: why, in the file status's colour, and the file itself to download. */
 export function DocumentProblemNotice({ document, reason }: DocumentProblemNoticeProps) {
-  const look = statusLook(document.status);
+  const copy = useCopy(viewerCopy);
+  const look = statusLook(document.status, useCopy(sidebarCopy));
   const Icon = look?.icon ?? IconFileOff;
 
   return (
     <ViewerNotice>
       <Alert
-        title="Atlas cannot show this file"
+        title={copy.cannotShow}
         icon={<Icon size={18} stroke={1.75} />}
         styles={noticeStyles(look?.color ?? 'gray')}
       >
@@ -36,7 +40,7 @@ export function DocumentProblemNotice({ document, reason }: DocumentProblemNotic
             size="xs"
             leftSection={<IconDownload size={14} stroke={1.75} />}
           >
-            Download the file
+            {copy.download}
           </Button>
         </Stack>
       </Alert>

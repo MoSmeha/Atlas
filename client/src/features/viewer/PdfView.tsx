@@ -7,6 +7,8 @@ import { useElementSize, useHotkeys } from '@mantine/hooks';
 import { Document, Page } from 'react-pdf';
 import type { DocumentSummary, PdfSource } from '@atlas/shared';
 import { api } from '../../api/endpoints';
+import { useCopy } from '../../i18n/useCopy';
+import { useLanguage } from '../../i18n/useLanguage';
 import { ErrorNotice } from '../errors/ErrorNotice';
 import type { NoticeError } from '../errors/errorCopy';
 import { PdfToolbar } from './PdfToolbar';
@@ -15,6 +17,7 @@ import { ViewerLoading } from './ViewerLoading';
 import { pdfLoadError } from './pdfLoadError';
 import { scrollToMiddle } from './stageScroll';
 import { useQuoteHighlight } from './useQuoteHighlight';
+import { viewerCopy } from './viewerCopy';
 import classes from './SourceViewer.module.css';
 
 /** Wide enough to read a page without zooming, narrow enough to keep the whole line in view. */
@@ -34,6 +37,8 @@ export interface PdfViewProps {
  * starts at the cited page with the quoted words highlighted and scrolled into view.
  */
 export function PdfView({ document, source }: PdfViewProps) {
+  const copy = useCopy(viewerCopy);
+  const { dir } = useLanguage();
   const [page, setPage] = useState(source?.page ?? 1);
   const [pageCount, setPageCount] = useState<number | null>(null);
   const [failure, setFailure] = useState<NoticeError | null>(null);
@@ -55,9 +60,11 @@ export function PdfView({ document, source }: PdfViewProps) {
     scrolledToQuote.current = false;
     if (stage.current) stage.current.scrollTop = 0;
   };
+  // The arrow keys follow the toolbar: in Arabic it mirrors, so the previous page is on the right.
+  const mirrored = dir === 'rtl';
   useHotkeys([
-    ['ArrowLeft', () => goTo(page - 1)],
-    ['ArrowRight', () => goTo(page + 1)],
+    [mirrored ? 'ArrowRight' : 'ArrowLeft', () => goTo(page - 1)],
+    [mirrored ? 'ArrowLeft' : 'ArrowRight', () => goTo(page + 1)],
   ]);
 
   // Runs after every text layer draw; the first one that carries marks brings them into view.
@@ -90,14 +97,14 @@ export function PdfView({ document, source }: PdfViewProps) {
         <div ref={sizer} className={classes.sizer}>
           {failure ? (
             <Box w="100%" maw={560}>
-              <ErrorNotice error={failure} onRetry={retry} retryLabel="Try again" />
+              <ErrorNotice error={failure} onRetry={retry} retryLabel={copy.tryAgain} />
             </Box>
           ) : (
             <Document
               key={attempt}
               file={api.documentFileUrl(document.id)}
               suspense={false}
-              loading={<ViewerLoading label="Opening the PDF" />}
+              loading={<ViewerLoading label={copy.openingPdf} />}
               error={null}
               onLoadSuccess={(pdf) => {
                 setPageCount(pdf.numPages);

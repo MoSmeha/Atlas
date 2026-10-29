@@ -56,4 +56,11 @@ describe('documentProblem', () => {
     );
     expect(documentProblem({ ...workbook, sheets: [] })).toBe('Atlas found no sheets in this workbook.');
   });
+
+  it('gives the reason in Arabic, never the English server detail', () => {
+    const damaged = { ...pdf, status: 'corrupt', statusDetail: 'The PDF ends before its last page.' } as const;
+    expect(documentProblem(damaged, 'ar')).toBe('الملف تالف ولا يمكن فتحه.');
+    expect(documentProblem({ ...workbook, sheets: [] }, 'ar')).toBe('لم يجد Atlas أي ورقة في مصنف Excel هذا.');
+    expect(documentProblem(pdf, 'ar')).toBeNull();
+  });
 });

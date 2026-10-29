@@ -1,5 +1,4 @@
 import type { RowRange } from '../../api/endpoints';
-import { formatNumber } from '../chat/formatNumber';
 
 /** Rows shown above and below the cited ones when the sheet opens. */
 const CONTEXT_ROWS = 10;
@@ -40,11 +39,4 @@ export function columnLetter(index: number): string {
     name = String.fromCharCode(65 + ((n - 1) % 26)) + name;
   }
   return name;
-}
-
-/** "All 29 rows", "Showing rows 2,768–2,817 of 10,001", or that the sheet is empty. */
-export function shownRowsText(from: number, to: number, total: number): string {
-  if (total === 0) return 'This sheet is empty';
-  if (from <= 1 && to >= total) return total === 1 ? 'The only row' : `All ${formatNumber(total)} rows`;
-  return `Showing rows ${formatNumber(from)}–${formatNumber(to)} of ${formatNumber(total)}`;
 }
