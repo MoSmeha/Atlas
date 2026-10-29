@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import type { AnswerEffort } from '@atlas/shared';
 import { ApiError } from './ApiError';
 import { type AskHandlers, type AskOutcome, askQuestion, stoppedMessage } from './askQuestion';
 import { queryKeys } from './queryKeys';
+
+/** The model and effort a question goes to; null for either means the server's default. */
+export interface AnswerChoice {
+  model: string | null;
+  effort: AnswerEffort | null;
+}
 
 export interface AskController {
   /** Stops the question. onError gets code "stopped" before this returns, and nothing follows it. */
@@ -32,7 +39,7 @@ export function useAskStream(sessionId: string, handlers: AskHandlers) {
   useEffect(() => () => running.current?.dispose(), []);
 
   const ask = useCallback(
-    (question: string, model: string | null, spoken = false): AskController => {
+    (question: string, { model, effort }: AnswerChoice, spoken = false): AskController => {
       running.current?.dispose();
       const controller = new AbortController();
       let open = true;
@@ -69,7 +76,7 @@ export function useAskStream(sessionId: string, handlers: AskHandlers) {
         },
       };
 
-      const finished = askQuestion({ sessionId, question, model, ...(spoken ? { spoken } : {}) }, report, controller.signal);
+      const finished = askQuestion({ sessionId, question, model, effort, ...(spoken ? { spoken } : {}) }, report, controller.signal);
       return {
         stop: () => {
           if (!open) return;

@@ -19,14 +19,14 @@ interface Running {
 /** Holds the conversation for the current session and streams each question into it. */
 export function ChatProvider({ children }: { children: ReactNode }) {
   const [turns, dispatch] = useReducer(chatReducer, noTurns);
-  const { sessionId, model, startNewSession } = useSession();
+  const { sessionId, model, effort, startNewSession } = useSession();
   const running = useRef<Running | null>(null);
-  const latest = useRef({ turns, model });
+  const latest = useRef({ turns, model, effort });
   const nextId = useRef(0);
   const clearChat = useClearChat();
 
   useEffect(() => {
-    latest.current = { turns, model };
+    latest.current = { turns, model, effort };
   });
 
   const onRunning = (deliver: (turnId: string) => void) => {
@@ -64,7 +64,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     (turnId: string, question: string, spoken: boolean) =>
       new Promise<TurnEnd>((resolve) => {
         running.current = { turnId, controller: null, speech: null, settle: resolve };
-        const controller = askStream(question, latest.current.model, spoken);
+        const controller = askStream(question, { model: latest.current.model, effort: latest.current.effort }, spoken);
         if (running.current?.turnId === turnId) running.current.controller = controller;
       }),
     [askStream],

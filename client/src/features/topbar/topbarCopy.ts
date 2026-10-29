@@ -1,4 +1,4 @@
-import type { ModelTier } from '@atlas/shared';
+import type { AnswerEffort, ModelTier } from '@atlas/shared';
 import { type ArabicNoun, countAr, countEn } from '../../i18n/count';
 import type { Bilingual, Language } from '../../i18n/language';
 import type { FreeProvider } from './freeTier';
@@ -17,6 +17,10 @@ interface TopbarCopy {
   tiers: Record<ModelTier, string>;
   /** The same, for a provider that charges nothing. */
   freeTiers: Record<ModelTier, string>;
+  /** The effort picker's name, for screen readers. */
+  effort: string;
+  /** Each effort's name, and how fast its answers come. */
+  efforts: Record<AnswerEffort, { label: string; speed: string }>;
   /** The badge beside the picker while a free provider answers, and what it means. */
   free: Record<FreeProvider, { label: string; hint: string }>;
   /** The cost of an answer that cost nothing. */
@@ -55,6 +59,12 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       frontier: 'Most thorough, free',
       balanced: 'Good balance of depth and speed, free',
       small: 'Fastest, free',
+    },
+    effort: 'Thinking effort',
+    efforts: {
+      low: { label: 'Low effort', speed: 'Fast' },
+      medium: { label: 'Medium effort', speed: 'Medium speed' },
+      high: { label: 'High effort', speed: 'Slower, most careful' },
     },
     free: {
       gemini: {
@@ -97,6 +107,12 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       frontier: 'الأدق، ومجاني',
       balanced: 'توازن جيد بين العمق والسرعة، ومجاني',
       small: 'الأسرع، ومجاني',
+    },
+    effort: 'مستوى التفكير',
+    efforts: {
+      low: { label: 'تفكير قليل', speed: 'سريع' },
+      medium: { label: 'تفكير متوسط', speed: 'سرعة متوسطة' },
+      high: { label: 'تفكير عميق', speed: 'أبطأ، والأدق' },
     },
     free: {
       gemini: {
