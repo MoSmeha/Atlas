@@ -172,11 +172,14 @@ Every sample document is fictional. `samples/README.md` describes each file, and
 
 ## Settings
 
-Settings live in `.env`. Only the key is required.
+Settings live in `.env`. Only a model is required: one key, or Ollama.
 
 | Name | Default | What it means |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | none | Your OpenAI key |
+| `OPENAI_API_KEY` | none | Your OpenAI key. Voice calls and dictation need it, whichever provider answers |
+| `GEMINI_API_KEY` | none | A Gemini key, for the free tier ([aistudio.google.com/apikey](https://aistudio.google.com/apikey)) |
+| `ATLAS_PROVIDER` | `auto` | `auto`, `openai`, `gemini` or `ollama`. A named provider is used only if it can be; `ollama` also allows a machine without a big enough graphics card, which is slow |
+| `OLLAMA_HOST` | `127.0.0.1:11434` | Where Ollama listens |
 | `ATLAS_FOLDER` | `samples/riyadh-tower` | Folder loaded at start |
 | `PORT` | `3001` | Server port; the web app forwards to it |
 | `ATLAS_DATA_DIR` | `.atlas` | Index cache and uploads |
@@ -195,6 +198,13 @@ Settings live in `.env`. Only the key is required.
 
 Atlas keeps only the models your key can see; `pnpm models` lists them. Change `answerTier` to change the default.
 
+**Free providers.** With `ATLAS_PROVIDER=auto` Atlas answers with the first that works: a local model through Ollama, then Gemini's free tier, then OpenAI. The server's first lines say which one answers and why, and the top bar shows a "Free tier" badge (or "Free, on this computer") beside the model picker while a free one does; its tooltip says what that means.
+
+- **Gemini** has its own free lineup in `models.json`: Gemini 3.8 Flash (frontier, the default), 3.6 Flash (balanced) and 3.5 Flash-Lite (small), with `gemini-embedding-001` for search. It runs on Gemini's OpenAI-compatible Chat Completions endpoint. Google uses what its free tier is sent to improve its products, so keep confidential files off it. Limits are per project; AI Studio shows them.
+- **Ollama** has no list there. At start Atlas reads the machine's RAM and graphics memory (nvidia-smi, the Windows registry, or sysfs on Linux) and asks Ollama what it has pulled. It takes the largest chat model with tool support that fits the graphics memory, at least `minChatBillions` (7) billion parameters, and the largest embedding model, and that one chat model fills all three tiers. Without a graphics card of 6 GB or more (or Apple silicon) it stays off unless `ATLAS_PROVIDER=ollama`. Start Ollama with `OLLAMA_CONTEXT_LENGTH=16384` or more: its default context is shorter than Atlas's prompts, and it cuts them without saying so.
+- **Switching** to another provider embeds the folder again once: each index records its embedding model, and vectors from one model cannot be compared with another's.
+- `pnpm models` prints what each key can see and what the local scan found. Listing models costs nothing.
+
 **Voices** are set in `server/config/voices.json`: the call model and its price, the silence and length limits, the dictation model, each dialect's speaking rules and sample script, and each voice, built in or designed from a description. Change a description and the next call designs a new voice and deletes the old one. Calls and dictation switch off by themselves when your key cannot see their models.
 
 ## Project layout
@@ -203,7 +213,7 @@ Atlas keeps only the models your key can see; `pnpm models` lists them. Change `
 shared/    Data shapes used by server and web app (Zod)
 server/    src/domain        pure rules
            src/application   agent, tools, checks, ports
-           src/infrastructure mupdf, exceljs, SQLite, OpenAI
+           src/infrastructure mupdf, exceljs, SQLite, OpenAI, Gemini, Ollama
            src/api           web routes
            config/           models.json, voices.json
            scripts/          samples, eval, models
@@ -217,9 +227,9 @@ docs/      images, eval report, note, time log
 
 | Command | What it does |
 | --- | --- |
-| `pnpm test` | About 1,760 unit tests. No key, no network |
+| `pnpm test` | About 1,890 unit tests. No key, no network |
 | `pnpm typecheck` | Types in all three packages |
-| `pnpm eval` | 21 real questions checked against `samples/expected.json`; writes [EVAL.md](EVAL.md). Costs a few cents on Luna |
+| `pnpm eval` | 21 real questions checked against `samples/expected.json`; writes [EVAL.md](EVAL.md), or `EVAL-gemini.md` and `EVAL-ollama.md` for the free providers. Costs a few cents on Luna, nothing on the free ones |
 | `pnpm samples` | Rebuilds the sample documents (needs Microsoft Edge) |
 
 **Latest eval:** 21 of 21 passed on GPT-6 Luna, with a median answer time of 6.9 seconds and **$0.02 for all 21 questions**. Every answer's time, cost and check is in [EVAL.md](EVAL.md).
