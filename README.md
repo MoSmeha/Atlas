@@ -87,7 +87,7 @@ Pick the model, and how long it thinks, from the top bar. Each answer shows what
 | Free option | How to set it up | Good to know |
 | --- | --- | --- |
 | Gemini's free tier | Get a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and add `GEMINI_API_KEY=` to `.env` | Daily limit. Google may use what it is sent, so keep confidential files off it |
-| A model on your computer | Install [Ollama](https://ollama.com), then run `ollama pull qwen3:14b` and `ollama pull bge-m3` | Nothing leaves your computer. Needs a graphics card with 6 GB or more |
+| A model on your computer | Install [Ollama](https://ollama.com), then run `ollama pull qwen3:14b` and `ollama pull bge-m3` | Nothing leaves your computer. Needs a graphics card with 6 GB or more, or a Mac with Apple silicon and 16 GB or more |
 
 Free models sit in the same picker. Voice calls still use OpenAI.
 
@@ -150,7 +150,7 @@ Each step has its own chart in [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
 | Step | Windows (PowerShell) | macOS / Linux |
 | --- | --- | --- |
-| 1. Install Node.js 24 | [nodejs.org](https://nodejs.org/en/download) | [nodejs.org](https://nodejs.org/en/download) or `brew install node@24` |
+| 1. Install Node.js 24 | [nodejs.org](https://nodejs.org/en/download) | [nodejs.org](https://nodejs.org/en/download), or Homebrew (see [On a Mac](#on-a-mac)) |
 | 2. Switch on pnpm | `corepack enable` | `corepack enable` |
 | 3. Get the code | `git clone https://github.com/MoSmeha/Atlas.git; cd Atlas` | `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas` |
 | 4. Install | `pnpm install` | `pnpm install` |
@@ -158,6 +158,29 @@ Each step has its own chart in [docs/TECHNICAL.md](docs/TECHNICAL.md).
 | 6. Start | `pnpm dev`, then open http://localhost:5173 | `pnpm dev`, then open http://localhost:5173 |
 
 A sample project, a fictional tower in Riyadh, loads by itself. To use your own files, type a folder path in the sidebar or drop files on it.
+
+### On a Mac
+
+The same steps, with what a Mac asks along the way. Open Terminal (Applications, then Utilities), and press Return after each command.
+
+1. **Install Node.js 24.** The simplest way is the macOS installer at [nodejs.org](https://nodejs.org/en/download): pick version 24. With [Homebrew](https://brew.sh) instead, run these three lines. Homebrew keeps `node@24` off the path, and the second line puts it there:
+
+   ```sh
+   brew install node@24
+   echo "export PATH=\"$(brew --prefix node@24)/bin:\$PATH\"" >> ~/.zshrc
+   source ~/.zshrc
+   ```
+
+   `node --version` should now print a version starting with `v24`.
+2. **Switch on pnpm:** `corepack enable`. If it says permission denied, run `sudo corepack enable` and type your Mac password. If it says command not found, run `npm install -g pnpm` instead.
+3. **Get the code:** `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas`. On a Mac without developer tools, this asks to install the "command line developer tools": click Install, wait for it to finish, then run the line again.
+4. **Install:** `pnpm install`. If it asks to download pnpm, type `Y`.
+5. **Add a model key:** `cp .env.example .env`, then `open -e .env` opens the file in TextEdit. Paste your key after `GEMINI_API_KEY=` (free) or `OPENAI_API_KEY=`, and save.
+6. **Start:** `pnpm dev`, then open http://localhost:5173 in Safari, Chrome or Edge. Press Control+C in Terminal to stop.
+
+The first voice call or dictation asks for the microphone. Allow it in the browser, and in System Settings, Privacy & Security, Microphone if macOS asks too.
+
+To answer for free on the Mac itself, Ollama runs on Apple silicon. `qwen3:14b` needs 24 GB of memory; with 16 GB, run `ollama pull qwen3:8b` in its place.
 
 ## Good to know
 
