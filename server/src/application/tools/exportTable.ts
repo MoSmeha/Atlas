@@ -27,7 +27,7 @@ export const exportTable = defineTool({
       return {
         // The file name only: the answer names the file, never its folder on this machine.
         output: { file: file.fileName },
-        summary: `Exported ${args.result_id} to ${basename(context.exportsDir)}/${file.fileName}`,
+        summary: `Exported the table to ${basename(context.exportsDir)}/${file.fileName}`,
       };
     } catch (error) {
       if (error instanceof AppError && error.code === 'result_not_found') {

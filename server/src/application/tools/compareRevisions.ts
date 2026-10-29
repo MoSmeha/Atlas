@@ -143,7 +143,7 @@ export const compareRevisions = defineTool({
     while (count > MIN_LISTED && JSON.stringify(outputWith(count)).length > MAX_OUTPUT_CHARS) {
       count = Math.max(MIN_LISTED, count - 5);
     }
-    const summary = `${diff.added.length} added, ${diff.removed.length} removed, ${diff.changed.length} changed (${saved.id})`;
+    const summary = `${diff.added.length} added, ${diff.removed.length} removed, ${diff.changed.length} changed`;
     return { output: outputWith(count), summary };
   },
 });

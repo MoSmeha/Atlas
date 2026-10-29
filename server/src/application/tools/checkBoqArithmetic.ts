@@ -127,7 +127,7 @@ export const checkBoqArithmetic = defineTool({
     while (count > MIN_LISTED && JSON.stringify(outputWith(count)).length > MAX_OUTPUT_CHARS) {
       count = Math.max(MIN_LISTED, count - 5);
     }
-    return { output: outputWith(count), summary: summarize(found.length, tables.length, saved.id) };
+    return { output: outputWith(count), summary: summarize(found.length, tables.length) };
   },
 });
 
@@ -196,9 +196,9 @@ function outputNote(mismatches: number, shown: number, checkedRows: number, id: 
 }
 
 /** For example "3 mismatches in 4 tables (r5)". */
-function summarize(mismatches: number, tables: number, id: string): string {
+function summarize(mismatches: number, tables: number): string {
   const what = mismatches === 0 ? 'No mismatches' : `${mismatches} ${mismatches === 1 ? 'mismatch' : 'mismatches'}`;
-  return `${what} in ${tables} ${tables === 1 ? 'table' : 'tables'} (${id})`;
+  return `${what} in ${tables} ${tables === 1 ? 'table' : 'tables'}`;
 }
 
 function cut(text: string | null): string | null {
