@@ -325,6 +325,10 @@ const roleTokens = {
   '--mantine-color-dimmed': 'var(--mantine-color-gray-6)',
   '--mantine-color-default-border': 'var(--mantine-color-gray-4)',
   '--mantine-color-error': 'var(--mantine-color-red-8)',
+  // Mantine's dark default paints a disabled control in the raised surface's own colour, so it vanishes.
+  '--mantine-color-disabled': 'var(--mantine-color-gray-2)',
+  '--mantine-color-disabled-color': 'var(--mantine-color-gray-5)',
+  '--mantine-color-disabled-border': 'var(--mantine-color-gray-3)',
   '--mantine-color-gray-light': 'var(--mantine-color-gray-2)',
   '--mantine-color-gray-light-hover': 'var(--mantine-color-gray-3)',
   '--mantine-color-gray-light-color': 'var(--mantine-color-gray-8)',
