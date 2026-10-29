@@ -94,6 +94,30 @@ describe('OpenAiEmbeddingClient', () => {
     expect(error.retryAfterSeconds).toBe(3);
   });
 
+  it('leaves dimensions out to keep the model default, follows the given limits and names the vendor', async () => {
+    const bodies: Record<string, unknown>[] = [];
+    const client = {
+      embeddings: {
+        create: async (body: Record<string, unknown> & { input: string[] }) => {
+          bodies.push(body);
+          if (bodies.length > 2) throw new RateLimitError(429, { message: 'Slow down.' }, undefined, new Headers());
+          return { data: echo(body.input) };
+        },
+      },
+    };
+    const vendor = { name: 'Gemini', keyVariable: 'GEMINI_API_KEY' };
+    const limits = { maxInputs: 2, maxRequestTokens: 1_000, maxInputTokens: 100 };
+    const embeddings = new OpenAiEmbeddingClient(client as unknown as OpenAI, { id: 'gemini-embedding-001', dimensions: null }, { vendor, limits });
+
+    const result = await embeddings.embed(['a', 'b', 'c']);
+    expect(bodies).toEqual([
+      { model: 'gemini-embedding-001', input: ['a', 'b'] },
+      { model: 'gemini-embedding-001', input: ['c'] },
+    ]);
+    expect(result.tokens).toBe(0);
+    expect((await rejection(embeddings.embed(['d']))).message).toContain('The Gemini rate limit was reached');
+  });
+
   it('reports stopped when the signal was aborted', async () => {
     const controller = new AbortController();
     const { embeddings } = stubOpenAi(() => {

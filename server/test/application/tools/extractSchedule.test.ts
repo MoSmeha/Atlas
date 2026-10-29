@@ -239,7 +239,7 @@ describe('extract_schedule', () => {
 
   it('names a missing API key as the reason the check failed', async () => {
     const { output } = await extract(indexWith(contract), null, { model: failingModel(errors.missingApiKey()) });
-    expect(output.note).toContain('could not be checked (no OpenAI API key is set)');
+    expect(output.note).toContain('could not be checked (no model is set up)');
   });
 
   it('stops when the question is stopped', async () => {

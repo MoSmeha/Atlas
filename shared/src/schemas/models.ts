@@ -13,9 +13,15 @@ export const ModelOption = z.object({
 });
 export type ModelOption = z.infer<typeof ModelOption>;
 
+/** Who answers: OpenAI, Gemini's free tier, or a model on this computer through Ollama. */
+export const ModelProvider = z.enum(['openai', 'gemini', 'ollama']);
+export type ModelProvider = z.infer<typeof ModelProvider>;
+
 export const ModelsResponse = z.object({
   models: z.array(ModelOption),
   defaultModel: z.string(),
+  /** Null while no provider is set up. */
+  provider: ModelProvider.nullable(),
 });
 export type ModelsResponse = z.infer<typeof ModelsResponse>;
 

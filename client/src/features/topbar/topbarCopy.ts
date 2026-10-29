@@ -1,6 +1,7 @@
 import type { ModelTier } from '@atlas/shared';
 import { type ArabicNoun, countAr, countEn } from '../../i18n/count';
 import type { Bilingual, Language } from '../../i18n/language';
+import type { FreeProvider } from './freeTier';
 
 const questions: ArabicNoun = { one: 'سؤال واحد', two: 'سؤالين', few: 'أسئلة', many: 'سؤالًا', other: 'سؤال' };
 
@@ -14,7 +15,14 @@ interface TopbarCopy {
   modelsFailed: (reason: string) => string;
   /** What each tier is good for, in plain words. */
   tiers: Record<ModelTier, string>;
+  /** The same, for a provider that charges nothing. */
+  freeTiers: Record<ModelTier, string>;
+  /** The badge beside the picker while a free provider answers, and what it means. */
+  free: Record<FreeProvider, { label: string; hint: string }>;
+  /** The cost of an answer that cost nothing. */
+  freeCost: string;
   usageLabel: (cost: string, time: string) => string;
+  freeUsageLabel: (time: string) => string;
   lastAnswer: (model: string) => string;
   inputTokens: (tokens: string) => string;
   outputTokens: (tokens: string) => string;
@@ -43,7 +51,24 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       balanced: 'Good balance of depth and cost',
       small: 'Fastest, lowest cost',
     },
+    freeTiers: {
+      frontier: 'Most thorough, free',
+      balanced: 'Good balance of depth and speed, free',
+      small: 'Fastest, free',
+    },
+    free: {
+      gemini: {
+        label: 'Free tier',
+        hint: "Gemini's free tier: answers cost nothing, up to a daily limit. Google uses what it is sent to improve its products, so keep confidential files off it.",
+      },
+      ollama: {
+        label: 'Free, on this computer',
+        hint: 'A model on this computer answers through Ollama. It costs nothing, and the documents never leave the computer.',
+      },
+    },
+    freeCost: 'Free',
     usageLabel: (cost, time) => `Last answer cost ${cost} and took ${time}`,
+    freeUsageLabel: (time) => `Last answer was free and took ${time}`,
     lastAnswer: (model) => `Last answer, ${model}`,
     inputTokens: (tokens) => `Input ${tokens} tokens`,
     outputTokens: (tokens) => `Output ${tokens} tokens`,
@@ -68,7 +93,24 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       balanced: 'توازن جيد بين العمق والتكلفة',
       small: 'الأسرع، والأقل تكلفة',
     },
+    freeTiers: {
+      frontier: 'الأدق، ومجاني',
+      balanced: 'توازن جيد بين العمق والسرعة، ومجاني',
+      small: 'الأسرع، ومجاني',
+    },
+    free: {
+      gemini: {
+        label: 'الباقة المجانية',
+        hint: 'الباقة المجانية من Gemini: الإجابات بلا تكلفة حتى حدّ يومي. تستخدم Google ما يُرسل إليها لتحسين منتجاتها، فلا تفتح عليها ملفات سرية.',
+      },
+      ollama: {
+        label: 'مجاني، على هذا الجهاز',
+        hint: 'يجيب نموذج على هذا الجهاز عبر Ollama. لا تكلفة، ولا تغادر المستندات الجهاز.',
+      },
+    },
+    freeCost: 'مجانًا',
     usageLabel: (cost, time) => `كلّفت آخر إجابة ${cost} واستغرقت ${time}`,
+    freeUsageLabel: (time) => `كانت آخر إجابة مجانية واستغرقت ${time}`,
     lastAnswer: (model) => `آخر إجابة، ${model}`,
     inputTokens: (tokens) => `رموز الإدخال: ${tokens}`,
     outputTokens: (tokens) => `رموز الإخراج: ${tokens}`,

@@ -147,6 +147,27 @@ export class SqliteIndex implements DocumentIndex {
     this.vectors = null;
   }
 
+  /**
+   * Records which embedding model the vectors come from. Vectors of another model cannot be compared with its
+   * own, so they are cleared and every chunk waits to be embedded again. A file that never recorded a model keeps
+   * its vectors only when they were made by `unrecordedKey`. Returns whether vectors were cleared.
+   */
+  useEmbeddingModel(key: string, unrecordedKey: string): boolean {
+    const stored = this.db.prepare("SELECT value FROM meta WHERE key = 'embedding_model'").pluck().get() as string | undefined;
+    if (stored === key) return false;
+    const clear = (stored ?? unrecordedKey) !== key && this.pendingEmbeddingCount() < this.chunkCount();
+    this.db.transaction(() => {
+      if (clear) this.db.prepare('UPDATE chunks SET embedding = NULL WHERE embedding IS NOT NULL').run();
+      this.db.prepare("INSERT INTO meta (key, value) VALUES ('embedding_model', ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value").run(key);
+    })();
+    this.vectors = null;
+    return clear;
+  }
+
+  private chunkCount(): number {
+    return this.db.prepare('SELECT COUNT(*) FROM chunks').pluck().get() as number;
+  }
+
   keywordSearch(query: string, options: { document: string | null; limit: number }): SearchHit[] {
     const match = ftsQuery(query);
     if (match === null || options.limit <= 0) return [];

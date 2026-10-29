@@ -87,6 +87,17 @@ Choose which AI answers from the top bar: a cheap, fast one for everyday questio
 
 On the sample project, Luna answered all 21 test questions correctly for 2 cents in total ([test report](docs/EVAL.md)).
 
+### Or use it for free
+
+Atlas can also answer at no cost. The top bar then shows **Free tier** beside the model picker, and each answer's cost reads "Free".
+
+| Free option | How to set it up | Good to know |
+| --- | --- | --- |
+| Gemini's free tier, from Google | Get a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and add `GEMINI_API_KEY=` to `.env` | There is a daily limit. Google uses what its free tier is sent to improve its products, so keep confidential files off it |
+| A model on your own computer | Install [Ollama](https://ollama.com), then run `ollama pull qwen3:14b` and `ollama pull bge-m3` | Nothing leaves your computer. It needs a graphics card with at least 6 GB of memory |
+
+Atlas picks by itself: a model on your computer first, then Gemini, then OpenAI. Voice calls still use OpenAI. Neither free option has been through the 21 test questions yet.
+
 ## English or Arabic, light or dark
 
 The whole app switches between English and Arabic (right to left) and between light and dark, from the top bar. Ask in Arabic and Atlas answers in Arabic. File names and numbers stay exactly as written.
@@ -125,11 +136,11 @@ flowchart LR
 | --- | --- |
 | Web app | React, Vite, Mantine, TypeScript |
 | Server | Node.js 24, Fastify, TypeScript |
-| AI | OpenAI: GPT-6 models for answers, GPT-Live for voice calls, gpt-transcribe for dictation, text-embedding-3-small for search by meaning |
+| AI | OpenAI: GPT-6 models for answers, GPT-Live for voice calls, gpt-transcribe for dictation, text-embedding-3-small for search by meaning. Free instead: Gemini (Google's free tier) or a local model through Ollama |
 | Reading files | mupdf for PDFs, exceljs for Excel |
 | Storage | SQLite on your computer, one file per folder, with keyword search |
 | Data shapes | Zod, shared by the server and the web app |
-| Tests | Vitest: about 1,760 tests that need no key and no network |
+| Tests | Vitest: about 1,890 tests that need no key and no network |
 
 ## Run it yourself
 
@@ -139,15 +150,15 @@ flowchart LR
 | 2. Switch on pnpm | `corepack enable` | `corepack enable` |
 | 3. Get the code | `git clone https://github.com/MoSmeha/Atlas.git; cd Atlas` | `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas` |
 | 4. Install | `pnpm install` | `pnpm install` |
-| 5. Add your OpenAI key | `Copy-Item .env.example .env`, then set `OPENAI_API_KEY=` | `cp .env.example .env`, then set `OPENAI_API_KEY=` |
+| 5. Add a model key | `Copy-Item .env.example .env`, then set `OPENAI_API_KEY=`, or `GEMINI_API_KEY=` to use it free | `cp .env.example .env`, then set `OPENAI_API_KEY=`, or `GEMINI_API_KEY=` to use it free |
 | 6. Start | `pnpm dev`, then open http://localhost:5173 | `pnpm dev`, then open http://localhost:5173 |
 
 A sample project, a fictional tower in Riyadh, loads by itself. To use your own files, type a folder path in the sidebar or drop files on it.
 
 ## Good to know
 
-- **Your files stay on your computer.** The app and its index run locally. The AI runs at OpenAI, so the passages and page images it needs are sent there.
-- **Cost.** A question on Luna costs a fraction of a cent. A voice call costs $0.05 a minute.
+- **Your files stay on your computer.** The app and its index run locally. The AI runs at OpenAI or Google (Gemini), so the passages and page images it needs are sent there; with Ollama nothing leaves the computer.
+- **Cost.** A question on Luna costs a fraction of a cent, and nothing on Gemini's free tier or Ollama. A voice call costs $0.05 a minute.
 - **File types.** PDF and Excel (`.pdf`, `.xlsx`, `.xlsm`). Other files are listed and skipped.
 - **Sample documents are fictional.** `samples/expected.json` holds their right answers.
 - **Licence.** mupdf is AGPL-3.0, so this repository has no permissive licence file.

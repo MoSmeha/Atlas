@@ -372,4 +372,41 @@ describe('SqliteIndexFactory', () => {
     recovered.save(pdfRecord('b.pdf', ['fresh']));
     expect(recovered.documents().map((document) => document.path)).toEqual(['b.pdf']);
   });
+
+  it('embeds again when the embedding model changes, and keeps the vectors while it stays the same', () => {
+    const openWith = (key: string) => {
+      const index = new SqliteIndexFactory(dataDir, key).open(folder);
+      opened.push(index);
+      return index;
+    };
+    const embedAll = (index: SqliteIndex) =>
+      index.saveEmbeddings(index.pendingEmbeddings(10).map((chunk) => ({ chunkId: chunk.chunkId, vector: new Float32Array([1, 0]) })));
+
+    const first = openWith('openai:text-embedding-3-small:1536');
+    first.save(pdfRecord('a.pdf', ['one', 'two']));
+    embedAll(first);
+    first.close();
+
+    const same = openWith('openai:text-embedding-3-small:1536');
+    expect(same.pendingEmbeddingCount()).toBe(0);
+    same.close();
+
+    const other = openWith('gemini:gemini-embedding-001:default');
+    expect(other.pendingEmbeddingCount()).toBe(2);
+    expect(other.vectorSearch(new Float32Array([1, 0]), { document: null, limit: 5 })).toEqual([]);
+    expect(other.keywordSearch('one', { document: null, limit: 5 })).toHaveLength(1);
+  });
+
+  it('keeps the vectors of an index that never recorded its model only when they came from OpenAI', () => {
+    const legacy = open();
+    legacy.save(pdfRecord('a.pdf', ['one']));
+    legacy.saveEmbeddings(legacy.pendingEmbeddings(10).map((chunk) => ({ chunkId: chunk.chunkId, vector: new Float32Array([1, 0]) })));
+    legacy.close();
+
+    const reopened = open();
+    expect(reopened.useEmbeddingModel('openai:text-embedding-3-small:1536', 'openai:text-embedding-3-small:1536')).toBe(false);
+    expect(reopened.pendingEmbeddingCount()).toBe(0);
+    expect(reopened.useEmbeddingModel('ollama:bge-m3:latest:default', 'openai:text-embedding-3-small:1536')).toBe(true);
+    expect(reopened.pendingEmbeddingCount()).toBe(1);
+  });
 });

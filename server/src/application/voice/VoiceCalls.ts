@@ -77,7 +77,7 @@ export class VoiceCalls {
 
   async start(input: StartCallInput): Promise<StartCallOutput> {
     const { deps } = this;
-    if (deps.voiceClient === null) throw errors.missingApiKey();
+    if (deps.voiceClient === null) throw errors.missingOpenAiKey();
     if (!deps.available) throw errors.voiceUnavailable(deps.catalog.call.model);
     const voice = findVoice(deps.catalog, input.voiceId);
     const { folder, index } = deps.workspace.require();

@@ -113,8 +113,8 @@ async function semanticSearch(
 }
 
 function unavailableReason(error: unknown): string {
-  if (error instanceof AppError && error.code === 'missing_api_key') return 'no OpenAI API key is set';
-  if (error instanceof AppError && error.code === 'rate_limited') return 'the OpenAI rate limit was reached';
+  if (error instanceof AppError && error.code === 'missing_api_key') return 'no model is set up';
+  if (error instanceof AppError && error.code === 'rate_limited') return "the model's rate limit was reached";
   return 'the embedding call failed';
 }
 

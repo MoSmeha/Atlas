@@ -10,20 +10,21 @@ import { renderReport, type QuestionResult } from './report';
 
 const FOLDER = join(repoRoot, 'samples', 'riyadh-tower');
 const RUNS_DIR = join(repoRoot, 'eval-runs');
-const PUBLISHED = join(repoRoot, 'docs', 'EVAL.md');
 
 /**
  * pnpm eval [--model <id>] [--only <id,id>]
  * Indexes the sample folder, asks every eval question, checks each answer against samples/expected.json and writes
- * a report to eval-runs/. A full run also copies it to docs/EVAL.md. Failed questions still exit 0: the report is the output.
+ * a report to eval-runs/. A full run also copies it to docs/EVAL.md, or docs/EVAL-<provider>.md for Gemini and
+ * Ollama, so a free run never replaces the OpenAI report. Failed questions still exit 0: the report is the output.
  */
 async function main(): Promise<void> {
   const { values } = parseArgs({ options: { model: { type: 'string' }, only: { type: 'string' } }, allowPositionals: true });
   const selected = pickQuestions(values.only);
   const container = await compose();
-  if (container.modelClient === null) stop('OPENAI_API_KEY is not set. Add it to .env at the repository root.');
+  if (container.provider === null) stop(container.providerChoice.reason);
+  const published = join(repoRoot, 'docs', container.provider.id === 'openai' ? 'EVAL.md' : `EVAL-${container.provider.id}.md`);
   const model = pickModel(container, values.model);
-  console.log(`Model ${model}, ${selected.length} of ${questions.length} questions`);
+  console.log(`${container.provider.label}: model ${model}, ${selected.length} of ${questions.length} questions`);
 
   const indexSeconds = await indexSamples(container);
   const runId = Date.now().toString(36);
@@ -42,11 +43,12 @@ async function main(): Promise<void> {
   mkdirSync(RUNS_DIR, { recursive: true });
   const path = join(RUNS_DIR, `${stamp(date)}-${model.replace(/[^\w.-]+/g, '_')}.md`);
   writeFileSync(path, report, 'utf8');
-  if (!subset) copyFileSync(path, PUBLISHED);
+  if (!subset) copyFileSync(path, published);
   const passed = results.filter((result) => result.pass).length;
   const total = results.reduce((sum, result) => sum + (result.usage?.costUsd ?? 0), 0);
+  const publishedName = relative(repoRoot, published).replaceAll('\\', '/');
   console.log(`\nPassed ${passed} of ${results.length}, cost $${total.toFixed(4)}`);
-  console.log(`Report: ${relative(repoRoot, path)}${subset ? ' (subset run, docs/EVAL.md left as it was)' : ', copied to docs/EVAL.md'}`);
+  console.log(`Report: ${relative(repoRoot, path)}${subset ? ` (subset run, ${publishedName} left as it was)` : `, copied to ${publishedName}`}`);
 }
 
 /** The questions named by --only, in list order, with the earlier questions their follow-ups need. */

@@ -7,12 +7,15 @@ import { topbarCopy } from './topbarCopy';
 interface ModelOptionRowProps {
   label: string;
   tier: ModelTier | null;
+  /** The model costs nothing, so its hint says free instead of naming a cost. */
+  free: boolean;
   checked: boolean;
 }
 
 /** One model in the picker's list: its name, a small tier hint under it, and a check on the chosen one. */
-export function ModelOptionRow({ label, tier, checked }: ModelOptionRowProps) {
+export function ModelOptionRow({ label, tier, free, checked }: ModelOptionRowProps) {
   const copy = useCopy(topbarCopy);
+  const hints = free ? copy.freeTiers : copy.tiers;
   return (
     <Group justify="space-between" gap="sm" wrap="nowrap" w="100%">
       <Stack gap={2} miw={0}>
@@ -21,7 +24,7 @@ export function ModelOptionRow({ label, tier, checked }: ModelOptionRowProps) {
         </Text>
         {tier && (
           <Text fz="xs" c="dimmed" lh="xs">
-            {copy.tiers[tier]}
+            {hints[tier]}
           </Text>
         )}
       </Stack>

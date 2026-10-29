@@ -4,7 +4,9 @@ import { z } from 'zod';
 import { ModelTier } from '@atlas/shared';
 import { repoRoot } from '../settings';
 
-const ModelConfigSchema = z.object({
+const ReasoningEffort = z.enum(['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max']);
+
+const ProviderModelsSchema = z.object({
   catalog: z
     .array(
       z.object({
@@ -18,10 +20,24 @@ const ModelConfigSchema = z.object({
     )
     .min(3),
   answerTier: ModelTier,
-  reasoningEffort: z.enum(['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max']),
-  embedding: z.object({ id: z.string().min(1), price: z.number().nonnegative(), dimensions: z.number().int().positive() }),
+  /** Null leaves reasoning at each model's default. */
+  reasoningEffort: ReasoningEffort.nullable(),
+  /** Null dimensions keep the model's default vector size. */
+  embedding: z.object({ id: z.string().min(1), price: z.number().nonnegative(), dimensions: z.number().int().positive().nullable() }),
 });
 
+const ModelConfigSchema = z.object({
+  openai: ProviderModelsSchema,
+  gemini: ProviderModelsSchema.extend({ baseUrl: z.url() }),
+  ollama: z.object({
+    reasoningEffort: ReasoningEffort.nullable(),
+    /** Smaller chat models are not used: they rarely follow the tool loop. */
+    minChatBillions: z.number().positive(),
+  }),
+});
+
+/** One provider's catalog, default answer tier, reasoning effort and embedding model. */
+export type ProviderModels = z.infer<typeof ProviderModelsSchema>;
 export type ModelConfig = z.infer<typeof ModelConfigSchema>;
 
 export const modelConfigPath = resolve(repoRoot, 'server', 'config', 'models.json');

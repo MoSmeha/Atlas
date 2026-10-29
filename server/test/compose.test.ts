@@ -7,12 +7,26 @@ import type { ChatEvent } from '@atlas/shared';
 import { afterAll, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/api/app';
 import { pickLineup } from '../src/application/models/pickLineup';
-import { loadSettings } from '../src/infrastructure/settings';
-import { compose } from '../src/main';
+import type { LocalModel } from '../src/infrastructure/local/listOllamaModels';
+import type { LocalScan } from '../src/infrastructure/local/pickLocalModels';
+import { loadSettings, type Settings } from '../src/infrastructure/settings';
+import { compose as composeWith, providerReport } from '../src/main';
 
 const logDir = mkdtempSync(join(tmpdir(), 'atlas-compose-logs-'));
 const workDir = mkdtempSync(join(tmpdir(), 'atlas-compose-work-'));
-const noKey = { ...loadSettings({}, 'no-such.env'), openAiApiKey: null, logDir };
+// Port 9 refuses connections, so nothing here reaches a real Ollama.
+const noKey: Settings = { ...loadSettings({}, 'no-such.env'), openAiApiKey: null, geminiApiKey: null, ollamaUrl: 'http://127.0.0.1:9', logDir };
+const GIB = 1024 ** 3;
+const machine = { ramBytes: 32 * GIB, gpuBytes: 16 * GIB, unifiedMemory: false };
+
+/** compose with a stand-in for the local scan: by default no Ollama is running. */
+function compose(settings: Settings, scan: LocalScan = { machine, models: null }) {
+  return composeWith(settings, async () => scan);
+}
+
+function localModel(name: string, capabilities: string[], parameterBillions: number, sizeGib: number): LocalModel {
+  return { name, capabilities, parameterBillions, sizeBytes: sizeGib * GIB };
+}
 
 afterAll(async () => {
   await rm(logDir, { recursive: true, force: true });
@@ -25,6 +39,45 @@ describe('compose', () => {
     expect(container.modelClient).toBeNull();
     expect(container.lineup).toEqual(pickLineup(container.modelConfig.catalog, null));
     expect(container.api.health.apiKeyPresent).toBe(false);
+  });
+
+  it('says why no provider answers and what the local scan found', async () => {
+    const container = await compose(noKey);
+    expect(container.provider).toBeNull();
+    expect(container.providerChoice.reason).toMatch(/OPENAI_API_KEY or GEMINI_API_KEY/);
+    expect(container.localProblem).toMatch(/^Ollama is not running; this machine can run a model of about \d+ billion parameters/);
+    expect(providerReport(container)).toEqual([
+      expect.stringMatching(/^Models: none\. No model is set up/),
+      expect.stringMatching(/^ {2}Local models: Ollama is not running/),
+    ]);
+  });
+
+  it('answers with Ollama when this machine can run the models it has pulled, one model in every tier', async () => {
+    const models = [localModel('qwen3:14b', ['completion', 'tools'], 14.8, 9), localModel('bge-m3:latest', ['embedding'], 0.567, 1.2)];
+    const container = await compose({ ...noKey, dataDir: join(workDir, 'local-data') }, { machine, models });
+
+    expect(container.provider?.id).toBe('ollama');
+    expect(container.localProblem).toBeNull();
+    expect(container.embeddings?.model).toBe('bge-m3:latest');
+    expect(Object.values(container.lineup).map((model) => model.id)).toEqual(['qwen3:14b', 'qwen3:14b', 'qwen3:14b']);
+    expect(container.api.health.apiKeyPresent).toBe(true);
+    const response = await buildApp(container.api).inject({ method: 'GET', url: '/api/models' });
+    expect(response.json()).toEqual({
+      models: [{ id: 'qwen3:14b', tier: 'frontier', label: 'qwen3:14b (local)', inputPrice: 0, outputPrice: 0 }],
+      defaultModel: 'qwen3:14b',
+      provider: 'ollama',
+    });
+  });
+
+  it('does not scan the machine when a cloud provider is named', async () => {
+    let scanned = false;
+    const container = await composeWith({ ...noKey, provider: 'openai' }, async () => {
+      scanned = true;
+      return { machine, models: null };
+    });
+    expect(scanned).toBe(false);
+    expect(container.providerChoice).toEqual({ id: null, reason: 'ATLAS_PROVIDER is openai, but OPENAI_API_KEY is not set.' });
+    expect(container.localProblem).toBeNull();
   });
 
   it('wires the indexer without embeddings when there is no key', async () => {
