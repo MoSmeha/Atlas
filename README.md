@@ -20,17 +20,15 @@ Atlas reads a folder of PDFs and Excel files (contracts, bills of quantities, sp
 
 ## What Atlas does
 
-- **Reads your files.** Point it at a folder. It reads every PDF and spreadsheet, including scanned pages and 300-page specifications.
-- **Answers in plain words.** Ask the way you would ask a colleague: "Which items cost more than a million riyals?"
-- **Shows its sources.** Every fact links to the page or rows it came from. One click opens it, highlighted.
-- **Never makes up numbers.** Totals and lists are worked out by code over every row. The AI does not type them.
-- **Says when it does not know.** If the answer is not in your files, Atlas says so and names the files it could not open.
+- **Reads a whole folder,** every PDF and spreadsheet, scanned pages included, and answers questions asked in plain words.
+- **Shows its sources.** Every fact links to its page or rows; one click opens it, highlighted.
+- **Never makes up numbers.** Code works out totals over every row, and when the files do not say, Atlas says so.
 
 ## See it in action
 
-**1. Load a folder.** Atlas lists every file, flags the ones it cannot read (damaged, password protected, empty, scanned), and suggests questions to start with.
+**1. Load a folder.** Atlas lists every file and flags the ones it cannot read (damaged, password protected, empty, scanned). Then type your question in the box at the foot.
 
-![A folder loaded, with every file listed and suggested questions](docs/images/start.png)
+![A folder loaded, with every file listed and Atlas's face waiting for a question](docs/images/start.png)
 
 **2. Get exact lists.** "Above SAR 1 million" checks every row, not a sample. Download the list as Excel or CSV.
 
@@ -54,20 +52,19 @@ Atlas reads a folder of PDFs and Excel files (contracts, bills of quantities, sp
 
 ## Talk to Atlas
 
-Press the phone button and talk to Atlas as you would on a call, in English or in your own Arabic dialect. Atlas answers out loud, and the same answer appears on screen with its table and sources.
+Press the phone button and talk to Atlas as you would on a call, in English or in your own Arabic dialect.
 
 <img src="docs/images/voice.png" alt="A voice call: Atlas's face, what you said, what Atlas said, and the answer on screen" width="720">
 
 <table>
   <tr>
-    <td width="270"><img src="docs/images/voice-picker.png" alt="The voice picker with English and Arabic dialect voices" width="258"></td>
+    <td width="270"><img src="docs/images/voice-picker.png" alt="The voice list open above the call button, with English and Arabic dialect voices" width="258"></td>
     <td>
 
-- **English and five Arabic dialects:** Gulf, Levantine, Egyptian, North African and Modern Standard, each with a female and a male voice.
-- **Pick the voice before you call,** from the arrow beside the call button. Interrupt any time, or mute yourself.
-- **The same checked answers.** The voice reads out the answer Atlas has already checked. It never works out numbers by itself.
-- **A face.** A line-drawn bust blinks, listens and moves its mouth as it speaks.
-- **Prefer typing?** The microphone button turns your speech into a typed question you can read before sending.
+- **English and five Arabic dialects** (Gulf, Levantine, Egyptian, North African, Modern Standard), female or male.
+- **Pick the voice** from the arrow beside the call button.
+- **Checked answers.** The voice reads out the checked answer and never works out numbers itself.
+- **Prefer typing?** The microphone button turns speech into a question you can edit before sending.
 
 </td>
   </tr>
@@ -75,34 +72,28 @@ Press the phone button and talk to Atlas as you would on a call, in English or i
 
 ## Pick the AI model
 
-Choose which AI answers from the top bar: a cheap, fast one for everyday questions or a stronger one for hard ones. Atlas shows what each answer cost and how long it took.
+Pick the model, and how long it thinks, from the top bar. Each answer shows what it cost and how long it took.
 
-<img src="docs/images/models.png" alt="The model picker open, showing GPT-6 Astra, GPT-6.1 Sol and GPT-6 Luna" width="640">
+<img src="docs/images/models.png" alt="The model picker open, with the GPT-6 models under OpenAI and the free Gemini models below, and the effort picker beside it" width="640">
 
 | Model | Best for | Cost |
 | --- | --- | --- |
-| GPT-6 Luna | Everyday questions (the default) | Lowest |
+| GPT-6 Luna | Everyday questions | Lowest |
 | GPT-6.1 Sol | A balance of depth and cost | Medium |
 | GPT-6 Astra | The hardest questions | Highest |
 
-On the sample project, Luna answered all 21 test questions correctly for 2 cents in total ([test report](docs/EVAL.md)).
-
-Beside the model, choose how long it thinks before answering: **Low effort** is fast, **Medium effort** is medium speed, and **High effort** is slower and most careful. GPT models start on Medium and Gemini on Low. In a voice call, a lower effort means Atlas starts speaking its answer sooner.
-
 ### Or use it for free
-
-Atlas can also answer at no cost. Every option you set up sits in the same model picker, grouped by who runs it, so you can pick GPT-6 Luna for one question and Gemini for the next. While a free model is picked, the top bar shows **Free tier** beside the picker, and each answer's cost reads "Free".
 
 | Free option | How to set it up | Good to know |
 | --- | --- | --- |
-| Gemini's free tier, from Google | Get a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and add `GEMINI_API_KEY=` to `.env` | There is a daily limit. Google uses what its free tier is sent to improve its products, so keep confidential files off it |
-| A model on your own computer | Install [Ollama](https://ollama.com), then run `ollama pull qwen3:14b` and `ollama pull bge-m3` | Nothing leaves your computer. It needs a graphics card with at least 6 GB of memory |
+| Gemini's free tier | Get a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and add `GEMINI_API_KEY=` to `.env` | Daily limit. Google may use what it is sent, so keep confidential files off it |
+| A model on your computer | Install [Ollama](https://ollama.com), then run `ollama pull qwen3:14b` and `ollama pull bge-m3` | Nothing leaves your computer. Needs a graphics card with 6 GB or more |
 
-The picker starts on a free model: one on your computer if there is one, otherwise Gemini. Searching your documents always uses that default, whichever model answers. Voice calls still use OpenAI. Neither free option has been through the 21 test questions yet.
+Free models sit in the same picker. Voice calls still use OpenAI.
 
 ## English or Arabic, light or dark
 
-The whole app switches between English and Arabic (right to left) and between light and dark, from the top bar. Ask in Arabic and Atlas answers in Arabic. File names and numbers stay exactly as written.
+Switch between English and Arabic, and light and dark, from the top bar. Atlas answers in the language you ask in.
 
 ![The Arabic interface, right to left, with an Arabic question answered in Arabic](docs/images/arabic.png)
 
@@ -112,7 +103,7 @@ The whole app switches between English and Arabic (right to left) and between li
 
 <p align="center"><img src="docs/images/opening.png" alt="Atlas's face with the words 'Every answer, with its page.'" width="320"></p>
 
-The AI never has to invent a number. It plans what to look up, and code does the work: it searches the text, reads pages and adds up table rows. Before you see anything, Atlas checks that every number came from that work and every source really exists. If something is off, the AI has to fix it.
+An AI model and ordinary code share the work. The model reads your question and decides what to look up. Code does the looking up: it searches the files, reads pages and adds up table rows. The model then writes the answer from what the code found. Before you see it, Atlas checks that every number in the answer appears in those results and that every source points to a real page or row. An answer that fails goes back to the model to fix.
 
 ```mermaid
 flowchart LR
@@ -123,14 +114,25 @@ flowchart LR
   check -- "all good" --> answer(["Answer with<br/>its sources"])
 ```
 
-A voice call takes the same road. The voice only listens and speaks; your question goes through the same steps and checks as a typed one.
+A voice call takes the same path: the voice only listens and speaks, and the question it hears is answered and checked like a typed one.
+
+### In the code
 
 ```mermaid
-flowchart LR
-  speak(["You speak"]) --> listen["The voice<br/>hears the question"]
-  listen --> atlas["Atlas answers it<br/>and checks it"]
-  atlas --> say(["The voice says the answer,<br/>the screen shows it"])
+flowchart TD
+  files[/"PDF and Excel files"/] -->|"on load and on change"| readers["Readers<br/>mupdf, exceljs"]
+  readers --> index[("SQLite index per folder<br/>tables as SQL tables<br/>keyword + embedding search")]
+
+  ask(["POST /api/chat<br/>typed, or from a voice call"]) --> agent["Agent loop<br/>OpenAI, Gemini or Ollama"]
+  agent -->|"tool call"| tools["Tools<br/>search_documents<br/>read_pages, query_tables<br/>calculate, ..."]
+  tools <--> index
+  tools -->|"result, with an id"| agent
+  agent -->|"submit_answer"| checks["Checks<br/>numbers from tool results<br/>sources exist"]
+  checks -->|"fail: back to the model, max 2"| agent
+  checks -->|"pass"| reply(["Streamed to the web app<br/>answer, table, sources"])
 ```
+
+Each step has its own chart in [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
 ## Tech stack
 
