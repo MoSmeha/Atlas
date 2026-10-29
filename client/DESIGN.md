@@ -79,12 +79,6 @@ colors:
   red-error-dark: "#f58a83"
   red-text-dark: "#ffaaa4"
 typography:
-  display:
-    fontFamily: "\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif"
-    fontSize: "26px"
-    fontWeight: 600
-    lineHeight: 1.25
-    letterSpacing: "-0.01em"
   opening-quote:
     fontFamily: "\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif"
     fontSize: "26px"
@@ -222,14 +216,6 @@ components:
   badge-error-dark:
     backgroundColor: "{colors.red-tint-dark}"
     textColor: "{colors.red-text-dark}"
-  suggested-question:
-    textColor: "{colors.soft-text}"
-    typography: "{typography.body}"
-    rounded: "{rounded.xs}"
-    padding: "12px 8px"
-  suggested-question-hover:
-    backgroundColor: "{colors.hover-ground}"
-    textColor: "{colors.body-text}"
   source-row:
     textColor: "{colors.soft-text}"
     typography: "{typography.body-sm}"
@@ -433,10 +419,9 @@ components:
     textColor: "{colors.soft-text}"
     typography: "{typography.body-sm}"
   opening:
-    backgroundColor: "{colors.chrome-ground}"
-    padding: "16px"
+    backgroundColor: "{colors.page-ground}"
   opening-dark:
-    backgroundColor: "{colors.chrome-ground-dark}"
+    backgroundColor: "{colors.page-ground-dark}"
   opening-face:
     rounded: "{rounded.full}"
     size: "156px"
@@ -459,11 +444,11 @@ components:
 
 **Creative North Star: "The Quiet Register"**
 
-Atlas is the category standard for chat-with-your-documents tools, built to the craft of Claude.ai's calm reading column (and its question box under the heading on a fresh chat), Perplexity's numbered sources and Linear's dense, quiet chrome with the content on an inset sheet. The owner chose the conventions on purpose and the build doesn't dress them up. The palette is grounded in paper, pencil and a desk's manila folders: graphite and warm stone, with no blue cast. The 52px top bar and the sidebar (300px by default, dragged between 240 and 480px, or closed) are one continuous stone chrome field. The conversation sits on it as an inset sheet: the page ground, a 1px hairline and 8px corners, scrolling on its own while the chrome stays still. The sheet holds one 760px column. Everything is drawn with 1px hairlines on flat grounds. The one graphite appears only where the reader acts or where the system points at evidence.
+Atlas is the category standard for chat-with-your-documents tools, built to the craft of Claude.ai's calm reading column, Perplexity's numbered sources and Linear's dense, quiet chrome with the content on an inset sheet. The owner chose the conventions on purpose and the build doesn't dress them up. The palette is grounded in paper, pencil and a desk's manila folders: graphite and warm stone, with no blue cast. The 52px top bar and the sidebar (300px by default, dragged between 240 and 480px, or closed) are one continuous stone chrome field. The conversation sits on it as an inset sheet: the page ground, a 1px hairline and 8px corners, scrolling on its own while the chrome stays still. The sheet holds one 760px column. Everything is drawn with 1px hairlines on flat grounds. The one graphite appears only where the reader acts or where the system points at evidence.
 
 The same world runs in two schemes and two languages. Dark is the same roles on warm graphite: the chrome darkest, the page a step up, raised surfaces a step above that. Every gray, ink, amber and red shade is a role, not a lightness step, and each role has its dark value, so a component that asks for "dimmed" or "red tint" reads correctly in both. The primary inverts by scheme: a graphite fill with white text in light, a chalk fill with graphite text in dark. Arabic mirrors the whole layout, while content (answers, questions, quotes, table cells, file names) keeps its own direction. Figures are Western digits in both languages, so a number on screen matches the number in the file.
 
-Density follows Linear more than a marketing page. Tree rows are 13px names over 12px meta. Tables run at 13px with tabular figures. The answer reads at 15px with a 75ch measure. Motion only marks state changes: a hover tint, a chevron turning, a folder opening, the sidebar sliding, and the finished answer's table and sources settling in once with a short fade-and-rise. Two exceptions, both approved by the owner on 2026-10-29, and both are Atlas's face (a philosopher's bust in graphite line work, marble in both schemes): the opening screen on every page load, where the bust looks up and says its line, and a voice call, during which the face moves continuously.
+Density follows Linear more than a marketing page. Tree rows are 13px names over 12px meta. Tables run at 13px with tabular figures. The answer reads at 15px with a 75ch measure. Motion only marks state changes: a hover tint, a chevron turning, a folder opening, the sidebar sliding, and the finished answer's table and sources settling in once with a short fade-and-rise. Two exceptions, both approved by the owner on 2026-10-29, and both are Atlas's face (a philosopher's bust in graphite line work, marble in both schemes): the opening of every fresh conversation, where the bust looks up, says its line and waits for the question, and a voice call, during which the face moves continuously.
 
 The system refuses the demo look named in the direction contract: decorative gradients, glowing AI sparkles, bubble chat and cards inside cards. The question is a heading-weight line, not a bubble. The answer is plain prose on the page ground, not a card.
 
@@ -477,7 +462,7 @@ The system refuses the demo look named in the direction contract: decorative gra
 - One system UI family for everything (Segoe UI carries Arabic on Windows); monospace only for SQL and tool input
 - Tabular Western figures wherever numbers appear, in English and Arabic
 - The whole layout mirrors in Arabic; content keeps its own direction
-- Continuous motion lives only in the bust: on the opening screen, and in the call avatar while a call is open
+- Continuous motion lives only in the bust: in the empty conversation, and in the call avatar while a call is open
 
 ## Colors
 
@@ -502,11 +487,11 @@ A warm, nearly colourless palette: stone grays carry the structure, one graphite
 - **Signal Red** (`red-tint` ground, `red-text` text, `red-wash`/`red-rule`/`red-icon` in notices, each with its `-dark` value): files Atlas could not open (Damaged, Password protected) and error notices. `red-error` is the inline error text under fields and the dropzone. In dark the grounds sink to deep brown and maroon and the text and icons lift to light amber and coral.
 
 ### Neutral
-- **Chrome Ground** (`chrome-ground`, `chrome-ground-dark`): the one field behind the top bar, the sidebar and the sheet's margin, plus the opening screen, the viewer stage behind a PDF page, sheet headers, the row-number gutter, the strip of sheet tabs and the code ground. In dark it is the deepest graphite.
+- **Chrome Ground** (`chrome-ground`, `chrome-ground-dark`): the one field behind the top bar, the sidebar and the sheet's margin, plus the viewer stage behind a PDF page, sheet headers, the row-number gutter, the strip of sheet tabs and the code ground. In dark it is the deepest graphite.
 - **Page Ground** (`page-ground`, `page-ground-dark`): the inset sheet the conversation sits on. The docked composer strip reuses it so turns scroll under it cleanly.
 - **Surface** (`white`, `surface-dark`): raised surfaces that hold content you read: composer box, call card, result-table frame, sheet stage, the open sheet's tab, modals, menus, popovers and dropdowns. On the chrome ground, a tree row lifts to it under the pointer. In dark it is a step above the page, so these surfaces lift off it.
 - **Hover Ground** (`hover-ground`, `hover-ground-dark`): the hover tint on rows and quiet controls, sticky table headers, the disabled composer, the call avatar's disc and the "not found" notice ground.
-- **Quiet Chip** (`quiet-chip`, `quiet-chip-dark`): neutral badges, source numbers and the disabled-control ground. Also the hairline between suggested questions and under the viewer header.
+- **Quiet Chip** (`quiet-chip`, `quiet-chip-dark`): neutral badges, source numbers and the disabled-control ground. Also the hairline under the viewer header.
 - **Hairline** (`hairline`, `hairline-dark`): the sheet's edge, table frames, quote rules, tree rails, the trace rail, the PDF page edge, the sheet gutter rule, the top bar's divider before the language and theme, and the disabled-control border.
 - **Border** (`border`, `border-dark`): input and composer borders, the default control border, scrollbar thumbs (browser and ScrollArea) and trace markers. In dark it is also the hairline edge of floating surfaces.
 - **Dimmed** (`dimmed`, `dimmed-dark`): meta text, placeholders (`placeholder-dark` in dark), column headers, the icon of a file Atlas does not read, chevrons and list markers (5.1:1 on chrome in light).
@@ -530,11 +515,10 @@ A warm, nearly colourless palette: stone grays carry the structure, one graphite
 **Character:** One native family at about a 1.15 ratio (12, 13, 15, 17, 20, 26). It looks like the user's own operating system in either script, so the documents and figures carry the voice. Weight does the ranking: 400 for reading, 600 for names, labels and headings, and 700 only on the wordmark.
 
 ### Hierarchy
-- **Display** (600, 26px, 1.25, -0.01em, balanced wrap): the one empty-state heading that names the folder or the state ("Ask about riyadh-tower").
-- **Opening quote** (400, 26px, 1.3, -0.01em, balanced wrap, at most 20ch): Atlas's line on the opening screen, in the bright tone. 20px on a phone. Arabic sets it at 1.55 with no tracking.
+- **Opening quote** (400, 26px, 1.3, -0.01em, balanced wrap, at most 20ch): Atlas's line in the empty conversation, in the bright tone, and the largest type in the app. 20px on a phone. Arabic sets it at 1.55 with no tracking.
 - **Headline** (600, 20px, 1.35): each question at the top of its turn, `dir="auto"` so Arabic questions set right to left.
 - **Title** (600, 17px, 1.5): modal titles and headings inside an answer. The wordmark uses the same size at 700 with -0.015em tracking.
-- **Body** (400, 15px, 1.55, max 75ch): answer prose, suggested questions, composer text and empty-state lines (65ch). Arabic answers set at 1.07x (about 16px) with 1.75 line height. Arabic interface text takes a 1.6 body line height, because Arabic letters sit lower and denser than Latin at the same size.
+- **Body** (400, 15px, 1.55, max 75ch): answer prose and composer text. Arabic answers set at 1.07x (about 16px) with 1.75 line height. Arabic interface text takes a 1.6 body line height, because Arabic letters sit lower and denser than Latin at the same size.
 - **Body small** (400, 13px, 1.45): tree names, source rows, tables, trace steps, form labels (600), the opening's "— Atlas" (600) and the usage line.
 - **Label** (600, 12px, sentence case, no tracking): badges, source numbers, the "Sources" list heading, sheet column letters and row numbers. Dimmed 12px/400 is the meta line.
 
@@ -553,20 +537,20 @@ The sidebar is 300px by default. On a wide screen it closes from the toggle at t
 
 Inside the sheet, a centred column of 760px plus 16px gutters each side. Its content stack has 32px top and 24px bottom padding with 24px between turns. Inside a turn, parts are 16px apart.
 
-Before the first question, the empty state holds the composer: the heading, its one summary line, the question box and then the five suggested questions, as one block a little above the middle of the sheet (24px gaps, 12dvh extra below). Once a question is asked, the composer docks at the bottom of the sheet with `position: sticky` on the page ground, 8px above it and 16px below. Turns that scroll under it fade out over a 24px band of page ground just above the dock (see The Fade Above The Dock Rule).
+Before the first question the sheet holds only Atlas's opening: the bust, its line and the byline, centred in the space above the composer and lifted 8dvh off the middle. The composer always docks at the bottom of the sheet with `position: sticky` on the page ground, 8px above it and 16px below; on a fresh page it waits below the sheet's foot until the line is said, then rises into place. The column clips what hangs below it (`overflow-y: clip`, which makes no scroll container, so the dock still sticks), so the rising box never adds a scrollbar. Turns that scroll under it fade out over a 24px band of page ground just above the dock (see The Fade Above The Dock Rule).
 
-Spacing runs on an 8/12/16/24/32 scale (`xs` to `xl`). Tight inner rhythm uses 2, 4 and 6px steps: 2px between a name and its meta, 4px between badges and trace lines, and 6px for row padding and stacked label-to-field gaps. Suggested questions are full-width rows (12px by 8px) separated by hairlines. Source rows bleed their hover ground 8px past the column edge so their text lines up with the prose. Result tables scroll inside their frame up to `min(28rem, 60dvh)`.
+Spacing runs on an 8/12/16/24/32 scale (`xs` to `xl`). Tight inner rhythm uses 2, 4 and 6px steps: 2px between a name and its meta, 4px between badges and trace lines, and 6px for row padding and stacked label-to-field gaps. Source rows bleed their hover ground 8px past the column edge so their text lines up with the prose. Result tables scroll inside their frame up to `min(28rem, 60dvh)`.
 
 Below `sm`, the sidebar toggle gives way to the burger, the language and theme controls move from the top bar to the sidebar's foot under a hairline, Clear chat becomes an icon button, the cost-and-time pair moves to the composer's hint line, and the viewer goes full screen. Ctrl+B opens and closes the folded sidebar there too. Below `xs` (36em), a source's place always drops under its name.
 
-During a voice call the call card takes the composer's place, under the heading before the first question and docked after it, at the same width. Inside it, 12px padding and 12px gaps: the avatar and a text block side by side, then a control row under a 1px Quiet Chip rule (voice picker at the start, actions at the end). Below `xs` the avatar drops to 56px, controls grow to 40px, the picker takes the row's remaining width so the controls stay on one line, only the latest caption shows, and the standing hint under the card is hidden.
+During a voice call the call card takes the composer's place in the dock, at the same width, and the opening steps back while it is open. Inside it, 12px padding and 12px gaps: the avatar and a text block side by side, then a control row under a 1px Quiet Chip rule (voice picker at the start, actions at the end). Below `xs` the avatar drops to 56px, controls grow to 40px, the picker takes the row's remaining width so the controls stay on one line, only the latest caption shows, and the standing hint under the card is hidden.
 
 Content widths inside the viewer cap at 560 to 600px for notes and states. The PDF page centres on the chrome stage with 16px padding, and the sheet runs edge to edge on the surface like a grid in Excel. A workbook opened whole keeps its sheet tabs along the viewer's foot, as Excel does.
 
 ### Arabic and direction
 The interface language sets `dir` on the document, and the whole layout mirrors: the sidebar moves to the right, its resize edge and the toggle's panel icon follow it, the top bar's ends swap, notifications rise from the bottom corner at the end of the reading direction, and every spacing, rule and rail uses logical properties (`inline-start`, `inline-end`). Arrows and chevrons that point along the reading direction turn round (`flip-rtl`, or a rotation for the trace and tree chevrons).
 
-Content keeps its own direction with `dir="auto"`: answers (set right to left when Arabic, with `lang`), questions, quotes, suggested questions, table cells, sheet cells, file names and said-aloud transcripts. A result table runs in the direction of its own column labels, not the page's. SQL, formulas, tool input that is code, folder paths and the full-path tooltip are always left to right. The Excel grid in the viewer stays left to right as Excel draws it, while its notes, buttons and sheet tabs follow the interface. Numbers in tables align right physically, not to the end, so their units line up in either direction. A Latin file name in an Arabic tree keeps its own direction but lines up on the right with the Arabic lines.
+Content keeps its own direction with `dir="auto"`: answers (set right to left when Arabic, with `lang`), questions, quotes, table cells, sheet cells, file names and said-aloud transcripts. A result table runs in the direction of its own column labels, not the page's. SQL, formulas, tool input that is code, folder paths and the full-path tooltip are always left to right. The Excel grid in the viewer stays left to right as Excel draws it, while its notes, buttons and sheet tabs follow the interface. Numbers in tables align right physically, not to the end, so their units line up in either direction. A Latin file name in an Arabic tree keeps its own direction but lines up on the right with the Arabic lines.
 
 Inside an Arabic sentence, file names, sheet names, paths, extensions and codes are wrapped in first-strong isolates, so their dots, slashes and colons stay put. An amount and its currency, and a time and its unit, are joined by no-break spaces so a wrapping line never strands "SAR" or "s" alone. The wordmark stays "Atlas" in Latin, and so does the name under the opening line; the keyboard shortcut in the sidebar toggle's tooltip stays left to right.
 
@@ -663,17 +647,20 @@ A question asked in a call is a normal turn. Its heading ends with a dimmed 16px
 The voice call, in the composer's place and in the composer's own frame: the surface, 8px corners, a 1px Border-gray edge, settling in with the 180ms fade-and-rise. Beside the avatar, a 13px/600 status line ("Listening", "Muted", the running step's name, "Atlas is speaking", truncated, announced politely) with the call's clock and cost at the line end in dimmed 12px tabular numerals (price per minute in a tooltip). Under it, "You" and "Atlas" captions: a 44px dimmed 12px/600 speaker column and 13px words capped at two lines, set against their end so the newest words stay in view. The latest speaker's line reads in Body Text, the other in Dimmed. The control row holds the voice picker, a default Stop answer while a question runs, a default mute toggle and a filled graphite End call (34 to 36px). On a phone they are 40px icon buttons. A dimmed 12px hint sits under the card.
 
 ### Call Avatar
-A philosopher's bust with curls and a full beard, drawn like marble: graphite line work (gray 8 at 1.2 to 1.7 stroke, curls and cloak folds in gray 5) with white skin and cloth, no colour in the drawing. The drawing takes the fixed light marble values (`--atlas-marble-*`) in both schemes; only the Hover Ground disc behind it and its ring follow the theme. A 72px circle in the call card (56px on a phone, which drops the curls and folds, draws heavier lines and larger eyes so it reads as a face first). Its ring carries the state: a Hairline ring while it listens, a gray 6 ring whose weight follows the user's voice while they speak, a dashed gray 5 ring turning once every 7s while a question runs, and a 1.5px ring in the link colour while Atlas speaks (graphite in light, chalk in dark). Before and after the live call it rests at 85% opacity with its eyes lowered. The opening screen uses the same face at 156px.
+A philosopher's bust with curls and a full beard, drawn like marble: graphite line work (gray 8 at 1.2 to 1.7 stroke, curls and cloak folds in gray 5) with white skin and cloth, no colour in the drawing. The drawing takes the fixed light marble values (`--atlas-marble-*`) in both schemes; only the Hover Ground disc behind it and its ring follow the theme. A 72px circle in the call card (56px on a phone, which drops the curls and folds, draws heavier lines and larger eyes so it reads as a face first). Its ring carries the state: a Hairline ring while it listens, a gray 6 ring whose weight follows the user's voice while they speak, a dashed gray 5 ring turning once every 7s while a question runs, and a 1.5px ring in the link colour while Atlas speaks (graphite in light, chalk in dark). Before and after the live call it rests at 85% opacity with its eyes lowered. The empty conversation uses the same face at 156px.
 
-**The Living Face Rule.** Continuous motion is allowed inside the bust only: on the opening screen while it says its line, and in the call avatar while a call is open. In a call it blinks every 2.8 to 6.5s, breathes on a slow 4.2s cycle, raises its brows while the user speaks, looks up while a question runs, moves its mouth with Atlas's measured voice, and its ring is dashed and turning while the call connects and while it checks. On the opening it comes into focus with its eyes lowered, looks up, and moves its mouth syllable by syllable with its line. Under reduced motion it holds one still pose per state, and it does not move in a hidden tab. Every other surface keeps motion for state changes only.
+**The Living Face Rule.** Continuous motion is allowed inside the bust only: in the empty conversation, where it says its line and then waits, and in the call avatar while a call is open. In a call it blinks every 2.8 to 6.5s, breathes on a slow 4.2s cycle, raises its brows while the user speaks, looks up while a question runs, moves its mouth with Atlas's measured voice, and its ring is dashed and turning while the call connects and while it checks. On the opening it comes into focus with its eyes lowered, looks up, and moves its mouth syllable by syllable with its line; then it blinks and glances now and then until a question is written. Under reduced motion it holds one still pose per state, and it does not move in a hidden tab. Every other surface keeps motion for state changes only.
 
-### Opening Screen
-On every page load, before the app shows, Atlas introduces itself. A fixed screen on the Chrome Ground (the same ground the page paints before the app loads, so nothing flashes) covers the frame while the app loads underneath; the opening never delays the first answer. A centred figure, 8dvh above the middle with 24px gaps: the bust at 156px (120px on a phone, every curl kept at both sizes), Atlas's line in the Opening quote style, and "— Atlas" under it in dimmed 13px/600, the name always Latin and left to right. The line is "Every answer, with its page." in English and «كل إجابة، ومعها صفحتها.» in Arabic, inside the quotation marks its language uses, kept inside the line rather than hung.
+### Opening
+Every fresh conversation opens with Atlas, on the sheet itself: the frame is usable from the first frame, and the opening never delays a question. A centred figure in the space above the composer, lifted 8dvh off the middle, with 24px gaps: the bust at 156px (120px on a phone, every curl kept at both sizes), Atlas's line in the Opening quote style, and "— Atlas" under it in dimmed 13px/600, the name always Latin and left to right. The line is "Every answer, with its page." in English and «كل إجابة، ومعها صفحتها.» in Arabic, inside the quotation marks its language uses, kept inside the line rather than hung.
 
-- **Beats** (about 2.5s for the five-word line, all on `cubic-bezier(0.16, 1, 0.3, 1)`): the face comes into focus over 760ms (from 92% scale, 10px blur and no opacity) with its eyes lowered; at 380ms it looks up; at 760ms it speaks, each word rising 6px out of a 4px blur over 460ms, 150ms after the one before, while its mouth opens in 112ms syllables; "— Atlas" fades in over 360ms once the line is said; after a 620ms hold the screen lifts away over 420ms (the figure rises 8px, shrinks to 98.5% and blurs 3px as the screen fades).
-- **Waiting and skipping:** it waits until the tab is visible, so a page opened in a background tab plays when it is first looked at. Any click or key skips straight to the lift.
-- **Reduced motion:** the still face and the whole line show at once, hold for 1.4s and fade over 220ms, with no focus pull, rising words or lift.
-- **Access:** the screen is `aria-hidden` and decorative; the app underneath is already there for assistive technology.
+Nothing else sits under it: no heading, no summary line and no suggested questions (the owner's call on 2026-10-29). The sidebar says what is loaded, and the composer's hint says whether a question can be asked yet and why not.
+
+- **Beats** (about 1.6s for the five-word line, all on `cubic-bezier(0.16, 1, 0.3, 1)`): the face comes into focus over 760ms (from 92% scale, 10px blur and no opacity) with its eyes lowered; at 380ms it looks up; at 760ms it speaks, each word rising 6px out of a 4px blur over 460ms, 150ms after the one before, while its mouth opens in 112ms syllables. Once the line is said, "— Atlas" fades in over 360ms and the composer rises out of the sheet's foot (from a full translate down, 560ms, with a 360ms ease-out fade). The figure stays, and the face keeps blinking and glancing while it waits.
+- **Stepping back:** while there is a question in the box, a dictation runs or a call is open, the figure fades over 180ms (rising 6px into a 3px blur) and then hides, so the face is no longer painted. It returns over 320ms when the box is empty again, without saying the line again. Clearing the chat plays the opening again; the composer stays docked.
+- **Waiting and skipping:** it waits until the tab is visible, so a page opened in a background tab plays when it is first looked at. Any click or key finishes the line at once, and the composer rises.
+- **Reduced motion:** the still face, the whole line and the composer are there from the first frame, with no focus pull, rising words or rising box; stepping back is a plain fade.
+- **Access:** a figure with the line as a blockquote and the byline as its caption, read like any content; hidden from assistive technology while it steps back.
 
 ### Voice Picker
 A Mantine Select (208px in the call card) grouped under "English" and "Arabic". Options read "Gulf · female"; each Arabic dialect shows its own name in Arabic, dimmed and right to left, at the option's end. Its dropdown opens upward at 240px on the raised surface. Choosing another voice mid-call reconnects in the new voice.
@@ -689,7 +676,7 @@ A Mantine Select (208px in the call card) grouped under "English" and "Arabic". 
 - **Do** separate resting surfaces with 1px hairlines on chrome, page or surface grounds, and keep shadows for modals, menus and the PDF page; give floating surfaces a hairline edge in dark.
 - **Do** keep the conversation on the inset sheet, which scrolls on its own inside the still chrome field, and keep it off both window edges when the sidebar is closed.
 - **Do** make a hidden sidebar `inert`, and keep its width and open state for the next visit.
-- **Do** put the question box under the heading until the first question, then dock it at the sheet's foot with the page-ground fade above it.
+- **Do** dock the question box at the sheet's foot from the start, with the page-ground fade above it, and let the opening hold the sheet until a question is written.
 - **Do** set every figure in tabular Western digits and right-align numeric columns physically, in both languages.
 - **Do** use logical properties so the whole layout mirrors in Arabic, `dir="auto"` on content, and isolates around file names, paths and codes inside Arabic sentences.
 - **Do** keep SQL, formulas, paths and the Excel grid left to right in both languages.
@@ -697,7 +684,7 @@ A Mantine Select (208px in the call card) grouped under "English" and "Arabic". 
 - **Do** use 150ms ease-out for hover and colour changes and 180ms `cubic-bezier(0.16, 1, 0.3, 1)` for content settling in, collapsing, a folder opening or the sidebar sliding, and disable both under reduced motion.
 - **Do** use Tabler outline icons at 1.5 to 2 stroke, sized 12 to 18px. The manila folder glyph is the one authored icon.
 - **Do** give the bust a still pose per state under reduced motion, and stop its motion in a hidden tab (The Living Face Rule).
-- **Do** let any click or key skip the opening, and wait for the tab to be seen before it plays.
+- **Do** let any click or key finish the opening's line at once, and wait for the tab to be seen before it plays.
 
 ### Don't:
 - **Don't** use decorative gradients, glowing AI sparkles, chat bubbles or cards inside cards. The page-ground fade above the docked composer is the only gradient (The Fade Above The Dock Rule).
@@ -708,6 +695,6 @@ A Mantine Select (208px in the call card) grouped under "English" and "Arabic". 
 - **Don't** add a second typeface or a display face. Monospace is for SQL and tool input only.
 - **Don't** use Eastern Arabic digits or round an amount for display.
 - **Don't** translate the wordmark, file names, item codes or numbers.
-- **Don't** choreograph page loads. The one exception, approved by the owner on 2026-10-29, is the opening screen, where the bust says its line; it plays once per load, never blocks the app, and any click or key skips it. Elsewhere motion marks state changes only, except inside the call avatar while a call is open.
+- **Don't** choreograph page loads. The one exception, approved by the owner on 2026-10-29, is the opening of a fresh conversation, where the bust says its line and the composer rises; it plays on each load and each cleared chat, never blocks the app, and any click or key finishes it. Elsewhere motion marks state changes only, except inside the call avatar while a call is open.
 - **Don't** let a blue cast back into the neutrals or the brand tone. Grays and the dark ramp are warm stone; graphite has almost no chroma.
 - **Don't** colour the bust. Its drawing stays graphite on white marble in both schemes, and the brand tone touches only its ring while Atlas speaks.

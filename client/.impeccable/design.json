@@ -172,7 +172,7 @@
       "chrome-ground": {
         "role": "neutral",
         "displayName": "Chrome Ground",
-        "canonical": "#f5f4f1 (gray.1; AppShell header, navbar and main; the opening screen)",
+        "canonical": "#f5f4f1 (gray.1; AppShell header, navbar and main)",
         "tonalRamp": [
           "#1b1917",
           "#514f4d",
@@ -667,7 +667,7 @@
       "chrome-ground-dark": {
         "role": "neutral",
         "displayName": "Chrome Ground (dark)",
-        "canonical": "#131210 (gray.1 role in dark, dark.8; the opening screen)",
+        "canonical": "#131210 (gray.1 role in dark, dark.8)",
         "tonalRamp": [
           "#0d0c0a",
           "#131210",
@@ -1116,13 +1116,9 @@
       }
     },
     "typographyMeta": {
-      "display": {
-        "displayName": "Display",
-        "purpose": "The one empty-state heading that names the folder or the state."
-      },
       "opening-quote": {
         "displayName": "Opening quote",
-        "purpose": "Atlas's line on the opening screen: 26px/400, 20px on a phone; Arabic at 1.55 with no tracking."
+        "purpose": "Atlas's line in the empty conversation: 26px/400, 20px on a phone; Arabic at 1.55 with no tracking."
       },
       "headline": {
         "displayName": "Headline",
@@ -1138,7 +1134,7 @@
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Answer prose (max 75ch), suggested questions, composer text. Arabic interface text takes a 1.6 line height."
+        "purpose": "Answer prose (max 75ch) and composer text. Arabic interface text takes a 1.6 line height."
       },
       "body-arabic": {
         "displayName": "Body (Arabic)",
@@ -1208,7 +1204,7 @@
       {
         "name": "avatar-loop",
         "value": "requestAnimationFrame; pose eases with a 110ms half-life, the mouth with 45ms",
-        "purpose": "The bust only: in the call avatar while a call is open, and on the opening screen while it says its line (The Living Face Rule). Paused in a hidden tab; a still pose per state under reduced motion."
+        "purpose": "The bust only: in the call avatar while a call is open, and in the empty conversation, where it says its line and then waits (The Living Face Rule). Paused in a hidden tab; a still pose per state under reduced motion."
       },
       {
         "name": "avatar-blink",
@@ -1228,7 +1224,7 @@
       {
         "name": "opening-focus",
         "value": "760ms cubic-bezier(0.16, 1, 0.3, 1), from scale 0.92, blur 10px, opacity 0",
-        "purpose": "The bust comes into focus on the opening screen once the tab is visible; eyes lowered, looking up at 380ms."
+        "purpose": "The bust comes into focus in the empty conversation once the tab is visible; eyes lowered, looking up at 380ms."
       },
       {
         "name": "opening-words",
@@ -1241,14 +1237,19 @@
         "purpose": "\"— Atlas\" once the line is said."
       },
       {
-        "name": "opening-lift",
-        "value": "420ms cubic-bezier(0.16, 1, 0.3, 1) after a 620ms hold; figure up 8px, scale 0.985, blur 3px, screen fades",
-        "purpose": "The opening lifts away to the app; any click or key jumps here. About 2.5s in all."
+        "name": "opening-composer-rise",
+        "value": "560ms cubic-bezier(0.16, 1, 0.3, 1) transform from translateY(100%), 360ms ease-out opacity",
+        "purpose": "Once the line is said (or a click or key finishes it), the docked composer rises out of the sheet's foot; the column clips it so no scrollbar appears. About 1.6s in all. Only on a fresh page."
+      },
+      {
+        "name": "opening-step-back",
+        "value": "180ms out (opacity, 6px rise, 3px blur, then hidden), 320ms back, cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The face and its line step back while a question is in the box, a dictation runs or a call is open, and return when the box is empty, without saying the line again."
       },
       {
         "name": "opening-still",
-        "value": "1.4s hold, then a 220ms opacity fade",
-        "purpose": "The opening under reduced motion: still face and the whole line, no focus pull, rising words or lift."
+        "value": "none; a plain opacity fade when stepping back",
+        "purpose": "The opening under reduced motion: the still face, the whole line and the composer from the first frame, with no focus pull, rising words or rising box."
       }
     ],
     "breakpoints": [
@@ -1314,14 +1315,6 @@
       "css": ".ds-sources{list-style:none;margin:0;padding:0;max-width:420px}.ds-source{display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:8px;align-items:start;width:100%;padding:6px 8px;border:0;border-radius:4px;background:transparent;color:#373533;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:13px;line-height:20px;text-align:start;cursor:pointer;transition:background-color 150ms ease-out}.ds-source:hover{background:#f9f8f6}.ds-source:focus-visible{outline:2px solid #373532;outline-offset:2px}.ds-source-n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;margin-top:1px;border-radius:4px;background:#ebe9e7;color:#373533;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}.ds-source-main{display:flex;flex-direction:column;gap:2px;min-width:0}.ds-source-name{font-weight:600;color:#1b1917}.ds-source-place{color:#696765;font-variant-numeric:tabular-nums}.ds-source-quote{padding-inline-start:8px;border-inline-start:1px solid #dddcda;color:#514f4d}.ds-source[data-active]{background:#e4e3e0}.ds-source[data-active] .ds-source-n{background:#373532;color:#fff}"
     },
     {
-      "name": "Suggested Question Row",
-      "kind": "custom",
-      "refersTo": "suggested-question",
-      "description": "Full-width quiet rows between hairlines on the empty state; the arrow nudges on hover.",
-      "html": "<ul class=\"ds-suggest\"><li><button>Which cost items are above SAR 1 million?<span aria-hidden=\"true\">&#8594;</span></button></li><li><button>What is the scope of the main contract?<span aria-hidden=\"true\">&#8594;</span></button></li></ul>",
-      "css": ".ds-suggest{list-style:none;margin:0;padding:0;max-width:760px;border-top:1px solid #ebe9e7}.ds-suggest li{border-bottom:1px solid #ebe9e7}.ds-suggest button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 8px;border:0;border-radius:4px;background:transparent;color:#373533;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:15px;line-height:1.55;text-align:start;cursor:pointer;transition:background-color 150ms ease-out,color 150ms ease-out}.ds-suggest span{margin-inline-start:auto;color:#a3a19f;transition:color 150ms ease-out,transform 150ms ease-out}.ds-suggest button:hover{background:#f9f8f6;color:#1b1917}.ds-suggest button:hover span{color:#373533;transform:translateX(2px)}.ds-suggest button:focus-visible{outline:2px solid #373532;outline-offset:2px}"
-    },
-    {
       "name": "Result Table",
       "kind": "card",
       "refersTo": "result-table-frame",
@@ -1362,17 +1355,17 @@
       "css": ".ds-shell{padding:0 8px 8px 0;background:#131210;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-sheet{position:relative;max-width:560px;padding:24px 16px 0;border:1px solid #31302e;border-radius:8px;background:#181715;color:#edece9}.ds-sheet-text{margin:0 0 12px;font-size:15px;line-height:1.55}.ds-dock{position:relative;padding:8px 0 16px;background:#181715}.ds-dock::before{position:absolute;inset-inline:0;bottom:100%;height:24px;background:linear-gradient(to bottom,transparent,#181715);pointer-events:none;content:\"\"}.ds-dock-box{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 4px 12px;border:1px solid #464543;border-radius:8px;background:#1f1e1c;color:#93918f;font-size:15px;transition:border-color 150ms ease-out}.ds-dock-box:focus-within{border-color:#c6c4c0}.ds-dock-box button{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:0;border-radius:6px;background:#e8e6e2;color:#181715;cursor:pointer}.ds-dock-box button:hover{background:#d3d1cd}.ds-dock-box button:focus-visible{outline:2px solid #c6c4c0;outline-offset:2px}"
     },
     {
-      "name": "Opening Screen",
+      "name": "Opening",
       "kind": "custom",
       "refersTo": "opening",
-      "description": "On every page load: the bust at 156px on the chrome ground comes into focus, looks up and says \"Every answer, with its page.\" as the words rise one by one, then \"— Atlas\" and a 420ms lift. Any click or key skips it; reduced motion shows the still face and the whole line, then a 220ms fade.",
+      "description": "The empty conversation: the bust at 156px on the page ground comes into focus, looks up and says \"Every answer, with its page.\" as the words rise one by one, then \"— Atlas\" while the composer rises out of the sheet's foot. It stays until a question is written. Any click or key finishes the line; reduced motion shows the still face, the whole line and the composer at once.",
       "html": "<figure class=\"ds-opening\"><svg class=\"ds-opening-face\" viewBox=\"0 0 120 120\" role=\"img\" aria-label=\"Atlas\"><circle cx=\"60\" cy=\"60\" r=\"58\" fill=\"#f9f8f6\"/><path d=\"M10 124 C12 106 28 97 45 94 C52 98 68 98 75 94 C92 97 108 106 110 124 Z\" fill=\"#fff\" stroke=\"#373533\" stroke-width=\"1.4\"/><path d=\"M38.5 52 C38.5 35 48 26.5 60 26.5 C72 26.5 81.5 35 81.5 52 L81.5 64 C81.5 79 72 89 60 89 C48 89 38.5 79 38.5 64 Z\" fill=\"#fff\" stroke=\"#373533\" stroke-width=\"1.4\"/><path d=\"M45.5 47.2 Q50.5 45 55 46.6 M65 46.6 Q69.5 45 74.5 47.2\" fill=\"none\" stroke=\"#373533\" stroke-width=\"1.7\" stroke-linecap=\"round\"/><ellipse cx=\"50.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#1b1917\"/><ellipse cx=\"69.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#1b1917\"/><path d=\"M60.6 53 Q58.4 58.2 59.1 61.3 Q60.2 62.4 61.8 61.7\" fill=\"none\" stroke=\"#373533\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><path d=\"M51.5 73.2 Q55.8 71.2 60 72.8 Q64.2 71.2 68.5 73.2\" fill=\"none\" stroke=\"#373533\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><circle class=\"ring\" cx=\"60\" cy=\"60\" r=\"58\"/></svg><blockquote class=\"ds-opening-quote\">“Every answer, with its page.”</blockquote><figcaption class=\"ds-opening-by\">— <span lang=\"en\" dir=\"ltr\">Atlas</span></figcaption></figure>",
-      "css": ".ds-opening{display:flex;flex-direction:column;align-items:center;gap:24px;margin:0;padding:48px 16px;background:#f5f4f1;text-align:center;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-opening-face{display:block;width:156px;height:156px}.ds-opening-face .ring{fill:none;stroke:#dddcda;stroke-width:1px;vector-effect:non-scaling-stroke}.ds-opening-quote{max-inline-size:20ch;margin:0;color:#1b1917;font-size:26px;font-weight:400;line-height:1.3;letter-spacing:-0.01em;text-wrap:balance}.ds-opening-by{color:#696765;font-size:13px;font-weight:600}@media (max-width:36em){.ds-opening-face{width:120px;height:120px}.ds-opening-quote{font-size:20px}}"
+      "css": ".ds-opening{display:flex;flex-direction:column;align-items:center;gap:24px;margin:0;padding:48px 16px;background:#fdfcfb;text-align:center;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-opening-face{display:block;width:156px;height:156px}.ds-opening-face .ring{fill:none;stroke:#dddcda;stroke-width:1px;vector-effect:non-scaling-stroke}.ds-opening-quote{max-inline-size:20ch;margin:0;color:#1b1917;font-size:26px;font-weight:400;line-height:1.3;letter-spacing:-0.01em;text-wrap:balance}.ds-opening-by{color:#696765;font-size:13px;font-weight:600}@media (max-width:36em){.ds-opening-face{width:120px;height:120px}.ds-opening-quote{font-size:20px}}"
     }
   ],
   "narrative": {
     "northStar": "The Quiet Register",
-    "overview": "Atlas is the category standard for chat-with-your-documents tools, built to the craft of Claude.ai's calm reading column (and its question box under the heading on a fresh chat), Perplexity's numbered sources and Linear's dense, quiet chrome with the content on an inset sheet. The owner chose the conventions on purpose and the build doesn't dress them up. The palette is grounded in paper, pencil and a desk's manila folders: graphite and warm stone, with no blue cast. The 52px top bar and the sidebar (300px by default, dragged between 240 and 480px, or closed) are one continuous stone chrome field. The conversation sits on it as an inset sheet: the page ground, a 1px hairline and 8px corners, scrolling on its own while the chrome stays still. The sheet holds one 760px column. Everything is drawn with 1px hairlines on flat grounds. The one graphite appears only where the reader acts or where the system points at evidence.\n\nThe same world runs in two schemes and two languages. Dark is the same roles on warm graphite: the chrome darkest, the page a step up, raised surfaces a step above that. Every gray, ink, amber and red shade is a role, not a lightness step, and each role has its dark value, so a component that asks for \"dimmed\" or \"red tint\" reads correctly in both. The primary inverts by scheme: a graphite fill with white text in light, a chalk fill with graphite text in dark. Arabic mirrors the whole layout, while content (answers, questions, quotes, table cells, file names) keeps its own direction. Figures are Western digits in both languages, so a number on screen matches the number in the file.\n\nDensity follows Linear more than a marketing page. Tree rows are 13px names over 12px meta. Tables run at 13px with tabular figures. The answer reads at 15px with a 75ch measure. Motion only marks state changes: a hover tint, a chevron turning, a folder opening, the sidebar sliding, and the finished answer's table and sources settling in once with a short fade-and-rise. Two exceptions, both approved by the owner on 2026-10-29, and both are Atlas's face (a philosopher's bust in graphite line work, marble in both schemes): the opening screen on every page load, where the bust looks up and says its line, and a voice call, during which the face moves continuously.\n\nThe system refuses the demo look named in the direction contract: decorative gradients, glowing AI sparkles, bubble chat and cards inside cards. The question is a heading-weight line, not a bubble. The answer is plain prose on the page ground, not a card.",
+    "overview": "Atlas is the category standard for chat-with-your-documents tools, built to the craft of Claude.ai's calm reading column, Perplexity's numbered sources and Linear's dense, quiet chrome with the content on an inset sheet. The owner chose the conventions on purpose and the build doesn't dress them up. The palette is grounded in paper, pencil and a desk's manila folders: graphite and warm stone, with no blue cast. The 52px top bar and the sidebar (300px by default, dragged between 240 and 480px, or closed) are one continuous stone chrome field. The conversation sits on it as an inset sheet: the page ground, a 1px hairline and 8px corners, scrolling on its own while the chrome stays still. The sheet holds one 760px column. Everything is drawn with 1px hairlines on flat grounds. The one graphite appears only where the reader acts or where the system points at evidence.\n\nThe same world runs in two schemes and two languages. Dark is the same roles on warm graphite: the chrome darkest, the page a step up, raised surfaces a step above that. Every gray, ink, amber and red shade is a role, not a lightness step, and each role has its dark value, so a component that asks for \"dimmed\" or \"red tint\" reads correctly in both. The primary inverts by scheme: a graphite fill with white text in light, a chalk fill with graphite text in dark. Arabic mirrors the whole layout, while content (answers, questions, quotes, table cells, file names) keeps its own direction. Figures are Western digits in both languages, so a number on screen matches the number in the file.\n\nDensity follows Linear more than a marketing page. Tree rows are 13px names over 12px meta. Tables run at 13px with tabular figures. The answer reads at 15px with a 75ch measure. Motion only marks state changes: a hover tint, a chevron turning, a folder opening, the sidebar sliding, and the finished answer's table and sources settling in once with a short fade-and-rise. Two exceptions, both approved by the owner on 2026-10-29, and both are Atlas's face (a philosopher's bust in graphite line work, marble in both schemes): the opening of every fresh conversation, where the bust looks up, says its line and waits for the question, and a voice call, during which the face moves continuously.\n\nThe system refuses the demo look named in the direction contract: decorative gradients, glowing AI sparkles, bubble chat and cards inside cards. The question is a heading-weight line, not a bubble. The answer is plain prose on the page ground, not a card.",
     "keyCharacteristics": [
       "One brand tone (graphite, a near-black at OKLCH hue 85 with almost no chroma, shade 7 of a 10-step ramp in both schemes; chalk in dark) for actions, focus, selection, links, citations, the open file, the streaming caret and the call avatar's ring while Atlas speaks",
       "Warm stone neutrals in both schemes; nothing reads blue",
@@ -1383,7 +1376,7 @@
       "One system UI family for everything (Segoe UI carries Arabic on Windows); monospace only for SQL and tool input",
       "Tabular Western figures wherever numbers appear, in English and Arabic",
       "The whole layout mirrors in Arabic; content keeps its own direction",
-      "Continuous motion lives only in the bust: on the opening screen, and in the call avatar while a call is open"
+      "Continuous motion lives only in the bust: in the empty conversation, and in the call avatar while a call is open"
     ],
     "rules": [
       {
@@ -1428,7 +1421,7 @@
       },
       {
         "name": "The Living Face Rule",
-        "body": "Continuous motion is allowed inside the bust only: on the opening screen while it says its line, and in the call avatar while a call is open. In a call it blinks every 2.8 to 6.5s, breathes on a slow 4.2s cycle, raises its brows while the user speaks, looks up while a question runs, moves its mouth with Atlas's measured voice, and its ring is dashed and turning while the call connects and while it checks. On the opening it comes into focus with its eyes lowered, looks up, and moves its mouth syllable by syllable with its line. Under reduced motion it holds one still pose per state, and it does not move in a hidden tab. Every other surface keeps motion for state changes only.",
+        "body": "Continuous motion is allowed inside the bust only: in the empty conversation, where it says its line and then waits, and in the call avatar while a call is open. In a call it blinks every 2.8 to 6.5s, breathes on a slow 4.2s cycle, raises its brows while the user speaks, looks up while a question runs, moves its mouth with Atlas's measured voice, and its ring is dashed and turning while the call connects and while it checks. On the opening it comes into focus with its eyes lowered, looks up, and moves its mouth syllable by syllable with its line; then it blinks and glances now and then until a question is written. Under reduced motion it holds one still pose per state, and it does not move in a hidden tab. Every other surface keeps motion for state changes only.",
         "section": "components"
       }
     ],
@@ -1441,7 +1434,7 @@
       "Do separate resting surfaces with 1px hairlines on chrome, page or surface grounds, and keep shadows for modals, menus and the PDF page; give floating surfaces a hairline edge in dark.",
       "Do keep the conversation on the inset sheet, which scrolls on its own inside the still chrome field, and keep it off both window edges when the sidebar is closed.",
       "Do make a hidden sidebar `inert`, and keep its width and open state for the next visit.",
-      "Do put the question box under the heading until the first question, then dock it at the sheet's foot with the page-ground fade above it.",
+      "Do dock the question box at the sheet's foot from the start, with the page-ground fade above it, and let the opening hold the sheet until a question is written.",
       "Do set every figure in tabular Western digits and right-align numeric columns physically, in both languages.",
       "Do use logical properties so the whole layout mirrors in Arabic, `dir=\"auto\"` on content, and isolates around file names, paths and codes inside Arabic sentences.",
       "Do keep SQL, formulas, paths and the Excel grid left to right in both languages.",
@@ -1449,7 +1442,7 @@
       "Do use 150ms ease-out for hover and colour changes and 180ms `cubic-bezier(0.16, 1, 0.3, 1)` for content settling in, collapsing, a folder opening or the sidebar sliding, and disable both under reduced motion.",
       "Do use Tabler outline icons at 1.5 to 2 stroke, sized 12 to 18px. The manila folder glyph is the one authored icon.",
       "Do give the bust a still pose per state under reduced motion, and stop its motion in a hidden tab (The Living Face Rule).",
-      "Do let any click or key skip the opening, and wait for the tab to be seen before it plays."
+      "Do let any click or key finish the opening's line at once, and wait for the tab to be seen before it plays."
     ],
     "donts": [
       "Don't use decorative gradients, glowing AI sparkles, chat bubbles or cards inside cards. The page-ground fade above the docked composer is the only gradient (The Fade Above The Dock Rule).",
@@ -1460,7 +1453,7 @@
       "Don't add a second typeface or a display face. Monospace is for SQL and tool input only.",
       "Don't use Eastern Arabic digits or round an amount for display.",
       "Don't translate the wordmark, file names, item codes or numbers.",
-      "Don't choreograph page loads. The one exception, approved by the owner on 2026-10-29, is the opening screen, where the bust says its line; it plays once per load, never blocks the app, and any click or key skips it. Elsewhere motion marks state changes only, except inside the call avatar while a call is open.",
+      "Don't choreograph page loads. The one exception, approved by the owner on 2026-10-29, is the opening of a fresh conversation, where the bust says its line and the composer rises; it plays on each load and each cleared chat, never blocks the app, and any click or key finishes it. Elsewhere motion marks state changes only, except inside the call avatar while a call is open.",
       "Don't let a blue cast back into the neutrals or the brand tone. Grays and the dark ramp are warm stone; graphite has almost no chroma.",
       "Don't colour the bust. Its drawing stays graphite on white marble in both schemes, and the brand tone touches only its ring while Atlas speaks."
     ]
