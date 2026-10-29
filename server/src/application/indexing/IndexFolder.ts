@@ -221,10 +221,11 @@ export class IndexFolder {
       this.progress(signal, 'embedding', { current: done, total: all, file: null, message: `Embedding ${count(done)} of ${count(all)} passages` });
     report(0, total);
     const result = await embedPending(loaded.index, embeddings, { signal, onProgress: report });
-    const detail = result.missingApiKey
-      ? 'The API key is missing or was rejected; search works by keyword only.'
-      : `${result.embedded} passages, ${result.tokens} tokens.`;
-    this.log(loaded.folder, '', result.missingApiKey ? 'no_api_key' : 'embedded', clock.now().getTime() - started, detail);
+    const detail =
+      result.stoppedBecause === null
+        ? `${result.embedded} passages, ${result.tokens} tokens.`
+        : `Stopped after ${result.embedded} passages, so search works by keyword only: ${result.stoppedBecause}`;
+    this.log(loaded.folder, '', result.stoppedBecause === null ? 'embedded' : 'embedding_skipped', clock.now().getTime() - started, detail);
   }
 
   /** Runs a pass or an update; a failure sets phase 'error', unless the work was cancelled by a newer load. */

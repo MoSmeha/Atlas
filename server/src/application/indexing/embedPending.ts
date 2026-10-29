@@ -13,13 +13,17 @@ export interface EmbedPendingOptions {
 export interface EmbedPendingResult {
   embedded: number;
   tokens: number;
-  /** True when it stopped early because the API key is missing or was rejected; search then works by keyword only. */
-  missingApiKey: boolean;
+  /**
+   * Why it stopped early, when the embeddings API could not be used (no key, a rejected key, no quota, a rate limit,
+   * no connection); search then works by keyword only. Null when every chunk was embedded.
+   */
+  stoppedBecause: string | null;
 }
 
 /**
  * Embeds every chunk that has no vector yet, batch by batch, saving each batch as soon as it arrives so a stop
- * keeps the work already paid for. A missing or rejected API key ends it quietly; other errors propagate.
+ * keeps the work already paid for. When the API cannot be used it ends quietly with the reason, so the folder still
+ * loads and search falls back to keywords; a stop by the user and unexpected errors propagate.
  */
 export async function embedPending(
   index: DocumentIndex,
@@ -36,8 +40,8 @@ export async function embedPending(
     const batch = index.pendingEmbeddings(limit).filter((chunk) => !done.has(chunk.chunkId));
     if (batch.length === 0) break;
 
-    const result = await embedUnlessNoKey(embeddings, batch.map((chunk) => chunk.text), signal);
-    if (result === null) return { embedded: done.size, tokens, missingApiKey: true };
+    const result = await embedOrReason(embeddings, batch.map((chunk) => chunk.text), signal);
+    if (typeof result === 'string') return { embedded: done.size, tokens, stoppedBecause: result };
     const { vectors } = result;
     if (vectors.length !== batch.length) {
       throw errors.modelError(`asked for ${batch.length} embeddings but got ${vectors.length}.`);
@@ -48,19 +52,19 @@ export async function embedPending(
     tokens += result.tokens;
     onProgress?.(done.size, Math.max(total, done.size));
   }
-  return { embedded: done.size, tokens, missingApiKey: false };
+  return { embedded: done.size, tokens, stoppedBecause: null };
 }
 
-/** The embed result, or null when the API key is missing or was rejected. */
-async function embedUnlessNoKey(
+/** The embed result, or the reason the embeddings API cannot be used right now. */
+async function embedOrReason(
   embeddings: EmbeddingClient,
   texts: string[],
   signal: AbortSignal | undefined,
-): Promise<{ vectors: Float32Array[]; tokens: number } | null> {
+): Promise<{ vectors: Float32Array[]; tokens: number } | string> {
   try {
     return await embeddings.embed(texts, signal);
   } catch (error) {
-    if (error instanceof AppError && error.code === 'missing_api_key') return null;
+    if (error instanceof AppError && error.code !== 'stopped') return error.message;
     throw error;
   }
 }
