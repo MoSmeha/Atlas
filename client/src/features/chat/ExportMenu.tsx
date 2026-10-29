@@ -3,6 +3,7 @@ import { notifications } from '@mantine/notifications';
 import { IconChevronDown, IconDownload, IconFileSpreadsheet, IconFileTypeCsv } from '@tabler/icons-react';
 import type { ExportFormat, ExportResponse } from '@atlas/shared';
 import { useExport } from '../../api/useExport';
+import { useLanguage } from '../../i18n/useLanguage';
 import { useSession } from '../../state/useSession';
 import { notifyError } from '../errors/notifyError';
 import { downloadFile } from './downloadFile';
@@ -18,6 +19,7 @@ const savedTitle: Record<ExportFormat, string> = {
  */
 export function ExportMenu({ resultId }: { resultId: string }) {
   const { sessionId } = useSession();
+  const { language } = useLanguage();
   const { mutate, isPending } = useExport();
 
   const exportAs = (format: ExportFormat) =>
@@ -28,7 +30,7 @@ export function ExportMenu({ resultId }: { resultId: string }) {
           downloadFile(saved.url, saved.fileName);
           notifySaved(saved, format);
         },
-        onError: (error) => notifyError(error, 'Atlas could not export the table'),
+        onError: (error) => notifyError(error, 'Atlas could not export the table', language),
       },
     );
 

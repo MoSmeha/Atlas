@@ -1,7 +1,10 @@
 import { ActionIcon, Button, Tooltip } from '@mantine/core';
 import { IconEraser } from '@tabler/icons-react';
+import { useCopy } from '../../i18n/useCopy';
+import { useLanguage } from '../../i18n/useLanguage';
 import { useChat } from '../chat/useChat';
 import { notifyError } from '../errors/notifyError';
+import { topbarCopy } from './topbarCopy';
 
 /**
  * Stops any running answer, forgets the chat on the server, empties the thread and starts a new
@@ -9,9 +12,11 @@ import { notifyError } from '../errors/notifyError';
  */
 export function ClearChatButton() {
   const { turns, clear, clearing } = useChat();
+  const { language } = useLanguage();
+  const copy = useCopy(topbarCopy);
   const disabled = turns.length === 0;
   const onClear = () => {
-    clear().catch((error: unknown) => notifyError(error, 'Atlas could not clear the chat'));
+    clear().catch((error: unknown) => notifyError(error, copy.clearFailed, language));
   };
   const icon = <IconEraser size={16} stroke={1.75} aria-hidden />;
 
@@ -25,13 +30,13 @@ export function ClearChatButton() {
         disabled={disabled}
         onClick={onClear}
       >
-        Clear chat
+        {copy.clearChat}
       </Button>
-      <Tooltip label="Clear chat">
+      <Tooltip label={copy.clearChat}>
         <ActionIcon
           hiddenFrom="sm"
           variant="default"
-          aria-label="Clear chat"
+          aria-label={copy.clearChat}
           loading={clearing}
           disabled={disabled}
           onClick={onClear}

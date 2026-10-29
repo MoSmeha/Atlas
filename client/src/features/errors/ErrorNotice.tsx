@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Group, Stack, Text } from '@mantine/core';
 import { IconAlertCircle, IconAlertTriangle, IconInfoCircle } from '@tabler/icons-react';
+import { figure } from '../../i18n/count';
+import type { Bilingual } from '../../i18n/language';
+import { useCopy } from '../../i18n/useCopy';
+import { useLanguage } from '../../i18n/useLanguage';
 import { type ErrorTone, type NoticeError, errorCopy } from './errorCopy';
 
 interface ErrorNoticeProps {
@@ -10,16 +14,24 @@ interface ErrorNoticeProps {
   retryLabel?: string;
 }
 
+const noticeCopy: Bilingual<{ askAgain: string; retryIn: (label: string, seconds: number) => string }> = {
+  en: { askAgain: 'Ask again', retryIn: (label, seconds) => `${label} in ${figure(seconds)} s` },
+  ar: { askAgain: 'اسأل مرة أخرى', retryIn: (label, seconds) => `${label} بعد ${figure(seconds)} ث` },
+};
+
 const toneColor: Record<ErrorTone, 'red' | 'yellow' | 'gray'> = { error: 'red', warning: 'yellow', neutral: 'gray' };
 const toneIcon = { error: IconAlertCircle, warning: IconAlertTriangle, neutral: IconInfoCircle };
 
 /** A plain-language error: what went wrong, what to do next, and a retry button when one helps. */
-export function ErrorNotice({ error, onRetry, retryLabel = 'Ask again' }: ErrorNoticeProps) {
-  const { title, detail, tone, retryable } = errorCopy(error);
+export function ErrorNotice({ error, onRetry, retryLabel }: ErrorNoticeProps) {
+  const { language } = useLanguage();
+  const text = useCopy(noticeCopy);
+  const { title, detail, tone, retryable } = errorCopy(error, language);
   const color = toneColor[tone];
   const Icon = toneIcon[tone];
   const wait = useCountdown(error.retryAfterSeconds ?? 0);
   const showRetry = onRetry !== undefined && retryable;
+  const label = retryLabel ?? text.askAgain;
 
   return (
     <Alert
@@ -45,7 +57,7 @@ export function ErrorNotice({ error, onRetry, retryLabel = 'Ask again' }: ErrorN
           {showRetry && (
             <Group gap="xs">
               <Button variant="default" size="xs" onClick={onRetry} disabled={wait > 0}>
-                {wait > 0 ? `${retryLabel} in ${wait} s` : retryLabel}
+                {wait > 0 ? text.retryIn(label, wait) : label}
               </Button>
             </Group>
           )}

@@ -1,12 +1,12 @@
 import { Collapse, Group, Progress, Stack, Text } from '@mantine/core';
 import { useFolderStatus } from '../../api/useFolderStatus';
 import type { IndexActivity } from '../../api/useIndexEvents';
+import { useCopy } from '../../i18n/useCopy';
+import { useLanguage } from '../../i18n/useLanguage';
 import { motion } from '../../theme';
 import { errorMessage } from '../errors/errorCopy';
 import { INDEX_STEP_COUNT, type IndexingNow, indexingNow } from './indexingNow';
-
-/** Shown while the block closes after the last step, so it never collapses around stale text. */
-const finished: IndexingNow = { label: 'Finished', step: INDEX_STEP_COUNT, message: 'All files read', percent: 100 };
+import { sidebarCopy } from './sidebarCopy';
 
 /**
  * The indexing line under the dropzone: the step, a thin progress bar and "Reading X, 3 of 12".
@@ -14,11 +14,16 @@ const finished: IndexingNow = { label: 'Finished', step: INDEX_STEP_COUNT, messa
  */
 export function IndexProgress({ activity }: { activity: IndexActivity | null }) {
   const status = useFolderStatus();
-  const now = indexingNow(status.data, activity);
+  const { language } = useLanguage();
+  const copy = useCopy(sidebarCopy);
+  const now = indexingNow(status.data, activity, copy, language === 'en');
+  // Shown while the block closes after the last step, so it never collapses around stale text.
+  const finished: IndexingNow = { label: copy.finished, step: INDEX_STEP_COUNT, message: copy.allRead, percent: 100 };
   const shown = now ?? finished;
   // A folder with no PDF or Excel files never started indexing; the folder form and the main column say so.
   const error = status.data?.phase === 'error' ? status.data.error : null;
   const failure = error?.code === 'folder_empty' ? null : error;
+  const stepText = copy.stepOf(shown.step, INDEX_STEP_COUNT);
 
   return (
     <>
@@ -29,7 +34,7 @@ export function IndexProgress({ activity }: { activity: IndexActivity | null }) 
               {shown.label}
             </Text>
             <Text fz="xs" c="dimmed" className="tabular-nums" style={{ flexShrink: 0 }}>
-              Step {shown.step} of {INDEX_STEP_COUNT}
+              {stepText}
             </Text>
           </Group>
           <Progress
@@ -37,7 +42,7 @@ export function IndexProgress({ activity }: { activity: IndexActivity | null }) 
             value={shown.percent ?? 100}
             animated={shown.percent === null}
             transitionDuration={motion.durationMs}
-            aria-label={`${shown.label}, step ${shown.step} of ${INDEX_STEP_COUNT}`}
+            aria-label={`${shown.label}${copy.listSeparator}${stepText}`}
           />
           <Text fz="xs" c="dimmed" truncate="end" className="tabular-nums">
             {shown.message}
@@ -46,7 +51,7 @@ export function IndexProgress({ activity }: { activity: IndexActivity | null }) 
       </Collapse>
       {failure !== null && (
         <Text role="alert" fz="xs" lh="sm" pt="xs" c="var(--mantine-color-error)">
-          Indexing stopped. {errorMessage(failure)}
+          {copy.indexingStopped} {errorMessage(failure, language)}
         </Text>
       )}
     </>

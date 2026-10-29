@@ -1,0 +1,19 @@
+.sheet {
+  height: calc(100dvh - var(--app-shell-header-offset, 0rem) - var(--mantine-spacing-xs));
+  margin-inline-end: var(--mantine-spacing-xs);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--mantine-color-gray-3);
+  border-radius: var(--mantine-radius-lg);
+  background-color: var(--mantine-color-body);
+}
+
+/* Below Mantine's sm breakpoint the sidebar folds away and the sheet fills the screen under the top bar. */
+@media (max-width: 47.99em) {
+  .sheet {
+    height: calc(100dvh - var(--app-shell-header-offset, 0rem));
+    margin-inline-end: 0;
+    border-width: 1px 0 0;
+    border-radius: 0;
+  }
+}

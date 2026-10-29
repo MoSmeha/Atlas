@@ -36,32 +36,34 @@ export function ChatThread() {
     apiKeyPresent: health.data?.apiKeyPresent,
   });
 
+  const composer =
+    voice.call !== null ? (
+      <CallCard />
+    ) : (
+      <Composer
+        readiness={readiness}
+        streaming={streaming}
+        onSend={ask}
+        onStop={stop}
+        hintAside={<UsageReadout placement="composer" />}
+        onStartCall={voice.callsAvailable ? voice.start : undefined}
+        maxDictationSeconds={voice.dictationAvailable ? voice.maxDictationSeconds : undefined}
+        notice={voice.notice}
+      />
+    );
+  const empty = turns.length === 0;
+
+  // Before the first question the composer sits under the empty state's heading; after it, it docks at the bottom.
   return (
-    <MainColumn
-      composer={
-        voice.call !== null ? (
-          <CallCard />
-        ) : (
-          <Composer
-            readiness={readiness}
-            streaming={streaming}
-            onSend={ask}
-            onStop={stop}
-            hintAside={<UsageReadout placement="composer" />}
-            onStartCall={voice.callsAvailable ? voice.start : undefined}
-            maxDictationSeconds={voice.dictationAvailable ? voice.maxDictationSeconds : undefined}
-            notice={voice.notice}
-          />
-        )
-      }
-    >
-      {turns.length === 0 ? (
+    <MainColumn composer={empty ? null : composer}>
+      {empty ? (
         <EmptyState
           status={folder.data}
           statusError={folder.error}
           canAsk={readiness.canAsk}
           onAsk={ask}
           onReload={() => void folder.refetch()}
+          composer={composer}
         />
       ) : (
         <Stack ref={thread} gap="xl" pb="md">

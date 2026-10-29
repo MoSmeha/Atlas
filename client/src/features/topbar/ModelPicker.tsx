@@ -1,8 +1,11 @@
 import { Box, Select, Tooltip } from '@mantine/core';
 import { useModels } from '../../api/useModels';
+import { useCopy } from '../../i18n/useCopy';
+import { useLanguage } from '../../i18n/useLanguage';
 import { useSession } from '../../state/useSession';
 import { errorMessage } from '../errors/errorCopy';
 import { ModelOptionRow } from './ModelOptionRow';
+import { topbarCopy } from './topbarCopy';
 
 /**
  * Picks the model the next question goes to, from the server's lineup. It shows the server's
@@ -10,6 +13,8 @@ import { ModelOptionRow } from './ModelOptionRow';
  */
 export function ModelPicker() {
   const { model, setModel } = useSession();
+  const { language } = useLanguage();
+  const copy = useCopy(topbarCopy);
   const models = useModels();
   const lineup = models.data?.models ?? [];
   const value = model ?? models.data?.defaultModel ?? null;
@@ -17,7 +22,7 @@ export function ModelPicker() {
 
   const select = (
     <Select
-      aria-label="Model"
+      aria-label={copy.model}
       w={156}
       data={lineup.map((option) => ({ value: option.id, label: option.label }))}
       value={value}
@@ -27,7 +32,7 @@ export function ModelPicker() {
       allowDeselect={false}
       withCheckIcon={false}
       disabled={models.data === undefined}
-      placeholder={models.isError ? 'Default model' : 'Loading models'}
+      placeholder={models.isError ? copy.defaultModel : copy.loadingModels}
       renderOption={({ option, checked }) => (
         <ModelOptionRow label={option.label} tier={tierOf(option.value)} checked={checked === true} />
       )}
@@ -37,7 +42,7 @@ export function ModelPicker() {
 
   if (!models.isError) return select;
   return (
-    <Tooltip label={`${errorMessage(models.error)} Questions go to the default model.`}>
+    <Tooltip label={copy.modelsFailed(errorMessage(models.error, language))}>
       <Box>{select}</Box>
     </Tooltip>
   );

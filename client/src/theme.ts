@@ -53,6 +53,47 @@ const gray: MantineColorsTuple = [
 /** The near-white page ground behind the conversation, a step lighter than every gray. */
 const pageGround = '#fcfcfd';
 
+/**
+ * Mantine's own dark ramp, cool like the grays: 0 text, 2 dimmed, 3 placeholder, 4 borders, 5 hover,
+ * 6 inputs and raised surfaces, 7 the page, 8 the chrome.
+ */
+const dark: MantineColorsTuple = [
+  '#e9ecf1',
+  '#cdd2d9',
+  '#939ba8',
+  '#8a92a0',
+  '#3f4651',
+  '#272d36',
+  '#1a1e25',
+  '#14171d',
+  '#0f1217',
+  '#0a0c10',
+];
+
+/**
+ * The gray, ink, amber and red shades are roles, not lightness steps (gray 0 is the hover tone, 1 the
+ * chrome, 3 hairlines, 6 dimmed text, 9 body text). In the dark scheme each role gets a dark value, so
+ * components that ask for "gray.6" or "red.1" read correctly in both schemes.
+ */
+const darkRoles = {
+  gray: ['#1f242c', '#0f1217', '#272d36', '#2b313a', '#3f4651', '#5f6774', '#939ba8', '#aeb5c0', '#cdd2d9', '#e9ecf1'],
+  ink: { 0: '#182136', 1: '#1f2b47', 2: '#2c3e66', 9: '#c9d8f5' },
+  yellow: { 0: '#221c0e', 1: '#2e2512', 2: '#4a3a16', 7: '#e3a93a', 8: '#f0c060', 9: '#f2c46b' },
+  red: { 0: '#241313', 1: '#3a1818', 2: '#5a2323', 7: '#f0716a', 8: '#f58a83', 9: '#ffaaa4' },
+} as const;
+
+/** CSS variables that give each dark role its value. */
+function darkRoleVariables(): Record<string, string> {
+  const variables: Record<string, string> = {};
+  darkRoles.gray.forEach((value, shade) => {
+    variables[`--mantine-color-gray-${shade}`] = value;
+  });
+  for (const color of ['ink', 'yellow', 'red'] as const) {
+    for (const [shade, value] of Object.entries(darkRoles[color])) variables[`--mantine-color-${color}-${shade}`] = value;
+  }
+  return variables;
+}
+
 /** Amber for warnings (scanned, too large). Shade 9 on shade 1 reads at 7.7:1. */
 const yellow: MantineColorsTuple = [
   '#fff9e2',
@@ -111,6 +152,9 @@ const fontFamilyMonospace = [
 /** Overlay shadows carry an ink tint, an offset and a soft blur. Surfaces use hairline borders instead. */
 const shadowTint = (alpha: number) => `rgba(21, 26, 33, ${alpha})`;
 
+/** Where the light or dark choice is kept. index.html reads the same key before the app loads. */
+export const COLOR_SCHEME_STORAGE_KEY = 'atlas-color-scheme';
+
 /** Motion for state changes only: short, exponential ease-out. */
 export const motion = {
   durationMs: 180,
@@ -119,9 +163,10 @@ export const motion = {
 
 /** The Mantine theme: every colour, size, radius and component default in the client comes from here. */
 export const theme = createTheme({
-  colors: { ink, gray, yellow, red },
+  colors: { ink, gray, yellow, red, dark },
   primaryColor: 'ink',
-  primaryShade: 7,
+  // Shade 6 on the dark page keeps white button text at 6.3:1 and still reads as the action.
+  primaryShade: { light: 7, dark: 6 },
   white: '#ffffff',
   black: gray[9],
   autoContrast: true,
@@ -191,11 +236,13 @@ export const theme = createTheme({
   other: { motion },
 
   components: {
+    // The top bar and sidebar are one continuous chrome field; the conversation sits on it as an inset sheet.
     AppShell: AppShell.extend({
-      defaultProps: { transitionDuration: motion.durationMs, transitionTimingFunction: motion.easing },
+      defaultProps: { transitionDuration: motion.durationMs, transitionTimingFunction: motion.easing, withBorder: false },
       styles: {
         header: { backgroundColor: 'var(--mantine-color-gray-1)' },
         navbar: { backgroundColor: 'var(--mantine-color-gray-1)' },
+        main: { backgroundColor: 'var(--mantine-color-gray-1)' },
       },
     }),
     // One badge size: 12px sentence-case label on a 20px chip. Neutral unless a status earns colour.
@@ -236,7 +283,9 @@ export const theme = createTheme({
         fz: 'xs',
         transitionProps: { transition: 'fade', duration: 150 },
       },
+      styles: { tooltip: { backgroundColor: 'var(--atlas-tooltip-bg)', color: 'var(--atlas-tooltip-color)' } },
     }),
+    // Floating surfaces sit on the raised surface ground, so in the dark scheme they lift off the page.
     Modal: Modal.extend({
       defaultProps: {
         centered: true,
@@ -246,11 +295,24 @@ export const theme = createTheme({
         overlayProps: { backgroundOpacity: 0.32 },
         transitionProps: { transition: 'pop', duration: motion.durationMs, timingFunction: motion.easing },
       },
-      styles: { title: { fontWeight: 600, fontSize: 'var(--mantine-font-size-lg)' } },
+      styles: {
+        content: { backgroundColor: 'var(--atlas-surface)' },
+        header: { backgroundColor: 'var(--atlas-surface)' },
+        title: { fontWeight: 600, fontSize: 'var(--mantine-font-size-lg)' },
+      },
     }),
-    Menu: Menu.extend({ defaultProps: { shadow: 'md', radius: 'md' } }),
-    Popover: Popover.extend({ defaultProps: { shadow: 'md', radius: 'md' } }),
-    Combobox: Combobox.extend({ defaultProps: { shadow: 'md', radius: 'md' } }),
+    Menu: Menu.extend({
+      defaultProps: { shadow: 'md', radius: 'md' },
+      styles: { dropdown: { backgroundColor: 'var(--atlas-surface)' } },
+    }),
+    Popover: Popover.extend({
+      defaultProps: { shadow: 'md', radius: 'md' },
+      styles: { dropdown: { backgroundColor: 'var(--atlas-surface)' } },
+    }),
+    Combobox: Combobox.extend({
+      defaultProps: { shadow: 'md', radius: 'md' },
+      styles: { dropdown: { backgroundColor: 'var(--atlas-surface)' } },
+    }),
     Notification: Notification.extend({ defaultProps: { radius: 'md', withBorder: true } }),
     ScrollArea: ScrollArea.extend({ defaultProps: { scrollbarSize: 8, type: 'hover' } }),
     Code: Code.extend({ defaultProps: { color: 'gray.1' } }),
@@ -258,28 +320,49 @@ export const theme = createTheme({
   },
 });
 
+/** Badge and alert tokens that point at role shades, so they follow the scheme with the roles. */
+const roleTokens = {
+  '--mantine-color-dimmed': 'var(--mantine-color-gray-6)',
+  '--mantine-color-default-border': 'var(--mantine-color-gray-4)',
+  '--mantine-color-error': 'var(--mantine-color-red-8)',
+  '--mantine-color-gray-light': 'var(--mantine-color-gray-2)',
+  '--mantine-color-gray-light-hover': 'var(--mantine-color-gray-3)',
+  '--mantine-color-gray-light-color': 'var(--mantine-color-gray-8)',
+  '--mantine-color-yellow-light': 'var(--mantine-color-yellow-1)',
+  '--mantine-color-yellow-light-hover': 'var(--mantine-color-yellow-2)',
+  '--mantine-color-yellow-light-color': 'var(--mantine-color-yellow-9)',
+  '--mantine-color-red-light': 'var(--mantine-color-red-1)',
+  '--mantine-color-red-light-hover': 'var(--mantine-color-red-2)',
+  '--mantine-color-red-light-color': 'var(--mantine-color-red-9)',
+};
+
 /**
- * Light-scheme surface tokens on top of Mantine's defaults: near-white page ground, readable
- * dimmed and placeholder text (at least 4.5:1), neutral light badges that stay visible on the
- * cooler sidebar, and warning and error badges drawn as shade 9 on shade 1.
+ * Surface tokens on top of Mantine's defaults, per scheme: the page ground, the raised surface that
+ * holds content you read (`--atlas-surface`: white in light, a lifted slate in dark), readable dimmed
+ * and placeholder text (at least 4.5:1), the focus ring, tooltips, and the role shades above.
  */
 export const cssVariablesResolver: CSSVariablesResolver = () => ({
   variables: {},
   light: {
+    ...roleTokens,
     '--mantine-color-body': pageGround,
-    '--mantine-color-dimmed': 'var(--mantine-color-gray-6)',
     '--mantine-color-placeholder': 'var(--mantine-color-gray-6)',
-    '--mantine-color-default-border': 'var(--mantine-color-gray-4)',
-    '--mantine-color-error': 'var(--mantine-color-red-8)',
-    '--mantine-color-gray-light': 'var(--mantine-color-gray-2)',
-    '--mantine-color-gray-light-hover': 'var(--mantine-color-gray-3)',
-    '--mantine-color-gray-light-color': 'var(--mantine-color-gray-8)',
-    '--mantine-color-yellow-light': 'var(--mantine-color-yellow-1)',
-    '--mantine-color-yellow-light-hover': 'var(--mantine-color-yellow-2)',
-    '--mantine-color-yellow-light-color': 'var(--mantine-color-yellow-9)',
-    '--mantine-color-red-light': 'var(--mantine-color-red-1)',
-    '--mantine-color-red-light-hover': 'var(--mantine-color-red-2)',
-    '--mantine-color-red-light-color': 'var(--mantine-color-red-9)',
+    '--atlas-surface': '#ffffff',
+    '--atlas-focus': 'var(--mantine-color-ink-7)',
+    '--atlas-tooltip-bg': 'var(--mantine-color-gray-9)',
+    '--atlas-tooltip-color': '#ffffff',
   },
-  dark: {},
+  dark: {
+    ...darkRoleVariables(),
+    ...roleTokens,
+    '--mantine-color-body': dark[7],
+    '--mantine-color-text': dark[0],
+    '--mantine-color-bright': '#f4f6f9',
+    '--mantine-color-placeholder': dark[3],
+    '--mantine-color-anchor': 'var(--mantine-color-ink-4)',
+    '--atlas-surface': dark[6],
+    '--atlas-focus': 'var(--mantine-color-ink-4)',
+    '--atlas-tooltip-bg': dark[0],
+    '--atlas-tooltip-color': dark[7],
+  },
 });

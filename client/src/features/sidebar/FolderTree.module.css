@@ -1,0 +1,138 @@
+/* The documents tree: folder rows with a turning chevron, files on a hairline rail under each folder. */
+
+.tree,
+.children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each folder's contents hang on a rail that drops from the middle of its chevron. */
+.children {
+  margin-inline-start: 10px;
+  padding-inline-start: 7px;
+  border-inline-start: 1px solid var(--mantine-color-gray-3);
+}
+
+.row,
+.file {
+  border-radius: var(--mantine-radius-sm);
+  transition: background-color 150ms ease-out;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  padding-block: 5px;
+  padding-inline: 3px 6px;
+  color: var(--mantine-color-gray-8);
+  font-size: var(--mantine-font-size-sm);
+  line-height: var(--mantine-line-height-xs);
+  text-align: start;
+}
+
+.row[data-root] {
+  color: var(--mantine-color-bright);
+  font-weight: 600;
+}
+
+/* Closed, the chevron points along the reading direction; open, it points down. */
+.chevron {
+  flex-shrink: 0;
+  color: var(--mantine-color-gray-6);
+  transform: rotate(-90deg);
+  transition: transform 150ms ease-out;
+}
+
+:where([dir='rtl']) .chevron {
+  transform: rotate(90deg);
+}
+
+.row[aria-expanded='true'] .chevron {
+  transform: none;
+}
+
+.folderIcon {
+  flex-shrink: 0;
+  color: var(--mantine-color-gray-7);
+}
+
+.name,
+.fileName,
+.meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name {
+  flex: 1;
+}
+
+.count {
+  flex-shrink: 0;
+  color: var(--mantine-color-dimmed);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.file {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-block: 6px;
+  padding-inline: 4px 6px;
+}
+
+.file > svg {
+  margin-top: 1px;
+}
+
+.fileText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fileLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.fileName {
+  flex: 1;
+  color: var(--mantine-color-text);
+  font-size: var(--mantine-font-size-sm);
+  line-height: var(--mantine-line-height-xs);
+}
+
+.meta {
+  color: var(--mantine-color-dimmed);
+  font-size: var(--mantine-font-size-xs);
+  line-height: var(--mantine-line-height-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) {
+  .row:hover,
+  .file:hover {
+    background-color: var(--atlas-surface);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .file,
+  .chevron {
+    transition: none;
+  }
+}

@@ -7,3 +7,9 @@ export function cleanFolderPath(raw: string): string {
   const quoted = /^"(.*)"$/.exec(trimmed);
   return quoted ? (quoted[1] ?? '').trim() : trimmed;
 }
+
+/** The folder's own name: the last part of its path, Windows or POSIX. */
+export function folderName(path: string): string {
+  const parts = path.split(/[\\/]+/).filter((part) => part !== '');
+  return parts.at(-1) ?? path;
+}

@@ -1,11 +1,13 @@
 import { type FormEvent, useEffect, useId, useRef, useState } from 'react';
 import { Anchor, Button, Group, Stack, Text, TextInput, Tooltip } from '@mantine/core';
+import { IconFolder } from '@tabler/icons-react';
 import { useFolderStatus } from '../../api/useFolderStatus';
 import { useLoadFolder } from '../../api/useLoadFolder';
+import { useCopy } from '../../i18n/useCopy';
+import { useLanguage } from '../../i18n/useLanguage';
 import { folderErrorMessage } from './folderErrorMessage';
 import { SAMPLE_FOLDER, cleanFolderPath } from './folderPath';
-
-const emptyPathHint = 'Type the path of a folder first, for example C:\\Projects\\Riyadh Tower.';
+import { sidebarCopy } from './sidebarCopy';
 
 /**
  * The folder path box and its Load button. Enter loads too; a problem shows in a line under the box.
@@ -15,6 +17,8 @@ const emptyPathHint = 'Type the path of a folder first, for example C:\\Projects
 export function FolderForm() {
   const status = useFolderStatus();
   const load = useLoadFolder();
+  const { language } = useLanguage();
+  const copy = useCopy(sidebarCopy);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputId = useId();
   const errorId = `${inputId}-error`;
@@ -24,7 +28,7 @@ export function FolderForm() {
   const [focused, setFocused] = useState(false);
 
   const value = draft ?? status.data?.folder ?? '';
-  const message = hint ?? (load.error ? folderErrorMessage(load.error, load.variables ?? '') : null);
+  const message = hint ?? (load.error ? folderErrorMessage(load.error, load.variables ?? '', copy, language) : null);
 
   // After a load and on blur, scroll the text to its end so the folder name is what shows. Hiding
   // the sidebar or resizing the window resets that scroll, so it is set again whenever the box resizes.
@@ -51,7 +55,7 @@ export function FolderForm() {
     if (load.isPending) return;
     const path = cleanFolderPath(value);
     if (path === '') {
-      setHint(emptyPathHint);
+      setHint(copy.emptyPathHint);
       inputRef.current?.focus();
       return;
     }
@@ -69,10 +73,10 @@ export function FolderForm() {
       <Stack gap={6}>
         <Group justify="space-between" gap="xs" wrap="nowrap">
           <Text component="label" htmlFor={inputId} fz="sm" fw={600}>
-            Project folder
+            {copy.projectFolder}
           </Text>
           <Anchor component="button" type="button" fz="xs" onClick={fillSample}>
-            Use sample project
+            {copy.useSample}
           </Anchor>
         </Group>
         <Group gap="xs" wrap="nowrap" align="flex-start">
@@ -87,6 +91,8 @@ export function FolderForm() {
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
               placeholder="C:\Projects\Riyadh Tower"
+              leftSection={<IconFolder size={16} stroke={1.5} aria-hidden />}
+              dir="ltr"
               error={message !== null}
               aria-describedby={message === null ? undefined : errorId}
               spellCheck={false}
@@ -95,7 +101,7 @@ export function FolderForm() {
             />
           </Tooltip>
           <Button type="submit" loading={load.isPending}>
-            Load
+            {copy.load}
           </Button>
         </Group>
         {message !== null && (

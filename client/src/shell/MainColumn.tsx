@@ -5,11 +5,11 @@ import { shellLayout } from './layout';
 interface MainColumnProps {
   /** The conversation: the empty state first, then one turn per question. */
   children: ReactNode;
-  /** The question box, docked to the bottom of the column. */
+  /** The question box, docked to the bottom of the column. Null while the empty state holds it. */
   composer: ReactNode;
 }
 
-/** The centred 760px reading column. The page scrolls; the composer stays at the bottom edge. */
+/** The centred 760px reading column. The sheet scrolls; the composer stays at its bottom edge. */
 export function MainColumn({ children, composer }: MainColumnProps) {
   return (
     <Stack
@@ -18,14 +18,16 @@ export function MainColumn({ children, composer }: MainColumnProps) {
       maw={`calc(${shellLayout.columnWidth}px + 2 * var(--mantine-spacing-md))`}
       mx="auto"
       px="md"
-      mih="calc(100dvh - var(--app-shell-header-offset, 0rem))"
+      mih="100%"
     >
       <Stack flex={1} gap="lg" pt="xl" pb="lg">
         {children}
       </Stack>
-      <Box pos="sticky" bottom={0} pb="md" bg="var(--mantine-color-body)">
-        {composer}
-      </Box>
+      {composer !== null && (
+        <Box pos="sticky" bottom={0} pb="md" bg="var(--mantine-color-body)">
+          {composer}
+        </Box>
+      )}
     </Stack>
   );
 }
