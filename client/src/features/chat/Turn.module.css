@@ -8,6 +8,14 @@
   overflow-wrap: anywhere;
 }
 
+/* A spoken question ends with a quiet microphone, on whichever side the question's text ends. */
+.spoken {
+  display: inline-block;
+  vertical-align: -2px;
+  margin-inline-start: var(--mantine-spacing-xs);
+  color: var(--mantine-color-dimmed);
+}
+
 /* Finished parts settle in under the streamed answer once, as the answer completes. Timing comes from the theme. */
 .settle {
   animation-name: settle;

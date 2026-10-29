@@ -32,7 +32,7 @@ export function useAskStream(sessionId: string, handlers: AskHandlers) {
   useEffect(() => () => running.current?.dispose(), []);
 
   const ask = useCallback(
-    (question: string, model: string | null): AskController => {
+    (question: string, model: string | null, spoken = false): AskController => {
       running.current?.dispose();
       const controller = new AbortController();
       let open = true;
@@ -58,6 +58,7 @@ export function useAskStream(sessionId: string, handlers: AskHandlers) {
         onStep: (step) => current().onStep?.(step),
         onAnswerDelta: (delta) => current().onAnswerDelta?.(delta),
         onAnswerReset: () => current().onAnswerReset?.(),
+        onSpeech: (text) => current().onSpeech?.(text),
         onAnswer: (answer, usage) => {
           current().onAnswer?.(answer, usage);
           end();
@@ -68,7 +69,7 @@ export function useAskStream(sessionId: string, handlers: AskHandlers) {
         },
       };
 
-      const finished = askQuestion({ sessionId, question, model }, report, controller.signal);
+      const finished = askQuestion({ sessionId, question, model, ...(spoken ? { spoken } : {}) }, report, controller.signal);
       return {
         stop: () => {
           if (!open) return;

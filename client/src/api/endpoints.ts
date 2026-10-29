@@ -1,4 +1,5 @@
 import {
+  type EndCallRequest,
   type ExportRequest,
   ExportResponse,
   HealthResponse,
@@ -6,7 +7,11 @@ import {
   type LoadFolderRequest,
   ModelsResponse,
   SheetRows,
+  type StartCallRequest,
+  StartCallResponse,
+  TranscriptionResponse,
   UsageResponse,
+  VoicesResponse,
   routes,
 } from '@atlas/shared';
 import { requestJson, send } from './http';
@@ -19,7 +24,7 @@ export interface RowRange {
 
 /**
  * One typed function per JSON endpoint. The hooks call these; components use the hooks.
- * Streams live in useAskStream and useIndexEvents.
+ * Streams live in useAskStream and useIndexEvents, and a voice call's connection in liveCall.
  */
 export const api = {
   health: (signal?: AbortSignal) => requestJson(routes.health, HealthResponse, { signal }),
@@ -54,4 +59,37 @@ export const api = {
 
   /** URL of the original file, for the PDF viewer and download links. */
   documentFileUrl: (documentId: string) => routes.documentFile(documentId),
+
+  voices: (signal?: AbortSignal) => requestJson(routes.voices, VoicesResponse, { signal }),
+
+  /** Exchanges the browser's WebRTC offer for the call's answer. */
+  startCall: (request: StartCallRequest) =>
+    requestJson(routes.voiceCalls, StartCallResponse, { method: 'POST', body: request }),
+
+  /** Reports how long a call lasted and, when the browser could not close it, has the server hang it up. */
+  endCall: async (callId: string, request: EndCallRequest) => {
+    await send(routes.voiceCallEnd(callId), { method: 'POST', body: request });
+  },
+
+  /** endCall for a page that is closing: the browser still delivers it after the page is gone. */
+  endCallOnExit: (callId: string, request: EndCallRequest) =>
+    navigator.sendBeacon(routes.voiceCallEnd(callId), new Blob([JSON.stringify(request)], { type: 'application/json' })),
+
+  /** Sends a dictated recording, as multipart form data under the field name "audio", and returns its text. */
+  transcribe: (sessionId: string, recording: Blob, recordedMs: number, signal?: AbortSignal) => {
+    const form = new FormData();
+    form.append('audio', recording, `dictation.${recordingExtension(recording.type)}`);
+    return requestJson(routes.transcriptions, TranscriptionResponse, {
+      method: 'POST',
+      body: form,
+      query: { sessionId, recordedMs: Math.round(recordedMs) },
+      signal,
+    });
+  },
 };
+
+/** "audio/webm;codecs=opus" is saved as .webm, "audio/mp4" as .mp4. */
+function recordingExtension(type: string): string {
+  const subtype = type.split(';')[0]?.split('/')[1]?.trim();
+  return subtype === undefined || subtype === '' ? 'webm' : subtype;
+}

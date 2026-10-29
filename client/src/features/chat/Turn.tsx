@@ -1,4 +1,5 @@
 import { Stack, Title } from '@mantine/core';
+import { IconMicrophone } from '@tabler/icons-react';
 import type { Source } from '@atlas/shared';
 import { motion } from '../../theme';
 import { ErrorNotice } from '../errors/ErrorNotice';
@@ -7,6 +8,7 @@ import { AnswerNotice } from './AnswerNotice';
 import { AnswerWarnings } from './AnswerWarnings';
 import { PendingLine } from './PendingLine';
 import { ResultTable } from './ResultTable';
+import { SaidAloud } from './SaidAloud';
 import { SourcesList } from './SourcesList';
 import { StoppedNote } from './StoppedNote';
 import { Trace } from './Trace';
@@ -58,6 +60,9 @@ export function Turn({ turn, onRetry, openedSource, onOpenSource }: TurnProps) {
     >
       <Title order={2} id={questionId} fz="xl" lh={1.35} className={classes.question} dir="auto">
         {turn.question}
+        {turn.spoken && (
+          <IconMicrophone size={16} stroke={1.75} className={classes.spoken} role="img" aria-label="Asked in a voice call" />
+        )}
       </Title>
 
       {streaming && !hasText && <PendingLine steps={turn.steps} />}
@@ -80,6 +85,8 @@ export function Turn({ turn, onRetry, openedSource, onOpenSource }: TurnProps) {
           <SourcesList sources={answer.sources} openedSource={openedSource} onOpenSource={onOpenSource} />
         </Stack>
       )}
+
+      {turn.spoken && <SaidAloud text={turn.said} />}
 
       <Trace steps={turn.steps} streaming={streaming} durationMs={turn.usage?.durationMs ?? null} />
     </Stack>
