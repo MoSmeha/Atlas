@@ -25,7 +25,7 @@
   }
 }
 
-/* On the opening screen the face is the whole picture, with every curl, at any width. */
+/* In the empty conversation the face is the whole picture, with every curl, at any width. */
 .face[data-size='opening'] {
   inline-size: 156px;
   block-size: 156px;

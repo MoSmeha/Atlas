@@ -1,5 +1,4 @@
-import { type CSSProperties, Fragment, useCallback, useEffect, useRef, useState } from 'react';
-import { useMediaQuery } from '@mantine/hooks';
+import { type CSSProperties, Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { AudioLevels } from '../api/audioMeter';
 import { AtlasFace } from '../features/voice/AtlasFace';
 import type { FaceMood } from '../features/voice/faceMotion';
@@ -13,24 +12,32 @@ const moods: Record<OpeningPhase, FaceMood> = {
   awake: 'listening',
   speaking: 'speaking',
   said: 'listening',
-  leaving: 'listening',
-  gone: 'listening',
 };
 
+interface OpeningProps {
+  /** A question is being written or a call is open, so the face and its line step back until the box is empty again. */
+  away: boolean;
+  /** The line is said, or was skipped: the question box can rise into place. */
+  onSaid: () => void;
+}
+
 /**
- * The opening screen, each time Atlas opens: the bust comes into focus on the chrome with its eyes lowered,
- * looks up, and says its line while the words appear one by one; then the screen lifts away. The app loads
- * underneath meanwhile, so the opening never delays the first answer. Any click or key skips it. With
- * reduced motion the face and the line show at once and fade. It waits for the tab to be seen first.
+ * The empty conversation, and how it opens: the bust comes into focus with its eyes lowered, looks up, and says its
+ * line while the words appear one by one; then it stays, blinking now and then, until a question is written. Any click
+ * or key finishes the line at once. With reduced motion the face and the line are simply there. It waits for the tab
+ * to be seen first.
  */
-export function Opening() {
+export function Opening({ away, onSaid }: OpeningProps) {
   const copy = useCopy(shellCopy).opening;
-  // Read now, not after the first paint, so a reduced-motion visitor never sees the moving version start.
-  const reduced = useMediaQuery('(prefers-reduced-motion: reduce)', undefined, { getInitialValueInEffect: false });
   const words = copy.quote.split(/\s+/);
+  // Both stay as they were when the opening started: read before the first paint, so a reduced-motion visitor never
+  // sees the moving version start, and a language switch later changes the words without timing them again.
+  const [reduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [wordCount] = useState(words.length);
   const [phase, setPhase] = useState<OpeningPhase>(reduced ? 'said' : 'arriving');
   // False until the tab is seen, so even the face's focus pull waits for a viewer.
   const [started, setStarted] = useState(false);
+  const [skipped, setSkipped] = useState(false);
   const timers = useRef<number[]>([]);
   const speakingSince = useRef(0);
 
@@ -39,8 +46,6 @@ export function Opening() {
     timers.current = [];
   }, []);
 
-  // The line and the motion preference stay as they were when the page opened, so this runs once.
-  const wordCount = words.length;
   useEffect(() => {
     const start = () => {
       setStarted(true);
@@ -66,19 +71,27 @@ export function Opening() {
     if (phase === 'speaking') speakingSince.current = performance.now();
   }, [phase]);
 
-  const leaving = phase === 'leaving' || phase === 'gone';
+  // Before the paint, so with reduced motion the question box is there from the first frame.
+  const said = phase === 'said';
+  useLayoutEffect(() => {
+    if (said) onSaid();
+  }, [said, onSaid]);
+
   const skip = useCallback(() => {
-    if (leaving) return;
     clearTimers();
-    setPhase('leaving');
-    timers.current = [window.setTimeout(() => setPhase('gone'), reduced ? openingBeats.stillLeaveMs : openingBeats.leaveMs)];
-  }, [leaving, reduced, clearTimers]);
+    setSkipped(true);
+    setPhase('said');
+  }, [clearTimers]);
 
   useEffect(() => {
-    if (leaving) return;
+    if (said) return;
     window.addEventListener('keydown', skip);
-    return () => window.removeEventListener('keydown', skip);
-  }, [leaving, skip]);
+    window.addEventListener('pointerdown', skip);
+    return () => {
+      window.removeEventListener('keydown', skip);
+      window.removeEventListener('pointerdown', skip);
+    };
+  }, [said, skip]);
 
   const levels = useCallback(
     (): AudioLevels => ({
@@ -88,18 +101,15 @@ export function Opening() {
     [phase, wordCount],
   );
 
-  if (phase === 'gone') return null;
-
   return (
-    // Decorative: the app underneath is already there for assistive technology, so the opening stays out of its way.
     <div
       className={classes.opening}
       data-phase={phase}
       data-started={started || undefined}
       data-still={reduced || undefined}
-      aria-hidden
-      onPointerDown={skip}
-      style={{ '--leave': `${reduced ? openingBeats.stillLeaveMs : openingBeats.leaveMs}ms` } as CSSProperties}
+      data-skipped={skipped || undefined}
+      data-away={away || undefined}
+      aria-hidden={away || undefined}
     >
       <figure className={classes.stage}>
         <div className={classes.face}>

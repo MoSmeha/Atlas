@@ -3,14 +3,14 @@ import { mouthOpening } from '../../src/features/voice/faceMotion';
 import { openingBeats, openingTimeline, speakingMs, spokenVoice } from '../../src/shell/openingScript';
 
 describe('openingTimeline', () => {
-  it('wakes, speaks, holds and lifts away in order, in about two and a half seconds for five words', () => {
+  it('wakes, speaks and has said its line in order, in under two seconds for five words', () => {
     const beats = openingTimeline(5, false);
-    expect(beats.map((beat) => beat.phase)).toEqual(['awake', 'speaking', 'said', 'leaving', 'gone']);
+    expect(beats.map((beat) => beat.phase)).toEqual(['awake', 'speaking', 'said']);
     const times = beats.map((beat) => beat.at);
     expect([...times].sort((a, b) => a - b)).toEqual(times);
-    const gone = times.at(-1) ?? 0;
-    expect(gone).toBeGreaterThan(2_000);
-    expect(gone).toBeLessThan(3_000);
+    const said = times.at(-1) ?? 0;
+    expect(said).toBeGreaterThan(1_000);
+    expect(said).toBeLessThan(2_000);
   });
 
   it('gives the line time for every word before it says who said it', () => {
@@ -19,11 +19,8 @@ describe('openingTimeline', () => {
     expect(said - openingBeats.speak).toBeGreaterThan(8 * openingBeats.wordMs);
   });
 
-  it('with reduced motion only holds and fades', () => {
-    expect(openingTimeline(5, true)).toEqual([
-      { phase: 'leaving', at: openingBeats.stillHold },
-      { phase: 'gone', at: openingBeats.stillHold + openingBeats.stillLeaveMs },
-    ]);
+  it('with reduced motion has nothing to time, because it starts said', () => {
+    expect(openingTimeline(5, true)).toEqual([]);
   });
 });
 

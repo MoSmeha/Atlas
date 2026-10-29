@@ -1,8 +1,9 @@
 /**
- * The opening, beat by beat: the bust comes into focus with its eyes lowered, looks up at the viewer,
- * says its line one word at a time, holds, and lifts away. About 2.5 s for a five-word line.
+ * The opening, beat by beat: the bust comes into focus with its eyes lowered, looks up at the viewer and
+ * says its line one word at a time; once the line is said, the question box rises into place. About 1.6 s
+ * for a five-word line. The face and the line then stay as the empty conversation.
  */
-export type OpeningPhase = 'arriving' | 'awake' | 'speaking' | 'said' | 'leaving' | 'gone';
+export type OpeningPhase = 'arriving' | 'awake' | 'speaking' | 'said';
 
 /** Times in ms. Words appear `wordMs` apart; the mouth moves in syllables of `syllableMs`. */
 export const openingBeats = {
@@ -10,11 +11,6 @@ export const openingBeats = {
   speak: 760,
   wordMs: 150,
   syllableMs: 112,
-  hold: 620,
-  leaveMs: 420,
-  /** With reduced motion the face and the whole line show at once, hold, and fade. */
-  stillHold: 1_400,
-  stillLeaveMs: 220,
 } as const;
 
 export interface OpeningBeat {
@@ -28,22 +24,13 @@ export function speakingMs(words: number): number {
   return Math.max(1, words) * openingBeats.wordMs + 120;
 }
 
-/** Every phase after the first and when it starts. A skip jumps straight to leaving. */
+/** Every phase after the first and when it starts. With reduced motion it starts said, so none follow. A skip jumps to said. */
 export function openingTimeline(words: number, reduced: boolean): OpeningBeat[] {
-  if (reduced) {
-    return [
-      { phase: 'leaving', at: openingBeats.stillHold },
-      { phase: 'gone', at: openingBeats.stillHold + openingBeats.stillLeaveMs },
-    ];
-  }
-  const said = openingBeats.speak + speakingMs(words);
-  const leaving = said + openingBeats.hold;
+  if (reduced) return [];
   return [
     { phase: 'awake', at: openingBeats.wake },
     { phase: 'speaking', at: openingBeats.speak },
-    { phase: 'said', at: said },
-    { phase: 'leaving', at: leaving },
-    { phase: 'gone', at: leaving + openingBeats.leaveMs },
+    { phase: 'said', at: openingBeats.speak + speakingMs(words) },
   ];
 }
 

@@ -18,8 +18,8 @@ export const IndexProgress = z.object({
 export type IndexProgress = z.infer<typeof IndexProgress>;
 
 /**
- * A suggested question in both interface languages. The empty chat shows the one for the interface
- * language, and the answer comes back in that language.
+ * A suggested question in both interface languages. The CLI prints the English ones when it starts; the web
+ * client's empty chat no longer shows them.
  */
 export const SuggestedQuestion = z.object({ en: z.string(), ar: z.string() });
 export type SuggestedQuestion = z.infer<typeof SuggestedQuestion>;

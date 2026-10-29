@@ -32,6 +32,8 @@ interface ComposerProps {
   maxDictationSeconds?: number;
   /** Shown on the hint line in place of the hint, such as why the last call could not start. */
   notice?: VoiceNotice | null;
+  /** Told whether a question is being written or dictated, so the empty conversation can step back meanwhile. */
+  onComposingChange?: (composing: boolean) => void;
 }
 
 /** "The browser blocked the microphone…" for a microphone problem; the error in plain words for anything else. */
@@ -62,6 +64,7 @@ export function Composer({
   onStartCall,
   maxDictationSeconds,
   notice,
+  onComposingChange,
 }: ComposerProps) {
   const { language } = useLanguage();
   const copy = useCopy(chatCopy).composer;
@@ -86,6 +89,11 @@ export function Composer({
   const question = value.trim();
   const canSend = readiness.canAsk && !streaming && question !== '' && !recording && !transcribing;
   const offerCall = onStartCall !== undefined && question === '' && !recording && !transcribing;
+  const composing = question !== '' || recording || transcribing;
+
+  useEffect(() => {
+    onComposingChange?.(composing);
+  }, [composing, onComposingChange]);
 
   const send = () => {
     if (!canSend) return;

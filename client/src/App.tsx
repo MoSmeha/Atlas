@@ -6,7 +6,6 @@ import { Sidebar } from './features/sidebar/Sidebar';
 import { TopBarActions } from './features/topbar/TopBarActions';
 import { useLanguage } from './i18n/useLanguage';
 import { shellLayout } from './shell/layout';
-import { Opening } from './shell/Opening';
 import resizeHandle from './shell/resizeHandle.module.css';
 import { Sheet } from './shell/Sheet';
 import { TopBar } from './shell/TopBar';
@@ -14,8 +13,8 @@ import { useSidebar } from './shell/useSidebar';
 
 /**
  * The app frame: top bar and document sidebar as one chrome field, and the conversation on its inset
- * sheet. The sidebar closes from the top bar and its edge drags to resize it. The opening screen plays
- * over the frame while it loads. Notifications rise from the bottom corner at the end of the reading direction.
+ * sheet. The sidebar closes from the top bar and its edge drags to resize it. Notifications rise from the
+ * bottom corner at the end of the reading direction.
  */
 export function App() {
   const sidebar = useSidebar();
@@ -24,7 +23,6 @@ export function App() {
 
   return (
     <>
-      <Opening />
       <Notifications position={dir === 'rtl' ? 'bottom-left' : 'bottom-right'} limit={3} />
       <AppShell
         header={{ height: shellLayout.headerHeight }}

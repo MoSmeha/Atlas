@@ -1,42 +1,40 @@
 /*
- * The opening screen on the chrome ground, the same ground the page paints before the app loads, so nothing
- * flashes. The bust comes into focus (blur, scale and opacity), each word of its line rises into place as it
- * says it, and the whole screen lifts away to the app underneath. Each word's start (--word-at) and the lift
- * (--leave) come from openingScript.ts, which also times the face.
+ * The empty conversation: Atlas's bust and its line, a little above the middle of the space over the question box.
+ * The bust comes into focus (blur, scale and opacity) and each word of its line rises into place as it says it. Each
+ * word's start (--word-at) comes from openingScript.ts, which also times the face. While a question is being written
+ * the figure steps back, quicker than it returns once the box is empty again.
  */
 
 .opening {
-  position: fixed;
-  inset: 0;
-  z-index: var(--mantine-z-index-max);
   display: grid;
+  flex: 1;
   place-items: center;
-  padding: var(--mantine-spacing-md);
-  background-color: var(--mantine-color-gray-1);
-  transition: opacity var(--leave) cubic-bezier(0.16, 1, 0.3, 1);
+  padding-block-end: 8dvh;
+  transition:
+    opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s;
 }
 
-.opening[data-phase='leaving'] {
+/* Hidden once it has faded, so the face stops being painted while the question is written. */
+.opening[data-away] {
   opacity: 0;
+  transform: translateY(-6px);
+  filter: blur(3px);
+  visibility: hidden;
   pointer-events: none;
+  transition-duration: 180ms, 180ms, 180ms, 0s;
+  transition-delay: 0s, 0s, 0s, 180ms;
 }
 
-/* A little above the middle, where the eye lands, like the empty conversation. */
 .stage {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--mantine-spacing-lg);
-  margin: 0 0 8dvh;
+  margin: 0;
   text-align: center;
-  transition:
-    transform var(--leave) cubic-bezier(0.16, 1, 0.3, 1),
-    filter var(--leave) cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.opening[data-phase='leaving'] .stage {
-  transform: translateY(-8px) scale(0.985);
-  filter: blur(3px);
 }
 
 /* Unseen until the tab is looked at, then it comes into focus. */
@@ -82,7 +80,7 @@
   opacity: 0;
 }
 
-.opening:is([data-phase='speaking'], [data-phase='said'], [data-phase='leaving']) .word {
+.opening:is([data-phase='speaking'], [data-phase='said']) .word {
   animation: word-in 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: var(--word-at);
 }
@@ -109,7 +107,13 @@
 }
 
 /* Who said it, once the line is said. */
-.opening:is([data-phase='said'], [data-phase='leaving']) .by {
+.opening[data-phase='said'] .by {
+  opacity: 1;
+}
+
+/* A click or key mid-line: the rest of the words are simply there. */
+.opening[data-skipped] .word {
+  animation: none;
   opacity: 1;
 }
 
@@ -119,8 +123,7 @@
   }
 }
 
-/* Reduced motion: no focus pull, no rising words, no lift; the face and the line are there, then fade. */
-.opening[data-still] .stage,
+/* Reduced motion: no focus pull and no rising words; the face and the line are there. Stepping back is a plain fade. */
 .opening[data-still] .face,
 .opening[data-still] .word,
 .opening[data-still] .by {
@@ -129,4 +132,11 @@
   filter: none;
   opacity: 1;
   transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opening[data-away] {
+    transform: none;
+    filter: none;
+  }
 }

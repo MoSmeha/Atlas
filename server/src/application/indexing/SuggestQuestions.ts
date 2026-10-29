@@ -3,7 +3,7 @@ import { currencyKey, UNSPECIFIED_CURRENCY } from '../../domain/currency';
 import { revisionName } from '../../domain/revisionName';
 import { isBoqTable } from '../tools/boqTables';
 
-/** How many questions the empty chat shows. */
+/** How many questions the folder status suggests. */
 export const SUGGESTION_COUNT = 5;
 
 /** Files Atlas could not read at all. A scanned file is not one of them: its pages can still be looked at. */
@@ -36,8 +36,8 @@ const GENERAL: readonly SuggestedQuestion[] = [
 /**
  * Five questions that fit what the folder holds, in priority order: BOQ totals, items above 1 million in the BOQs'
  * currency, BOQ arithmetic, two revisions of one BOQ, a contract's scope, dates in the PDFs, an Arabic document, a
- * scanned one, a file in several currencies, then general questions. Each comes in English and Arabic, so the
- * empty chat can offer them in the interface language. Real file names, no model call, and the same answer
+ * scanned one, a file in several currencies, then general questions. Each comes in English and Arabic, so a client
+ * can offer them in either interface language. Real file names, no model call, and the same answer
  * whatever order the documents come in.
  */
 export function suggest(documents: readonly DocumentSummary[]): SuggestedQuestion[] {

@@ -38,7 +38,7 @@ interface AtlasFaceProps {
   mood: FaceMood;
   /** Read every frame: Atlas's voice opens the mouth. */
   levels: () => AudioLevels;
-  /** 72px in the call card (56px on a phone), or 156px (120px on a phone) as the whole of the opening screen. */
+  /** 72px in the call card (56px on a phone), or 156px (120px on a phone) in the empty conversation's opening. */
   size?: 'call' | 'opening';
 }
 
@@ -72,7 +72,7 @@ function draw(parts: Parts, pose: FacePose, breathing: number, blink: number): v
  * and breathes while it listens, raises its brows while the user speaks, looks up while it checks the documents, and
  * moves its mouth with the loudness of its own voice. The ring around it is dashed and turning while the call connects
  * and while it works, and turns ink while it speaks. With reduced motion the face holds one still pose per state. The
- * opening screen uses the same face, larger, to say Atlas's line.
+ * empty conversation uses the same face, larger, to say Atlas's line.
  */
 export function AtlasFace({ mood, levels, size = 'call' }: AtlasFaceProps) {
   const reduceMotion = useReducedMotion();
