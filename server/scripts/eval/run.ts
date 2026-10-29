@@ -2,6 +2,7 @@ import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { parseArgs } from 'node:util';
 import type { IndexEvent, ToolStep } from '@atlas/shared';
+import type { CatalogModel } from '../../src/application/models/pickLineup';
 import { repoRoot } from '../../src/infrastructure/settings';
 import { compose, type Container } from '../../src/main';
 import type { CheckResult, RunTrace } from './checks';
@@ -14,17 +15,18 @@ const RUNS_DIR = join(repoRoot, 'eval-runs');
 /**
  * pnpm eval [--model <id>] [--only <id,id>]
  * Indexes the sample folder, asks every eval question, checks each answer against samples/expected.json and writes
- * a report to eval-runs/. A full run also copies it to docs/EVAL.md, or docs/EVAL-<provider>.md for Gemini and
- * Ollama, so a free run never replaces the OpenAI report. Failed questions still exit 0: the report is the output.
+ * a report to eval-runs/. A full run also copies it to docs/EVAL.md, or docs/EVAL-<provider>.md when the model is
+ * Gemini's or Ollama's, so a free run never replaces the OpenAI report. Failed questions still exit 0: the report is the output.
  */
 async function main(): Promise<void> {
   const { values } = parseArgs({ options: { model: { type: 'string' }, only: { type: 'string' } }, allowPositionals: true });
   const selected = pickQuestions(values.only);
   const container = await compose();
   if (container.provider === null) stop(container.providerChoice.reason);
-  const published = join(repoRoot, 'docs', container.provider.id === 'openai' ? 'EVAL.md' : `EVAL-${container.provider.id}.md`);
-  const model = pickModel(container, values.model);
-  console.log(`${container.provider.label}: model ${model}, ${selected.length} of ${questions.length} questions`);
+  const chosen = pickModel(container, values.model);
+  const model = chosen.id;
+  const published = join(repoRoot, 'docs', chosen.provider === 'openai' ? 'EVAL.md' : `EVAL-${chosen.provider}.md`);
+  console.log(`Model ${model} (${chosen.provider}), ${selected.length} of ${questions.length} questions`);
 
   const indexSeconds = await indexSamples(container);
   const runId = Date.now().toString(36);
@@ -61,12 +63,13 @@ function pickQuestions(only: string | undefined): EvalQuestion[] {
   return questions.filter((question) => wanted.has(question.id));
 }
 
-/** --model when it is one of the lineup's three models, otherwise the configured default answer model. */
-function pickModel(container: Container, requested: string | undefined): string {
-  const ids = Object.values(container.lineup).map((model) => model.id);
-  if (requested === undefined) return container.lineup[container.modelConfig.answerTier].id;
-  if (!ids.includes(requested)) stop(`Model ${requested} is not in the lineup. Use one of: ${ids.join(', ')}`);
-  return requested;
+/** --model when it is one of the choices, from any provider set up, otherwise the default model. */
+function pickModel(container: Container, requested: string | undefined): CatalogModel {
+  const { options, defaultModel } = container.models;
+  if (requested === undefined) return defaultModel;
+  const chosen = options.find((model) => model.id === requested);
+  if (!chosen) stop(`Model ${requested} is not offered. Use one of: ${options.map((model) => model.id).join(', ')}`);
+  return chosen;
 }
 
 /** Loads the sample folder and waits until it is ready, printing each phase and progress step once. */

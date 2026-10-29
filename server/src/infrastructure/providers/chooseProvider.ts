@@ -1,7 +1,11 @@
+import type { ModelProvider } from '@atlas/shared';
 import type { LocalPick } from '../local/pickLocalModels';
 import type { ProviderSetting } from '../settings';
 
-export type ProviderId = 'openai' | 'gemini' | 'ollama';
+export type ProviderId = ModelProvider;
+
+/** The order providers are offered in the model picker. */
+const OFFER_ORDER: ProviderId[] = ['openai', 'gemini', 'ollama'];
 
 export interface ProviderInputs {
   setting: ProviderSetting;
@@ -18,8 +22,9 @@ export interface ProviderChoice {
 }
 
 /**
- * Picks who answers. `auto` prefers what costs nothing: Ollama when this machine can run its models, then Gemini's
- * free tier, then OpenAI. A provider named in ATLAS_PROVIDER is used only if it can be; nothing else stands in. Pure.
+ * Picks the default provider: it answers when no model is chosen, and its embeddings search the documents. `auto`
+ * prefers what costs nothing: Ollama when this machine can run its models, then Gemini's free tier, then OpenAI.
+ * A provider named in ATLAS_PROVIDER is used only if it can be; nothing else stands in. Pure.
  */
 export function chooseProvider({ setting, hasOpenAiKey, hasGeminiKey, local }: ProviderInputs): ProviderChoice {
   const localProblem = local === null ? 'the machine was not scanned.' : local.problem;
@@ -39,6 +44,16 @@ export function chooseProvider({ setting, hasOpenAiKey, hasGeminiKey, local }: P
         reason: 'No model is set up: add OPENAI_API_KEY or GEMINI_API_KEY to .env, or start Ollama, then restart Atlas.',
       };
   }
+}
+
+/**
+ * Every provider that is set up, offered side by side in the model picker, in a fixed order. None when there is
+ * no default provider, since nothing then answers. Pure.
+ */
+export function offeredProviders({ hasOpenAiKey, hasGeminiKey, local }: ProviderInputs, choice: ProviderChoice): ProviderId[] {
+  if (choice.id === null) return [];
+  const ready: Record<ProviderId, boolean> = { openai: hasOpenAiKey, gemini: hasGeminiKey, ollama: local !== null && local.problem === null };
+  return OFFER_ORDER.filter((id) => id === choice.id || ready[id]);
 }
 
 function named(id: ProviderId): ProviderChoice {
