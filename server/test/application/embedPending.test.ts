@@ -46,7 +46,7 @@ describe('embedPending', () => {
 
     const result = await embedPending(index, embeddings);
 
-    expect(result).toEqual({ embedded: 3, tokens: 6, missingApiKey: false });
+    expect(result).toEqual({ embedded: 3, tokens: 6, stoppedBecause: null });
     expect(embeddings.calls.flat()).toEqual(['concrete works', 'electrical works', 'steel doors']);
     expect(index.pendingEmbeddingCount()).toBe(0);
     const [hit] = index.vectorSearch(embedText('electrical'), { document: null, limit: 1 });
@@ -83,10 +83,10 @@ describe('embedPending', () => {
 
     index.save(pdfRecord('Annex.pdf', ['retention']));
     const second = await embedPending(index, embeddings);
-    expect(second).toEqual({ embedded: 1, tokens: 1, missingApiKey: false });
+    expect(second).toEqual({ embedded: 1, tokens: 1, stoppedBecause: null });
     expect(embeddings.calls).toEqual([['scope of works', 'payment terms'], ['retention']]);
 
-    expect(await embedPending(index, embeddings)).toEqual({ embedded: 0, tokens: 0, missingApiKey: false });
+    expect(await embedPending(index, embeddings)).toEqual({ embedded: 0, tokens: 0, stoppedBecause: null });
     expect(embeddings.calls).toHaveLength(2);
   });
 
@@ -94,7 +94,7 @@ describe('embedPending', () => {
     const embeddings = new FakeEmbeddingClient();
     const progress: number[] = [];
     const result = await embedPending(new FakeIndex(), embeddings, { onProgress: (done) => progress.push(done) });
-    expect(result).toEqual({ embedded: 0, tokens: 0, missingApiKey: false });
+    expect(result).toEqual({ embedded: 0, tokens: 0, stoppedBecause: null });
     expect(embeddings.calls).toEqual([]);
     expect(progress).toEqual([]);
   });
@@ -105,17 +105,25 @@ describe('embedPending', () => {
 
     const result = await embedPending(index, embeddings, { batchSize: 2 });
 
-    expect(result).toEqual({ embedded: 2, tokens: 2, missingApiKey: true });
+    expect(result).toEqual({ embedded: 2, tokens: 2, stoppedBecause: errors.missingApiKey().message });
     expect(index.pendingEmbeddings(10).map((chunk) => chunk.text)).toEqual(['c', 'd', 'e']);
   });
 
-  it('passes other errors on, after saving the batches that worked', async () => {
+  it('stops quietly with the reason when the API is out of quota or rate limited', async () => {
     const index = indexWith(['a', 'b', 'c']);
     const embeddings = new ScriptedEmbeddings({ 2: errors.rateLimited(5) });
 
-    const error = await rejection(embedPending(index, embeddings, { batchSize: 1 }));
+    const result = await embedPending(index, embeddings, { batchSize: 1 });
 
-    expect(error.code).toBe('rate_limited');
+    expect(result).toEqual({ embedded: 1, tokens: 1, stoppedBecause: errors.rateLimited(5).message });
+    expect(index.pendingEmbeddingCount()).toBe(2);
+  });
+
+  it('passes unexpected errors on, after saving the batches that worked', async () => {
+    const index = indexWith(['a', 'b', 'c']);
+    const embeddings = new ScriptedEmbeddings({ 2: new Error('socket closed') });
+
+    await expect(embedPending(index, embeddings, { batchSize: 1 })).rejects.toThrow('socket closed');
     expect(index.pendingEmbeddingCount()).toBe(2);
   });
 
