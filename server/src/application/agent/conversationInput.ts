@@ -43,7 +43,11 @@ export function describeTurn(turn: Turn, session: Session): string {
   const markdown = answer.markdown.trim();
   const parts = [markdown.length <= MAX_ANSWER_CHARS ? markdown : `${sliceText(markdown, MAX_ANSWER_CHARS - 1).trimEnd()}…`];
   const attached = answer.table;
-  if (attached !== null) parts.push(describeResult({ ...attached, id: attached.resultId }, null));
+  if (attached !== null) {
+    // The saved result, not the table the user saw, so the model still has the _row and _page values it cites from.
+    const saved = session.result(attached.resultId);
+    parts.push(describeResult(saved === null ? { ...attached, id: attached.resultId } : { ...saved, totalRows: saved.rows.length }, null));
+  }
   const others = turn.resultIds
     .filter((id) => id !== attached?.resultId)
     .slice(-MEMORY_OTHER_RESULTS)

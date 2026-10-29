@@ -124,6 +124,27 @@ describe('checkSources', () => {
     ]);
   });
 
+  it('lists at most 25 sources, merging the closest rows of a result that cites many', () => {
+    const { index, session } = setup();
+    // Items on every other row from 5 to 63: 30 single-row ranges on one sheet.
+    const rows = Array.from({ length: 30 }, (_, i) => 5 + 2 * i);
+    const saved = session.saveResult({
+      title: 'Items',
+      columns: ['item_code', '_row'],
+      rows: rows.map((row) => [`A${row}`, row]),
+      sources: rows.map((row) => ({ kind: 'excel', document: 'boq/BOQ Phase 1.xlsx', sheet: 'Bill 1', rowFrom: row, rowTo: row })),
+      tool: 'query_tables',
+      detail: 'SELECT ...',
+    });
+    const result = checkSources({ index, session, kind: 'answer', sources: [pdf('Main Contract.pdf', 3)], resultId: saved.id });
+
+    expect(result.sources).toHaveLength(25);
+    expect(result.sources[0]).toEqual({ kind: 'pdf', document: 'contracts/Main Contract.pdf', page: 3, quote: null });
+    const ranges = result.sources.flatMap((source) => (source.kind === 'excel' ? [source] : []));
+    expect(rows.every((row) => ranges.some((range) => range.rowFrom <= row && row <= range.rowTo))).toBe(true);
+    expect(session.result(saved.id)?.sources).toHaveLength(30);
+  });
+
   it('rejects a result_id that is not saved in the session', () => {
     const result = check([pdf('Main Contract.pdf', 1)], { resultId: 'r9' });
     expect(result.result).toBeNull();

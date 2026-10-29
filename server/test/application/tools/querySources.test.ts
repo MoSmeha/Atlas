@@ -109,8 +109,130 @@ describe('querySources', () => {
     expect(querySources(result(['count(*)'], [[12]]), [pdfBoq], () => [])).toEqual(expected);
   });
 
+  it('cites the rows of both sides of a join, each on the only sheet that has it', () => {
+    // Rows 12 and 13 are only in Bill 1; rows 4 and 30 only in Bill 2.
+    const found = result(['item_code', '_row', '_row'], [['A1', 12, 30], ['A2', 13, 4]]);
+    expect(querySources(found, [bill1, bill2], rowsOf)).toEqual([
+      { kind: 'excel', document: 'BOQ.xlsx', sheet: 'Bill 1', rowFrom: 12, rowTo: 13 },
+      { kind: 'excel', document: 'BOQ.xlsx', sheet: 'Bill 2', rowFrom: 4, rowTo: 4 },
+      { kind: 'excel', document: 'BOQ.xlsx', sheet: 'Bill 2', rowFrom: 30, rowTo: 30 },
+    ]);
+  });
+
   it('cites nothing for a query that reads no loaded table, or an empty sheet table', () => {
     expect(querySources(result(['1 + 1'], [[2]]), [], rowsOf)).toEqual([]);
     expect(querySources(result(['amount'], []), [bill1], () => [])).toEqual([]);
+  });
+});
+
+/** Two revisions of one BOQ with the same sheet names, and a PDF BOQ: a UNION ALL over them repeats row numbers. */
+const rev0Mep = schema('t_rev0_mep', 'BOQs/BOQ_Rev0.xlsx', 'MEP');
+const rev0Civil = schema('t_rev0_civil', 'BOQs/BOQ_Rev0.xlsx', 'Civil');
+const rev1Mep = schema('t_rev1_mep', 'BOQs/BOQ_Rev1.xlsx', 'MEP');
+const facade = schema('t_facade', 'Facade.pdf', null, [1, 3]);
+const unionRows: Record<string, TableRowRecord[]> = {
+  // Rows 8 to 12 are items and row 13 the sheet total.
+  t_rev0_mep: rows([8, 9, 10, 11, 12, 13]),
+  t_rev0_civil: rows([8, 9, 10, 11, 12, 13]),
+  // Rev 1 adds items on rows 13 and 14 and moves the total to row 15.
+  t_rev1_mep: rows([8, 9, 10, 11, 12, 13, 14, 15]),
+  t_facade: rows([], [1, 1, 2, 3]),
+};
+const unionRowsOf = (table: string) => unionRows[table] ?? [];
+const unionTables = [rev0Mep, rev0Civil, rev1Mep, facade];
+const rev0MepWhole = { kind: 'excel', document: 'BOQs/BOQ_Rev0.xlsx', sheet: 'MEP', rowFrom: 8, rowTo: 13 };
+const rev0CivilWhole = { kind: 'excel', document: 'BOQs/BOQ_Rev0.xlsx', sheet: 'Civil', rowFrom: 8, rowTo: 13 };
+const rev1MepWhole = { kind: 'excel', document: 'BOQs/BOQ_Rev1.xlsx', sheet: 'MEP', rowFrom: 8, rowTo: 15 };
+
+describe('querySources over a UNION ALL', () => {
+  it('cites each row on its own sheet, from the document and sheet columns, in ranges', () => {
+    const found = result(
+      ['document', 'sheet', 'item_code', 'amount', '_row', '_page'],
+      [
+        ['BOQ_Rev0.xlsx', 'MEP', '3.2.04', 4250000, 9, null],
+        ['BOQ_Rev0.xlsx', 'MEP', '3.1.01', 4140000, 11, null],
+        ['BOQ_Rev0.xlsx', 'MEP', '3.1.04', 3306000, 12, null],
+        ['BOQ_Rev0.xlsx', 'Civil', '1.3.02', 11760000, 8, null],
+        ['BOQ_Rev1.xlsx', 'MEP', '3.2.04', 4300000, 9, null],
+        ['BOQ_Rev1.xlsx', 'MEP', '3.9.01', 1200000, 14, null],
+        ['Facade.pdf', null, 'F.2.01', 20590000, null, 2],
+        ['Facade.pdf', null, 'F.1.03', 1100000, null, 1],
+      ],
+    );
+    expect(querySources(found, unionTables, unionRowsOf)).toEqual([
+      { kind: 'excel', document: 'BOQs/BOQ_Rev0.xlsx', sheet: 'MEP', rowFrom: 9, rowTo: 9 },
+      { kind: 'excel', document: 'BOQs/BOQ_Rev0.xlsx', sheet: 'MEP', rowFrom: 11, rowTo: 12 },
+      { kind: 'excel', document: 'BOQs/BOQ_Rev0.xlsx', sheet: 'Civil', rowFrom: 8, rowTo: 8 },
+      { kind: 'excel', document: 'BOQs/BOQ_Rev1.xlsx', sheet: 'MEP', rowFrom: 9, rowTo: 9 },
+      { kind: 'excel', document: 'BOQs/BOQ_Rev1.xlsx', sheet: 'MEP', rowFrom: 14, rowTo: 14 },
+      { kind: 'pdf', document: 'Facade.pdf', page: 1, quote: null },
+      { kind: 'pdf', document: 'Facade.pdf', page: 2, quote: null },
+    ]);
+  });
+
+  it('matches names whatever their case: path, file name, name without extension, sheet or table name', () => {
+    const found = result(
+      ['file', 'tab', '_row'],
+      [
+        ['boqs/boq_rev0.xlsx', 'civil', 10],
+        ['BOQ_Rev1', ' mep ', 8],
+        ['t_rev0_mep', null, 8],
+      ],
+    );
+    expect(querySources(found, unionTables, unionRowsOf)).toEqual([
+      { kind: 'excel', document: 'BOQs/BOQ_Rev0.xlsx', sheet: 'Civil', rowFrom: 10, rowTo: 10 },
+      { kind: 'excel', document: 'BOQs/BOQ_Rev1.xlsx', sheet: 'MEP', rowFrom: 8, rowTo: 8 },
+      { kind: 'excel', document: 'BOQs/BOQ_Rev0.xlsx', sheet: 'MEP', rowFrom: 8, rowTo: 8 },
+    ]);
+  });
+
+  it('still uses a sheet column whose PDF rows hold something that is no sheet', () => {
+    const found = result(
+      ['document', 'sheet', '_row', '_page'],
+      [
+        ['BOQ_Rev0.xlsx', 'MEP', 10, null],
+        ['BOQ_Rev0.xlsx', 'Civil', 10, null],
+        ['BOQ_Rev0.xlsx', 'Civil', 11, null],
+        ['Facade.pdf', 'Facade BOQ', null, 3],
+      ],
+    );
+    expect(querySources(found, unionTables, unionRowsOf)).toEqual([
+      { kind: 'excel', document: 'BOQs/BOQ_Rev0.xlsx', sheet: 'MEP', rowFrom: 10, rowTo: 10 },
+      { kind: 'excel', document: 'BOQs/BOQ_Rev0.xlsx', sheet: 'Civil', rowFrom: 10, rowTo: 11 },
+      { kind: 'pdf', document: 'Facade.pdf', page: 3, quote: null },
+    ]);
+  });
+
+  it('traces a row without naming columns to the only sheet that has it', () => {
+    const found = result(['item_code', '_row'], [['3.9.01', 14], ['3.9.02', 15]]);
+    expect(querySources(found, [rev0Mep, rev1Mep], unionRowsOf)).toEqual([
+      { kind: 'excel', document: 'BOQs/BOQ_Rev1.xlsx', sheet: 'MEP', rowFrom: 14, rowTo: 15 },
+    ]);
+  });
+
+  it('cites whole only the tables an untraced row could come from, beside the traced rows', () => {
+    // Rev 1 has one sheet, so its row 14 is traced; row 9 of Rev 0 is on both of its sheets.
+    const found = result(['document', 'item_code', '_row'], [['BOQ_Rev1.xlsx', '3.9.01', 14], ['BOQ_Rev0.xlsx', '3.1.01', 9]]);
+    expect(querySources(found, unionTables, unionRowsOf)).toEqual([
+      { kind: 'excel', document: 'BOQs/BOQ_Rev1.xlsx', sheet: 'MEP', rowFrom: 14, rowTo: 14 },
+      rev0MepWhole,
+      rev0CivilWhole,
+    ]);
+  });
+
+  it('leaves out traced rows that a table cited whole already covers', () => {
+    // Row 14 is only in Rev 1, but row 9 could be either revision's, so both are cited whole.
+    const found = result(['item_code', '_row'], [['3.9.01', 14], ['3.1.01', 9]]);
+    expect(querySources(found, [rev0Mep, rev1Mep], unionRowsOf)).toEqual([rev0MepWhole, rev1MepWhole]);
+  });
+
+  it('falls back to every table whole when no row can be traced', () => {
+    const found = result(['item_code', '_row'], [['3.1.01', 9], ['1.3.02', 10]]);
+    expect(querySources(found, [rev0Mep, rev0Civil, rev1Mep], unionRowsOf)).toEqual([rev0MepWhole, rev0CivilWhole, rev1MepWhole]);
+  });
+
+  it('does not take a description that happens to be a sheet name for the sheet', () => {
+    const found = result(['description', '_row'], [['Civil', 9], ['Chilled water pipework', 10], ['Power cabling', 11]]);
+    expect(querySources(found, [rev0Mep, rev0Civil], unionRowsOf)).toEqual([rev0MepWhole, rev0CivilWhole]);
   });
 });

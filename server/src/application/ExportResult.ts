@@ -1,6 +1,7 @@
 import { basename } from 'node:path';
 import type { ExportFormat } from '@atlas/shared';
 import { fileSlug, fileTimestamp } from '../domain/fileName';
+import { visibleColumns } from '../domain/visibleColumns';
 import { errors } from './errors';
 import type { Clock } from './ports/Clock';
 import type { ResultExporter } from './ports/ResultExporter';
@@ -36,7 +37,8 @@ export class ExportResult {
     if (!result) throw errors.resultNotFound(resultId);
 
     const baseName = `${fileSlug(result.title ?? '', 'result')}-${fileTimestamp(this.clock.now())}`;
-    const table = { title: result.title, columns: result.columns, rows: result.rows, sources: result.sources };
+    // The reader's columns only; the sources the meta columns gave are listed with them.
+    const table = { title: result.title, ...visibleColumns(result), sources: result.sources };
     const path = await this.exporter.export(table, format, exportsDir, baseName);
     return { fileName: basename(path), path };
   }

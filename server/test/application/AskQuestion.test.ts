@@ -78,7 +78,7 @@ describe('AskQuestion', () => {
       kind: 'answer',
       language: 'en',
       markdown: 'One item costs over 1,000,000: A1 at SAR 2,000,000.',
-      table: { resultId: 'r1', title: 'Items over 1,000,000', rows: [['A1', 2000000, 5]], totalRows: 1 },
+      table: { resultId: 'r1', title: 'Items over 1,000,000', columns: ['item_code', 'amount'], rows: [['A1', 2000000]], totalRows: 1 },
       sources: [{ kind: 'excel', document: 'BOQ.xlsx', sheet: 'Bill 1', rowFrom: 5, rowTo: 5 }],
       warnings: [],
     });
@@ -165,7 +165,8 @@ describe('AskQuestion', () => {
 
     expect(outcome.ok).toBe(true);
     expect(exporter.exported).toHaveLength(1);
-    expect(exporter.exported[0]?.table.rows).toEqual([['A1', 2000000, 5]]);
+    expect(exporter.exported[0]?.table.columns).toEqual(['item_code', 'amount']);
+    expect(exporter.exported[0]?.table.rows).toEqual([['A1', 2000000]]);
     expect(outputsOf(model.requests[3])[0]).toMatchObject({ file: expect.stringMatching(/\.xlsx$/) });
   });
 
