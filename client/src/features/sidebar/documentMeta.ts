@@ -1,5 +1,5 @@
 import type { DocumentSummary } from '@atlas/shared';
-import type { SidebarCopy } from './sidebarCopy';
+import { type SidebarCopy, sidebarCopy } from './sidebarCopy';
 
 /** File size the way Explorer shows it: "18 KB", "2.7 MB", "205 MB". */
 export function formatBytes(bytes: number): string {
@@ -19,7 +19,7 @@ export function formatBytes(bytes: number): string {
  * The dimmed line under a file name: "64 pages", "6 pages, 1 table", "3 sheets, 2 tables", then the
  * document type when Atlas sorted it. Falls back to the file size when Atlas could not count pages or sheets.
  */
-export function documentMeta(document: DocumentSummary, copy: SidebarCopy): string {
+export function documentMeta(document: DocumentSummary, copy: SidebarCopy = sidebarCopy.en): string {
   const parts: string[] = [];
   if (document.kind === 'pdf' && document.pageCount !== null) {
     parts.push(copy.pages(document.pageCount));

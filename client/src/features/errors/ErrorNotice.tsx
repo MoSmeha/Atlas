@@ -6,6 +6,7 @@ import type { Bilingual } from '../../i18n/language';
 import { useCopy } from '../../i18n/useCopy';
 import { useLanguage } from '../../i18n/useLanguage';
 import { type ErrorTone, type NoticeError, errorCopy } from './errorCopy';
+import { type NoticeColor, noticeStyles } from './noticeStyles';
 
 interface ErrorNoticeProps {
   error: NoticeError;
@@ -19,7 +20,7 @@ const noticeCopy: Bilingual<{ askAgain: string; retryIn: (label: string, seconds
   ar: { askAgain: 'اسأل مرة أخرى', retryIn: (label, seconds) => `${label} بعد ${figure(seconds)} ث` },
 };
 
-const toneColor: Record<ErrorTone, 'red' | 'yellow' | 'gray'> = { error: 'red', warning: 'yellow', neutral: 'gray' };
+const toneColor: Record<ErrorTone, NoticeColor> = { error: 'red', warning: 'yellow', neutral: 'gray' };
 const toneIcon = { error: IconAlertCircle, warning: IconAlertTriangle, neutral: IconInfoCircle };
 
 /** A plain-language error: what went wrong, what to do next, and a retry button when one helps. */
@@ -38,14 +39,7 @@ export function ErrorNotice({ error, onRetry, retryLabel }: ErrorNoticeProps) {
       role="alert"
       title={title}
       icon={<Icon size={18} stroke={1.75} />}
-      styles={{
-        root: {
-          backgroundColor: `var(--mantine-color-${color}-0)`,
-          border: `1px solid var(--mantine-color-${color}-2)`,
-        },
-        title: { color: `var(--mantine-color-${color}-9)`, fontWeight: 600, fontSize: 'var(--mantine-font-size-sm)' },
-        icon: { color: `var(--mantine-color-${color}-7)` },
-      }}
+      styles={noticeStyles(color)}
     >
       {(detail !== '' || showRetry) && (
         <Stack gap="xs" align="flex-start">

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Box, Button, Group, Table, Text, VisuallyHidden } from '@mantine/core';
 import { IconArrowsVertical } from '@tabler/icons-react';
-import type { DocumentSummary, ExcelSource } from '@atlas/shared';
+import type { DocumentSummary } from '@atlas/shared';
 import type { RowRange } from '../../api/endpoints';
 import { useSheetRows } from '../../api/useSheetRows';
 import { formatNumber } from '../chat/formatNumber';
@@ -9,29 +9,30 @@ import { rowsText } from '../chat/sourcePlace';
 import { ErrorNotice } from '../errors/ErrorNotice';
 import { SheetBlock } from './SheetBlock';
 import { ViewerLoading } from './ViewerLoading';
-import { columnLetter, firstWindow, rowsAfter, rowsBefore, shownRowsText } from './sheetWindow';
+import { columnLetter, firstWindow, rowsAfter, rowsBefore, shownRowsText, topWindow } from './sheetWindow';
 import { scrollToMiddle } from './stageScroll';
 import { useKeepInView } from './useKeepInView';
 import viewer from './SourceViewer.module.css';
 import classes from './SheetView.module.css';
 
-interface SheetSourceViewProps {
+interface SheetViewProps {
   document: DocumentSummary;
-  source: ExcelSource;
+  sheet: string;
+  /** The rows a source cites; null shows the sheet from its top. */
+  cited: RowRange | null;
 }
 
 /**
- * The cited sheet as Excel shows it: row numbers, column letters, raw cell values, the cited rows
- * tinted and scrolled into view. It opens on a window around the citation and grows on request.
+ * A sheet as Excel shows it: row numbers, column letters, raw cell values. Opened from a source, it
+ * starts on a window around the cited rows, tinted and scrolled into view. It grows on request.
  */
-export function SheetSourceView({ document, source }: SheetSourceViewProps) {
-  const [first] = useState(() => firstWindow(source.rowFrom, source.rowTo));
+export function SheetView({ document, sheet, cited }: SheetViewProps) {
+  const [first] = useState(() => (cited ? firstWindow(cited.from, cited.to) : topWindow()));
   const [blocks, setBlocks] = useState<RowRange[]>([first]);
-  const anchor = useSheetRows(document.id, source.sheet, first.from, first.to);
+  const anchor = useSheetRows(document.id, sheet, first.from, first.to);
   const stage = useRef<HTMLDivElement>(null);
   const scrolled = useRef(false);
   const holdView = useKeepInView(stage);
-  const cited = { from: source.rowFrom, to: source.rowTo };
 
   const showCited = useCallback(() => {
     const container = stage.current;
@@ -62,16 +63,16 @@ export function SheetSourceView({ document, source }: SheetSourceViewProps) {
       <Group className={viewer.bar} justify="space-between" wrap="wrap" gap="xs" mih={47}>
         <Text fz="sm" c="gray.8" className="tabular-nums">
           {anchor.data && shownRowsText(top.from, shownTo, totalRows)}
-          {anchor.data && totalRows > 0 && source.rowFrom > totalRows && '. The cited rows are past its last row.'}
+          {anchor.data && totalRows > 0 && cited && cited.from > totalRows && '. The cited rows are past its last row.'}
         </Text>
-        {anchor.data && totalRows > 0 && (
+        {anchor.data && totalRows > 0 && cited && (
           <Button
             variant="subtle"
             size="compact-sm"
             rightSection={<IconArrowsVertical size={14} stroke={1.75} />}
             onClick={showCited}
           >
-            Cited {rowsText(source)}
+            Cited {rowsText({ rowFrom: cited.from, rowTo: cited.to })}
           </Button>
         )}
       </Group>
@@ -122,7 +123,7 @@ export function SheetSourceView({ document, source }: SheetSourceViewProps) {
                   <SheetBlock
                     key={range.from}
                     documentId={document.id}
-                    sheet={source.sheet}
+                    sheet={sheet}
                     range={range}
                     columnCount={columnCount}
                     cited={cited}

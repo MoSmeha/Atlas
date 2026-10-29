@@ -23,17 +23,18 @@ const MAX_PAGE_WIDTH = 860;
 /** A4 height over width, for the space a page holds while it draws. */
 const PAGE_RATIO = 1.414;
 
-interface PdfSourceViewProps {
+export interface PdfViewProps {
   document: DocumentSummary;
-  source: PdfSource;
+  /** The cited page and quote; null shows the whole file from page 1. */
+  source: PdfSource | null;
 }
 
 /**
- * The cited PDF page drawn by pdf.js with the quoted words highlighted and scrolled into view,
- * plus previous and next page controls (also the arrow keys).
+ * A PDF page drawn by pdf.js, with page controls (also the arrow keys). Opened from a source, it
+ * starts at the cited page with the quoted words highlighted and scrolled into view.
  */
-export function PdfSourceView({ document, source }: PdfSourceViewProps) {
-  const [page, setPage] = useState(source.page);
+export function PdfView({ document, source }: PdfViewProps) {
+  const [page, setPage] = useState(source?.page ?? 1);
   const [pageCount, setPageCount] = useState<number | null>(null);
   const [failure, setFailure] = useState<NoticeError | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -41,11 +42,11 @@ export function PdfSourceView({ document, source }: PdfSourceViewProps) {
   const scrolledToQuote = useRef(false);
   const { ref: sizer, width } = useElementSize();
 
-  const quote = source.quote?.trim() || null;
-  const onCitedPage = page === source.page;
+  const quote = source?.quote?.trim() || null;
+  const onCitedPage = source !== null && page === source.page;
   const highlight = useQuoteHighlight(onCitedPage ? quote : null, page, classes.mark);
   const pageWidth = Math.floor(Math.min(MAX_PAGE_WIDTH, width));
-  const lastPage = pageCount ?? document.pageCount ?? source.page;
+  const lastPage = pageCount ?? document.pageCount ?? page;
 
   const goTo = (next: number) => {
     const target = Math.min(Math.max(1, next), lastPage);
@@ -78,8 +79,10 @@ export function PdfSourceView({ document, source }: PdfSourceViewProps) {
     <>
       {(!failure || quote) && (
         <Stack gap="xs" className={classes.bar}>
-          {!failure && <PdfToolbar page={page} pageCount={pageCount} citedPage={source.page} onGoTo={goTo} />}
-          {quote && <QuoteNote quote={quote} state={onCitedPage ? highlight.state : null} citedPage={source.page} />}
+          {!failure && <PdfToolbar page={page} pageCount={pageCount} citedPage={source?.page ?? null} onGoTo={goTo} />}
+          {quote && source && (
+            <QuoteNote quote={quote} state={onCitedPage ? highlight.state : null} citedPage={source.page} />
+          )}
         </Stack>
       )}
 

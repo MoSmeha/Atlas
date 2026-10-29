@@ -10,6 +10,7 @@ import { Notifications } from '@mantine/notifications';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { App } from './App';
 import { ChatProvider } from './features/chat/ChatProvider';
+import { DocumentViewerProvider } from './features/viewer/DocumentViewerProvider';
 import { VoiceCallProvider } from './features/voice/VoiceCallProvider';
 import { LanguageProvider } from './i18n/LanguageProvider';
 import { queryClient } from './queryClient';
@@ -37,7 +38,9 @@ createRoot(rootElement).render(
             <SessionProvider>
               <ChatProvider>
                 <VoiceCallProvider>
-                  <App />
+                  <DocumentViewerProvider>
+                    <App />
+                  </DocumentViewerProvider>
                 </VoiceCallProvider>
               </ChatProvider>
             </SessionProvider>

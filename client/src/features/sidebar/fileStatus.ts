@@ -7,7 +7,7 @@ import {
   IconLock,
   type Icon,
 } from '@tabler/icons-react';
-import type { SidebarCopy } from './sidebarCopy';
+import { type SidebarCopy, sidebarCopy } from './sidebarCopy';
 
 export interface StatusLook {
   label: string;
@@ -28,6 +28,6 @@ const looks: Record<Exclude<FileStatus, 'ok'>, Pick<StatusLook, 'color' | 'icon'
 };
 
 /** How a file status is shown in the interface language, or null for "ok", which gets no badge. */
-export function statusLook(status: FileStatus, copy: SidebarCopy): StatusLook | null {
+export function statusLook(status: FileStatus, copy: SidebarCopy = sidebarCopy.en): StatusLook | null {
   return status === 'ok' ? null : { ...looks[status], ...copy.statuses[status] };
 }
