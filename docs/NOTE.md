@@ -15,7 +15,7 @@
 - **The OpenAI Responses API** chains tool calls with `previous_response_id`, so reasoning carries across steps. The three models come from the account's own model list. The default answering model is the small one (GPT-6 Luna), to keep the demo cheap; the picker switches to Sol or Astra for harder questions.
 - **Clean architecture, kept light:** domain, application (use cases, tools, ports), infrastructure adapters, and api. One composition root serves the web server, the CLI and the eval. About 1,650 unit tests run with no API key and no network.
 
-**Results.** The eval asks 21 questions and checks each answer against the known right answer (`docs/EVAL.md`). It passed 20 of 21 on GPT-6 Astra, with a median answer time of 9.6 seconds and $1.48 for the run. The miss: "items above SAR 1 million" also listed three provisional sums, which the expected answer leaves out. The fixes made after that run are covered by unit tests but not yet by a second eval run, because the OpenAI credit ran out. Those fixes are row-level sources, hidden internal columns, a faster date extraction, Arabic text order and plainer answers.
+**Results.** The eval asks 21 questions and checks each answer against the known right answer (`docs/EVAL.md`). The first run passed 20 of 21 on GPT-6 Astra for $1.48; the miss listed three extra provisional sums. After the fixes (row-level sources, hidden internal columns, faster date extraction, Arabic text order, plainer answers, BOQ totals from item rows), it passed **21 of 21 on GPT-6 Luna, the default, for $0.02**, with a median answer time of 6.9 seconds.
 
 **With more time.**
 - Numbered markers in the answer text that point to each source.
