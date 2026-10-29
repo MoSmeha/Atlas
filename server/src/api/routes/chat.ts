@@ -12,7 +12,7 @@ export interface ChatDeps {
   askQuestion: AskQuestion;
   sessions: SessionStore;
   workspace: Workspace;
-  /** False while OPENAI_API_KEY is unset; questions are then refused before a stream opens. */
+  /** False while no model provider is set up; questions are then refused before a stream opens. */
   apiKeyPresent: boolean;
 }
 

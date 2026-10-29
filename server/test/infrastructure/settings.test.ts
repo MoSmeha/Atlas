@@ -36,4 +36,19 @@ describe('loadSettings', () => {
   it('rejects a port that is not a number', () => {
     expect(() => loadSettings({ PORT: 'abc' }, envFile(''))).toThrow();
   });
+
+  it('picks the provider automatically unless ATLAS_PROVIDER names one, and rejects an unknown one', () => {
+    const none = join(tmpdir(), 'no-such-file.env');
+    expect(loadSettings({}, none)).toMatchObject({ provider: 'auto', geminiApiKey: null, ollamaUrl: 'http://127.0.0.1:11434' });
+    expect(loadSettings({ ATLAS_PROVIDER: ' Gemini ', GEMINI_API_KEY: 'gm-key' }, none)).toMatchObject({ provider: 'gemini', geminiApiKey: 'gm-key' });
+    expect(() => loadSettings({ ATLAS_PROVIDER: 'claude' }, none)).toThrow();
+  });
+
+  it('reads OLLAMA_HOST the way Ollama does', () => {
+    const url = (host: string) => loadSettings({ OLLAMA_HOST: host }, join(tmpdir(), 'no-such-file.env')).ollamaUrl;
+    expect(url('0.0.0.0')).toBe('http://127.0.0.1:11434');
+    expect(url('localhost:8080')).toBe('http://localhost:8080');
+    expect(url('http://gpu-box')).toBe('http://gpu-box:11434');
+    expect(url('https://ollama.example.com')).toBe('https://ollama.example.com');
+  });
 });

@@ -98,6 +98,28 @@ describe('mapOpenAiError', () => {
     expect(mapOpenAiError(limited).code).toBe('rate_limited');
   });
 
+  it('names another vendor and its key, and reads the wait Gemini writes in its message', () => {
+    const gemini = { name: 'Gemini', keyVariable: 'GEMINI_API_KEY' };
+    const badKey = new BadRequestError(400, { message: 'API key not valid. Please pass a valid API key.' }, undefined, new Headers());
+    expect(mapOpenAiError(badKey, gemini)).toMatchObject({
+      code: 'missing_api_key',
+      message: 'The Gemini API key was rejected. Check GEMINI_API_KEY in .env.',
+    });
+    const quota = new RateLimitError(429, { message: 'You exceeded your current quota. Please retry in 27.5s.' }, undefined, new Headers());
+    expect(mapOpenAiError(quota, gemini)).toMatchObject({
+      code: 'rate_limited',
+      retryAfterSeconds: 28,
+      message: 'The Gemini rate limit was reached. Try again in 28 seconds.',
+    });
+  });
+
+  it('asks whether a local server is running instead of checking the internet, and has no key to blame', () => {
+    const ollama = { name: 'Ollama', keyVariable: null };
+    expect(mapOpenAiError(new APIConnectionError({ message: 'fetch failed' }), ollama).message).toBe('Could not reach Ollama. Check that it is running.');
+    const unauthorised = new AuthenticationError(401, { message: 'unauthorized' }, undefined, new Headers());
+    expect(mapOpenAiError(unauthorised, ollama).code).toBe('model_error');
+  });
+
   it('maps an unknown error to model_error and shortens long messages', () => {
     const mapped = mapOpenAiError(new SyntaxError('x'.repeat(1000)));
     expect(mapped.code).toBe('model_error');

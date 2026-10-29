@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CatalogModel } from '../../../src/application/models/pickLineup';
-import type { ModelConfig } from '../../../src/infrastructure/config/modelConfig';
+import type { ProviderModels } from '../../../src/infrastructure/config/modelConfig';
 import { resolveLineup, resolveModels } from '../../../src/infrastructure/openai/resolveLineup';
 import { FakeModelClient } from '../../fakes/FakeModelClient';
 
@@ -8,7 +8,7 @@ function model(id: string, tier: CatalogModel['tier']): CatalogModel {
   return { id, tier, label: id, inputPrice: 1, cachedInputPrice: 0.1, outputPrice: 2 };
 }
 
-const config: ModelConfig = {
+const config: ProviderModels = {
   catalog: [
     model('new-frontier', 'frontier'),
     model('new-balanced', 'balanced'),

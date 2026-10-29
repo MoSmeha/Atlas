@@ -19,18 +19,21 @@ import { TranscribeSpeech } from './application/voice/TranscribeSpeech';
 import type { VoiceCatalog } from './application/voice/VoiceCatalog';
 import { VoiceCalls } from './application/voice/VoiceCalls';
 import { Workspace } from './application/workspace/Workspace';
-import { loadModelConfig, type ModelConfig } from './infrastructure/config/modelConfig';
+import { loadModelConfig, type ProviderModels } from './infrastructure/config/modelConfig';
 import { loadVoiceConfig } from './infrastructure/config/voiceConfig';
 import { XlsxExporter } from './infrastructure/export/XlsxExporter';
 import { NodeFileSystem } from './infrastructure/fs/NodeFileSystem';
 import { SqliteIndexFactory } from './infrastructure/index/SqliteIndexFactory';
+import { pickLocalModels, type LocalScan } from './infrastructure/local/pickLocalModels';
+import { scanLocal } from './infrastructure/local/scanLocal';
 import { JsonlRunLogger } from './infrastructure/logging/JsonlRunLogger';
 import { createOpenAiClient } from './infrastructure/openai/createOpenAiClient';
-import { OpenAiEmbeddingClient } from './infrastructure/openai/OpenAiEmbeddingClient';
 import { OpenAiModelClient } from './infrastructure/openai/OpenAiModelClient';
 import { OpenAiTranscriber } from './infrastructure/openai/OpenAiTranscriber';
 import { OpenAiVoiceClient } from './infrastructure/openai/OpenAiVoiceClient';
-import { resolveModels } from './infrastructure/openai/resolveLineup';
+import { resolveModels, visibleModels } from './infrastructure/openai/resolveLineup';
+import { chooseProvider, type ProviderChoice } from './infrastructure/providers/chooseProvider';
+import { connectProvider, type Provider } from './infrastructure/providers/connectProvider';
 import { ExcelJsReader } from './infrastructure/readers/ExcelJsReader';
 import { MupdfPageRenderer } from './infrastructure/readers/MupdfPageRenderer';
 import { MupdfReader } from './infrastructure/readers/MupdfReader';
@@ -45,12 +48,19 @@ const SHUTDOWN_GRACE_MS = 3_000;
 /** Everything the server and the CLI share, built once by compose(). */
 export interface Container {
   settings: Settings;
-  modelConfig: ModelConfig;
+  /** The answering provider's models; OpenAI's while no provider is set up. */
+  modelConfig: ProviderModels;
   /** One model per tier; the default answer model is `lineup[modelConfig.answerTier]`. */
   lineup: Lineup;
-  /** Null while OPENAI_API_KEY is unset; use cases then throw missing_api_key. */
+  /** Who answers, and why; a null id means no provider is set up. */
+  providerChoice: ProviderChoice;
+  /** Null while no provider is set up; use cases then throw missing_api_key. */
+  provider: Provider | null;
+  /** Why local models are not used, when the machine was scanned and they are not; null otherwise. */
+  localProblem: string | null;
+  /** Null while no provider is set up; use cases then throw missing_api_key. */
   modelClient: ModelClient | null;
-  /** Null while OPENAI_API_KEY is unset; search then works by keyword only. */
+  /** Null while no provider is set up; search then works by keyword only. */
   embeddings: EmbeddingClient | null;
   clock: Clock;
   logger: RunLogger;
@@ -69,29 +79,46 @@ export interface Container {
   api: ApiDeps;
 }
 
-/** The composition root: wires concrete adapters into use cases. The CLI reuses it. */
-export async function compose(settings: Settings = loadSettings()): Promise<Container> {
+/**
+ * The composition root: wires concrete adapters into use cases. The CLI reuses it. `scan` reads this machine and
+ * its Ollama server when the provider may be local; tests pass a stand-in.
+ */
+export async function compose(settings: Settings = loadSettings(), scan: (ollamaUrl: string) => Promise<LocalScan> = scanLocal): Promise<Container> {
   const clock = new SystemClock();
   const logger = new JsonlRunLogger(settings.logDir, clock);
   const fs = new NodeFileSystem();
   const sessions = new SessionStore();
   const exporter = new XlsxExporter();
-  const modelConfig = loadModelConfig();
+  const config = loadModelConfig();
   const voiceCatalog = loadVoiceConfig();
+  const scansLocal = settings.provider === 'auto' || settings.provider === 'ollama';
+  const local = scansLocal
+    ? pickLocalModels(await scan(settings.ollamaUrl), { minChatBillions: config.ollama.minChatBillions, allowCpu: settings.provider === 'ollama' })
+    : null;
+  const providerChoice = chooseProvider({
+    setting: settings.provider,
+    hasOpenAiKey: settings.openAiApiKey !== null,
+    hasGeminiKey: settings.geminiApiKey !== null,
+    local,
+  });
+  const provider = providerChoice.id === null ? null : connectProvider(providerChoice.id, settings, config, local);
+  const modelConfig = provider?.models ?? config.openai;
+  const modelClient = provider?.modelClient ?? null;
+  const embeddings = provider?.embeddings ?? null;
+  // Voice calls and dictation stay on OpenAI, whichever provider answers.
   const openAi = settings.openAiApiKey === null ? null : createOpenAiClient(settings.openAiApiKey);
-  const modelClient = openAi === null ? null : new OpenAiModelClient(openAi);
-  const embeddings = openAi === null ? null : new OpenAiEmbeddingClient(openAi, modelConfig.embedding);
   const voiceClient = openAi === null ? null : new OpenAiVoiceClient(openAi, join(settings.dataDir, 'voices.json'));
   const transcriber = openAi === null ? null : new OpenAiTranscriber(openAi, voiceCatalog.dictation.model);
   const { lineup, visible } = await resolveModels(modelClient, modelConfig);
+  const openAiVisible = provider?.id === 'openai' ? visible : openAi === null ? null : await visibleModels(new OpenAiModelClient(openAi));
   // When the list could not be read, trust the config, as the lineup does.
-  const canUse = (model: string) => visible === null || visible.includes(model);
+  const canUse = (model: string) => openAiVisible === null || openAiVisible.includes(model);
   const workspace = new Workspace();
   const classifier = modelClient === null ? null : new ClassifyDocument(modelClient, lineup.small.id);
   const indexFolder = new IndexFolder({
     fs,
     readers: [new MupdfReader(), new ExcelJsReader()],
-    indexes: new SqliteIndexFactory(settings.dataDir),
+    indexes: new SqliteIndexFactory(settings.dataDir, provider?.embeddingKey ?? null),
     embeddings,
     workspace,
     logger,
@@ -126,11 +153,14 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     logger,
     pricePerMinute: voiceCatalog.dictation.pricePerMinute,
   });
-  const apiKeyPresent = settings.openAiApiKey !== null;
+  const apiKeyPresent = modelClient !== null;
   return {
     settings,
     modelConfig,
     lineup,
+    providerChoice,
+    provider,
+    localProblem: provider?.id === 'ollama' ? null : (local?.problem ?? null),
     modelClient,
     embeddings,
     clock,
@@ -166,12 +196,30 @@ async function start(): Promise<void> {
   app.addHook('onClose', () => container.voiceCalls.hangUpAll());
   for (const signal of ['SIGINT', 'SIGTERM'] as const) process.once(signal, () => void shutdown(app));
   await app.listen({ port: settings.port, host: settings.host });
-  const { frontier, balanced, small } = container.lineup;
   console.log(`Atlas server listening on http://${settings.host}:${settings.port}`);
-  console.log(`Models: frontier ${frontier.id}, balanced ${balanced.id}, small ${small.id}`);
+  for (const line of providerReport(container)) console.log(line);
   // Each designed voice is made once, in the background, so no call waits for its voice; later starts skip them.
   void container.voiceCalls.prepareVoices();
   if (settings.startFolder !== null) await loadStartFolder(container, settings.startFolder);
+}
+
+/** Who answers and why, the lineup, and why local models are not used, for the start-up log. */
+export function providerReport({ provider, providerChoice, lineup, localProblem }: Container): string[] {
+  const { frontier, balanced, small } = lineup;
+  const lines =
+    provider === null
+      ? [`Models: none. ${providerChoice.reason}`]
+      : [
+          `Models: ${provider.label}. ${providerChoice.reason}`,
+          `  Lineup: frontier ${frontier.id}, balanced ${balanced.id}, small ${small.id}`,
+          ...(provider.notice === null ? [] : [`  Note: ${provider.notice}`]),
+        ];
+  if (localProblem !== null) lines.push(`  Local models: ${capitalise(localProblem)}`);
+  return lines;
+}
+
+function capitalise(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 /** Closes the server, which stops the folder watch, and exits; open event streams get a short grace period. */

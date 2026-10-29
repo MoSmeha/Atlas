@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pickLineup, type CatalogModel } from '../../src/application/models/pickLineup';
+import { lineupModels, pickLineup, type CatalogModel } from '../../src/application/models/pickLineup';
 
 function model(id: string, tier: CatalogModel['tier']): CatalogModel {
   return { id, tier, label: id, inputPrice: 1, cachedInputPrice: 0.1, outputPrice: 2 };
@@ -29,5 +29,13 @@ describe('pickLineup', () => {
 
   it('falls back to the first catalog entry when the account sees none of a tier', () => {
     expect(pickLineup(catalog, []).frontier.id).toBe('new-frontier');
+  });
+});
+
+describe('lineupModels', () => {
+  it('lists the lineup from frontier to small, each model once', () => {
+    expect(lineupModels(pickLineup(catalog, null)).map((entry) => entry.id)).toEqual(['new-frontier', 'new-balanced', 'new-small']);
+    const local = model('qwen3:14b', 'frontier');
+    expect(lineupModels({ frontier: local, balanced: { ...local, tier: 'balanced' }, small: { ...local, tier: 'small' } })).toEqual([local]);
   });
 });

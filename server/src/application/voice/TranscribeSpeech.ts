@@ -64,7 +64,7 @@ export class TranscribeSpeech {
 
   async execute(input: TranscribeInput): Promise<TranscribeOutput> {
     const { deps } = this;
-    if (deps.transcriber === null) throw errors.missingApiKey();
+    if (deps.transcriber === null) throw errors.missingOpenAiKey();
     const mimeType = input.mimeType.split(';')[0]?.trim().toLowerCase() ?? '';
     const extension = EXTENSIONS[mimeType];
     if (extension === undefined) throw errors.invalidRequest(`Atlas cannot read a recording of type "${input.mimeType}".`);

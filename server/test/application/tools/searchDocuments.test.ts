@@ -143,7 +143,7 @@ describe('search_documents', () => {
       [1, 'keyword'],
       [3, 'keyword'],
     ]);
-    expect(output.note).toContain('Semantic search was unavailable (no OpenAI API key is set)');
+    expect(output.note).toContain('Semantic search was unavailable (no model is set up)');
     expect(summary).toBe('2 passages from 1 document (keyword search only)');
     expect(vector).not.toHaveBeenCalled();
   });

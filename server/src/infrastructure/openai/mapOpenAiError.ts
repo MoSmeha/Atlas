@@ -11,29 +11,54 @@ import { AppError, errors } from '../../application/errors';
 const MAX_MESSAGE_LENGTH = 300;
 const RESET_HEADERS = ['x-ratelimit-reset-requests', 'x-ratelimit-reset-tokens', 'x-ratelimit-reset-project-tokens'];
 
+/** Who is behind an OpenAI SDK client, for error messages: OpenAI itself, or another server that speaks its API. */
+export interface Vendor {
+  /** As messages name it, such as "OpenAI". */
+  name: string;
+  /** The .env variable holding its key; null for a local server, which needs none. */
+  keyVariable: string | null;
+}
+
+export const OPENAI: Vendor = { name: 'OpenAI', keyVariable: 'OPENAI_API_KEY' };
+
 /** Turns anything the OpenAI SDK throws into an AppError the API and CLI can explain. AppError passes through. */
-export function mapOpenAiError(error: unknown): AppError {
+export function mapOpenAiError(error: unknown, vendor: Vendor = OPENAI): AppError {
+  const { name, keyVariable } = vendor;
   if (error instanceof AppError) return error;
   if (error instanceof APIUserAbortError || isAbortError(error)) return errors.stopped();
   if (error instanceof APIConnectionTimeoutError) {
-    return new AppError('model_error', 'OpenAI did not answer in time. Try again.');
+    return new AppError('model_error', `${name} did not answer in time. Try again.`);
   }
   if (error instanceof APIConnectionError) {
-    return new AppError('model_error', 'Could not reach OpenAI. Check the internet connection.');
+    const hint = keyVariable === null ? 'Check that it is running.' : 'Check the internet connection.';
+    return new AppError('model_error', `Could not reach ${name}. ${hint}`);
   }
-  if (error instanceof AuthenticationError) {
-    return new AppError('missing_api_key', 'The OpenAI API key was rejected. Check OPENAI_API_KEY in .env.');
+  if (keyVariable !== null && isRejectedKey(error)) {
+    return new AppError('missing_api_key', `The ${name} API key was rejected. Check ${keyVariable} in .env.`);
   }
   if (error instanceof APIError) {
     if (isQuotaError(error)) {
-      return new AppError('model_error', 'Your OpenAI account has no remaining quota. Check billing.');
+      return new AppError('model_error', `Your ${name} account has no remaining quota. Check billing.`);
     }
     if (error instanceof RateLimitError || error.code === 'rate_limit_exceeded') {
-      return errors.rateLimited(error.headers ? retryAfterSeconds(error.headers) : null);
+      const wait = (error.headers ? retryAfterSeconds(error.headers) : null) ?? retryFromMessage(shortMessage(error));
+      return errors.rateLimited(wait, name);
     }
     return errors.modelError(shortMessage(error));
   }
   return errors.modelError(error instanceof Error ? truncate(error.message) : String(error));
+}
+
+/** A 401, or the 400 or 403 Gemini sends for a key it does not accept. */
+function isRejectedKey(error: unknown): boolean {
+  if (error instanceof AuthenticationError) return true;
+  return error instanceof APIError && (error.status === 400 || error.status === 403) && /\bAPI[ _]?key\b/i.test(shortMessage(error));
+}
+
+/** Gemini says how long to wait in the message: "Please retry in 27.5s." */
+function retryFromMessage(message: string): number | null {
+  const match = /retry in (\d+(?:\.\d+)?)\s*s\b/i.exec(message);
+  return match ? wholeSeconds(Number(match[1])) : null;
 }
 
 /** Billing problems also arrive as 429s; retrying them never helps. */

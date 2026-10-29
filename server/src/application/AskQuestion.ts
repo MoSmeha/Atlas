@@ -33,7 +33,7 @@ const INTERNAL_MESSAGE = 'Something went wrong while answering. Details are in t
 export interface AskQuestionDeps {
   workspace: Workspace;
   sessions: SessionStore;
-  /** Null while OPENAI_API_KEY is unset; questions then fail with missing_api_key. */
+  /** Null while no model provider is set up; questions then fail with missing_api_key. */
   modelClient: ModelClient | null;
   embeddings: EmbeddingClient | null;
   renderer: PageRenderer;

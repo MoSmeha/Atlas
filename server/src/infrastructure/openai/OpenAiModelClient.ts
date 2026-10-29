@@ -1,7 +1,6 @@
 import type OpenAI from 'openai';
 import { zodTextFormat } from 'openai/helpers/zod';
 import type { ResponseCreateParamsStreaming } from 'openai/resources/responses/responses';
-import type { z } from 'zod';
 import { errors } from '../../application/errors';
 import type {
   ModelClient,
@@ -12,6 +11,7 @@ import type {
 import type { TokenUsage } from '../../domain/pricing';
 import { toResponseInput } from './inputItems';
 import { mapOpenAiError } from './mapOpenAiError';
+import { parseObject } from './parseObject';
 import { readResponse } from './readResponse';
 import { initialStreamState, reduceStreamEvent } from './streamEvents';
 import { toFunctionTool } from './toolSchema';
@@ -101,16 +101,4 @@ function turnParams(request: ModelTurnRequest): ResponseCreateParamsStreaming {
     store: true,
     stream: true,
   };
-}
-
-function parseObject<T>(schema: z.ZodType<T>, text: string): T {
-  let json: unknown;
-  try {
-    json = JSON.parse(text);
-  } catch {
-    throw errors.modelError('the reply was not valid JSON.');
-  }
-  const parsed = schema.safeParse(json);
-  if (!parsed.success) throw errors.modelError('the reply did not match the expected format.');
-  return parsed.data;
 }

@@ -27,3 +27,9 @@ export function pickLineup(catalog: CatalogModel[], visibleIds: string[] | null)
   });
   return Object.fromEntries(entries) as Lineup;
 }
+
+/** The lineup's models from frontier to small, each once: a local provider puts one model in every tier. */
+export function lineupModels(lineup: Lineup): CatalogModel[] {
+  const models = tiers.map((tier) => lineup[tier]);
+  return models.filter((model, i) => models.findIndex((other) => other.id === model.id) === i);
+}

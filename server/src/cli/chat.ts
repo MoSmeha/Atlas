@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { createInterface } from 'node:readline/promises';
-import type { CatalogModel } from '../application/models/pickLineup';
+import { lineupModels, type CatalogModel } from '../application/models/pickLineup';
 import type { Container } from '../main';
 import { askAndPrint } from './ask';
 import type { Terminal } from './Terminal';
@@ -14,7 +14,7 @@ const HELP = 'Type a question, or /model <id> to change the model, /clear to sta
  */
 export async function chat(container: Container, terminal: Terminal, suggestions: readonly string[] = []): Promise<void> {
   const { lineup, modelConfig, sessions, askQuestion } = container;
-  const models = Object.values(lineup);
+  const models = lineupModels(lineup);
   let model: CatalogModel = lineup[modelConfig.answerTier];
   let sessionId = randomUUID();
   let running: AbortController | null = null;
@@ -78,7 +78,7 @@ function pickModel(models: CatalogModel[], name: string, current: CatalogModel, 
   if (name !== '') terminal.line(`There is no model "${name}".`);
   terminal.line('Models:');
   for (const model of models) {
-    const price = `$${model.inputPrice} in / $${model.outputPrice} out per 1M tokens`;
+    const price = model.inputPrice === 0 && model.outputPrice === 0 ? 'free' : `$${model.inputPrice} in / $${model.outputPrice} out per 1M tokens`;
     terminal.line(`  ${model.id === current.id ? '*' : ' '} ${model.id.padEnd(16)} ${model.tier.padEnd(9)} ${price}`);
   }
   return current;
