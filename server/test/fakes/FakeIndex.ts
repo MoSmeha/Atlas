@@ -29,6 +29,7 @@ export class FakeIndex implements DocumentIndex {
   readonly queries: string[] = [];
   private readonly records = new Map<string, DocumentRecord>();
   private readonly classifications = new Map<string, Classification | null>();
+  private readonly excludedPaths = new Set<string>();
   private chunks: Chunk[] = [];
   private nextChunk = 1;
 
@@ -60,6 +61,18 @@ export class FakeIndex implements DocumentIndex {
 
   setClassification(path: string, classification: Classification | null): void {
     this.classifications.set(path, classification);
+  }
+
+  excluded(): string[] {
+    return [...this.excludedPaths].sort();
+  }
+
+  exclude(path: string): void {
+    this.excludedPaths.add(path);
+  }
+
+  include(path: string): void {
+    this.excludedPaths.delete(path);
   }
 
   pendingEmbeddingCount(): number {

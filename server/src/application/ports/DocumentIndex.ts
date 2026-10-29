@@ -77,6 +77,12 @@ export interface DocumentIndex {
   find(nameOrPath: string): DocumentSummary | null;
   setClassification(path: string, classification: Classification | null): void;
 
+  /** Files and subfolders the user removed from this folder; scans leave out every file in them. */
+  excluded(): string[];
+  exclude(path: string): void;
+  /** Takes a path off the excluded list; its files return with the next scan. */
+  include(path: string): void;
+
   /** How many chunks still have no embedding. */
   pendingEmbeddingCount(): number;
   pendingEmbeddings(limit: number): { chunkId: number; text: string }[];
@@ -96,4 +102,6 @@ export interface DocumentIndex {
 export interface DocumentIndexFactory {
   /** Opens, or creates, the index file for a folder. */
   open(folder: string): DocumentIndex;
+  /** Deletes the index file for a folder, once its index is closed; the next open starts empty. */
+  discard(folder: string): Promise<void>;
 }

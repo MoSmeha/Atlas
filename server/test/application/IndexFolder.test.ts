@@ -82,9 +82,10 @@ interface SetupOptions {
   outcomes?: Record<string, ReadOutcome | Error>;
   embeddings?: EmbeddingClient | null;
   steps?: IndexStep[];
+  uploadsDir?: string;
 }
 
-function setup({ outcomes = {}, embeddings = new FakeEmbeddingClient(), steps }: SetupOptions = {}) {
+function setup({ outcomes = {}, embeddings = new FakeEmbeddingClient(), steps, uploadsDir }: SetupOptions = {}) {
   const fs = new FakeFileSystem();
   const pdfReader = new ScriptedReader(['.pdf'], outcomes);
   const excelReader = new ScriptedReader(['.xlsx', '.xlsm'], outcomes);
@@ -95,12 +96,16 @@ function setup({ outcomes = {}, embeddings = new FakeEmbeddingClient(), steps }:
       indexes.set(folder, index);
       return index;
     },
+    discard: async (folder) => {
+      indexes.delete(folder);
+    },
   };
   const workspace = new Workspace();
   const events: IndexEvent[] = [];
   workspace.subscribe((event) => events.push(event));
   const logger = new MemoryRunLogger();
   const activated: string[] = [];
+  const unloads: number[] = [];
   const indexFolder = new IndexFolder({
     fs,
     readers: [pdfReader, excelReader],
@@ -112,8 +117,12 @@ function setup({ outcomes = {}, embeddings = new FakeEmbeddingClient(), steps }:
     maxFileBytes: 1000,
     steps,
     onFolderActivated: (folder) => activated.push(folder),
+    onFolderUnloaded: async () => {
+      unloads.push(unloads.length + 1);
+    },
+    uploadsDir,
   });
-  return { fs, pdfReader, excelReader, indexes, workspace, events, logger, activated, indexFolder };
+  return { fs, pdfReader, excelReader, indexes, workspace, events, logger, activated, unloads, indexFolder };
 }
 
 async function rejection(promise: Promise<unknown>): Promise<AppError> {
@@ -410,5 +419,124 @@ describe('IndexFolder watcher updates', () => {
     await indexFolder.refreshFile('/p/A.pdf');
     await indexFolder.removeFile('/p/A.pdf');
     expect(events).toEqual([]);
+  });
+});
+
+describe('IndexFolder removing files and folders', () => {
+  const paths = (status: { documents: { path: string }[] }) => status.documents.map((document) => document.path);
+
+  it('drops a file from a folder loaded by path, keeps it on disk and leaves it out of later scans', async () => {
+    const { fs, indexFolder, events, pdfReader } = setup({ outcomes: { '/p/A.pdf': pdf('a'), '/p/B.pdf': pdf('b') } });
+    fs.addFile('/p/A.pdf');
+    fs.addFile('/p/B.pdf');
+    await indexFolder.load('/p');
+    await indexFolder.idle();
+    events.length = 0;
+
+    const status = await indexFolder.remove('B.pdf');
+
+    expect(paths(status)).toEqual(['A.pdf']);
+    expect(status).toMatchObject({ uploads: false, removed: ['B.pdf'] });
+    expect(events).toEqual([{ type: 'removed', path: 'B.pdf' }]);
+    expect(await fs.stat('/p', '/p/B.pdf')).not.toBeNull();
+
+    await indexFolder.load('/p');
+    await indexFolder.refreshFile('/p/B.pdf');
+    expect(paths(await indexFolder.idle())).toEqual(['A.pdf']);
+    expect(pdfReader.reads.filter((read) => read === '/p/B.pdf')).toHaveLength(1);
+  });
+
+  it('drops a subfolder with everything in it, and putting it back reads it again', async () => {
+    const { fs, indexFolder } = setup({
+      outcomes: { '/p/A.pdf': pdf('a'), '/p/Phase 2/B.pdf': pdf('b'), '/p/Phase 2/old/C.pdf': pdf('c') },
+    });
+    for (const path of ['/p/A.pdf', '/p/Phase 2/B.pdf', '/p/Phase 2/old/C.pdf']) fs.addFile(path);
+    await indexFolder.load('/p');
+    await indexFolder.idle();
+
+    await indexFolder.remove('Phase 2/old/C.pdf');
+    const status = await indexFolder.remove('Phase 2/');
+    expect(paths(status)).toEqual(['A.pdf']);
+    // The folder covers the file removed inside it earlier.
+    expect(status.removed).toEqual(['Phase 2']);
+
+    await indexFolder.restore('Phase 2');
+    const restored = await indexFolder.idle();
+    expect(paths(restored).sort()).toEqual(['A.pdf', 'Phase 2/B.pdf', 'Phase 2/old/C.pdf']);
+    expect(restored.removed).toEqual([]);
+  });
+
+  it('deletes the uploaded copy when the folder is the uploads folder', async () => {
+    const { fs, indexFolder } = setup({ outcomes: { '/up/A.pdf': pdf('a'), '/up/B.pdf': pdf('b') }, uploadsDir: '/up' });
+    fs.addFile('/up/A.pdf');
+    fs.addFile('/up/B.pdf');
+    await indexFolder.load('/up');
+    await indexFolder.idle();
+
+    const status = await indexFolder.remove('B.pdf');
+
+    expect(paths(status)).toEqual(['A.pdf']);
+    expect(status).toMatchObject({ uploads: true, removed: [] });
+    expect(await fs.stat('/up', '/up/B.pdf')).toBeNull();
+  });
+
+  it('does not save a file that was removed while the pass was reading it', async () => {
+    for (const folder of ['/p', '/up']) {
+      const { fs, indexFolder, pdfReader } = setup({
+        outcomes: { [`${folder}/X/1.pdf`]: pdf('one'), [`${folder}/X/2.pdf`]: pdf('two') },
+        uploadsDir: '/up',
+      });
+      fs.addFile(`${folder}/X/1.pdf`);
+      fs.addFile(`${folder}/X/2.pdf`);
+      const release = pdfReader.hold(`${folder}/X/2.pdf`);
+      await indexFolder.load(folder);
+      while (pdfReader.reads.length < 2) await new Promise((resolve) => setTimeout(resolve, 0));
+
+      await indexFolder.remove('X');
+      release();
+
+      expect(paths(await indexFolder.idle())).toEqual([]);
+    }
+  });
+
+  it('removes the whole folder: stops watching it, deletes its index and its uploaded files', async () => {
+    const { fs, indexFolder, indexes, events, unloads } = setup({ outcomes: { '/up/A.pdf': pdf('a') }, uploadsDir: '/up' });
+    fs.addFile('/up/A.pdf');
+    await indexFolder.load('/up');
+    await indexFolder.idle();
+
+    const status = await indexFolder.unload();
+
+    expect(status).toMatchObject({ folder: null, phase: 'idle', documents: [], removed: [] });
+    expect(unloads).toEqual([1]);
+    expect(indexes.has('/up')).toBe(false);
+    expect(await fs.stat('/up', '/up/A.pdf')).toBeNull();
+    expect(events.at(-1)).toEqual({ type: 'unloaded', folder: '/up' });
+    expect((await rejection(indexFolder.remove('A.pdf'))).code).toBe('not_indexed');
+  });
+
+  it('keeps the files of a folder loaded by path when the folder is removed', async () => {
+    const { fs, indexFolder, indexes } = setup({ outcomes: { '/p/A.pdf': pdf('a') }, uploadsDir: '/up' });
+    fs.addFile('/p/A.pdf');
+    await indexFolder.load('/p');
+    await indexFolder.idle();
+
+    await indexFolder.unload();
+
+    expect(indexes.has('/p')).toBe(false);
+    expect(await fs.stat('/p', '/p/A.pdf')).not.toBeNull();
+  });
+
+  it('refuses a path outside the folder, one that matches nothing, and work with no folder loaded', async () => {
+    const { fs, indexFolder } = setup({ outcomes: { '/p/A.pdf': pdf('a') } });
+    expect((await rejection(indexFolder.unload())).code).toBe('not_indexed');
+    fs.addFile('/p/A.pdf');
+    await indexFolder.load('/p');
+    await indexFolder.idle();
+
+    expect((await rejection(indexFolder.remove('../A.pdf'))).code).toBe('invalid_request');
+    expect((await rejection(indexFolder.remove('C:/p/A.pdf'))).code).toBe('invalid_request');
+    expect((await rejection(indexFolder.remove('Nope.pdf'))).code).toBe('document_not_found');
+    expect((await rejection(indexFolder.restore('A.pdf'))).code).toBe('document_not_found');
   });
 });

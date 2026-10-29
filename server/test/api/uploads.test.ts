@@ -29,6 +29,7 @@ const indexFolder = new IndexFolder({
   logger: new MemoryRunLogger(),
   clock: new FakeClock(),
   maxFileBytes: MAX_BYTES,
+  uploadsDir,
 });
 const app = buildApp(
   makeApiDeps({
@@ -118,5 +119,18 @@ describe('POST /api/uploads', () => {
     const response = await app.inject({ method: 'POST', url: '/api/uploads', payload: { path: 'x' } });
     expect(response.statusCode).toBe(400);
     expect(response.json().error.code).toBe('invalid_request');
+  });
+});
+
+describe('POST /api/folder/remove in the uploads folder', () => {
+  it('deletes the uploaded copy, and the same file can be uploaded again', async () => {
+    const response = await app.inject({ method: 'POST', url: '/api/folder/remove', payload: { path: 'Rev1.xlsx' } });
+    expect(response.statusCode).toBe(200);
+    expect(IndexStatus.parse(response.json())).toMatchObject({ uploads: true, removed: [] });
+    expect(readdirSync(uploadsDir)).toEqual(['BOQ_Phase1.xlsx']);
+    expect((await indexFolder.idle()).documents.map((document) => document.name)).toEqual(['BOQ_Phase1.xlsx']);
+
+    await upload([{ name: 'Rev1.xlsx', data: await workbookBytes('1.02') }]);
+    expect((await indexFolder.idle()).documents.map((document) => document.name)).toEqual(['BOQ_Phase1.xlsx', 'Rev1.xlsx']);
   });
 });

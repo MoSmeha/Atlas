@@ -1,5 +1,5 @@
 import type { Dirent } from 'node:fs';
-import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { basename, dirname, extname, join, relative, resolve, sep } from 'node:path';
 import type { FileEntry, FileSystem } from '../../application/ports/FileSystem';
 import { isIgnoredName } from '../../domain/fileTypes';
@@ -56,6 +56,14 @@ export class NodeFileSystem implements FileSystem {
 
   async ensureDir(path: string): Promise<void> {
     await mkdir(path, { recursive: true });
+  }
+
+  /** Retries briefly, since Windows can hold a file that a reader or the watcher has only just let go of. */
+  async remove(root: string, relativePath: string): Promise<void> {
+    const base = resolve(root);
+    const path = resolve(base, ...relativePath.split('/'));
+    if (path !== base && !path.startsWith(base + sep)) throw new Error(`${relativePath} is not inside ${root}.`);
+    await rm(path, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   }
 
   private async walk(root: string, dir: string): Promise<FileEntry[]> {

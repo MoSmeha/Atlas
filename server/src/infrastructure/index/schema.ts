@@ -88,15 +88,27 @@ CREATE TABLE sheet_rows (
 );
 `;
 
+/**
+ * Tables added after version 1, created in place when missing, so an index built earlier keeps its content instead
+ * of being rebuilt (and embedded again).
+ */
+const ADDED = `
+CREATE TABLE IF NOT EXISTS excluded (
+  path TEXT PRIMARY KEY
+);
+`;
+
 /** Creates the schema in a new file, or empties and recreates it when the file was written by another version. */
 export function applySchema(db: Database.Database): void {
   const version = storedVersion(db);
-  if (version === SCHEMA_VERSION) return;
-  db.transaction(() => {
-    if (version !== null) dropEverything(db);
-    db.exec(DDL);
-    db.prepare("INSERT INTO meta (key, value) VALUES ('schema_version', ?)").run(String(SCHEMA_VERSION));
-  })();
+  if (version !== SCHEMA_VERSION) {
+    db.transaction(() => {
+      if (version !== null) dropEverything(db);
+      db.exec(DDL);
+      db.prepare("INSERT INTO meta (key, value) VALUES ('schema_version', ?)").run(String(SCHEMA_VERSION));
+    })();
+  }
+  db.exec(ADDED);
 }
 
 /** Null for a new, empty file; -1 when tables exist but no version does. */

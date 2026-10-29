@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, statSync, writeFileSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -182,6 +182,54 @@ describe('before a folder is loaded', () => {
     const status = await fresh.inject({ method: 'GET', url: '/api/folder/status' });
     expect(status.json()).toMatchObject({ folder: null, phase: 'idle', documents: [] });
     await fresh.close();
+  });
+});
+
+describe('removing files and folders', () => {
+  const removable = join(root, 'removable');
+  const post = (url: string, path: string) => app.inject({ method: 'POST', url, payload: { path } });
+  const paths = async () => (await getStatus()).documents.map((document) => document.path);
+
+  it('removes a subfolder, keeps its files on disk and leaves it out until it is put back', async () => {
+    mkdirSync(join(removable, 'Phase 2'), { recursive: true });
+    await writeWorkbook(join(removable, 'BOQ.xlsx'));
+    await writeWorkbook(join(removable, 'Phase 2', 'BOQ2.xlsx'));
+    await loadFolder(removable);
+    await indexFolder.idle();
+    expect(await paths()).toEqual(['BOQ.xlsx', 'Phase 2/BOQ2.xlsx']);
+
+    const removed = await post('/api/folder/remove', 'Phase 2');
+    expect(removed.statusCode).toBe(200);
+    expect(IndexStatus.parse(removed.json())).toMatchObject({ uploads: false, removed: ['Phase 2'] });
+    expect(await paths()).toEqual(['BOQ.xlsx']);
+    expect(existsSync(join(removable, 'Phase 2', 'BOQ2.xlsx'))).toBe(true);
+
+    await loadFolder(removable);
+    await indexFolder.idle();
+    expect(await paths()).toEqual(['BOQ.xlsx']);
+
+    const restored = await post('/api/folder/restore', 'Phase 2');
+    expect(restored.statusCode).toBe(202);
+    await indexFolder.idle();
+    expect(await paths()).toEqual(['BOQ.xlsx', 'Phase 2/BOQ2.xlsx']);
+    expect((await getStatus()).removed).toEqual([]);
+  });
+
+  it('answers 404 for a path that matches nothing and 400 for one outside the folder', async () => {
+    expect((await post('/api/folder/remove', 'Nope.pdf')).statusCode).toBe(404);
+    expect((await post('/api/folder/remove', '../project/BOQ.xlsx')).statusCode).toBe(400);
+    expect((await post('/api/folder/restore', 'BOQ.xlsx')).statusCode).toBe(404);
+  });
+
+  it('removes the loaded folder and deletes its index, keeping the files', async () => {
+    const response = await app.inject({ method: 'DELETE', url: '/api/folder' });
+    expect(response.statusCode).toBe(200);
+    expect(IndexStatus.parse(response.json())).toMatchObject({ folder: null, phase: 'idle', documents: [] });
+    expect(existsSync(new SqliteIndexFactory(join(root, 'data')).fileFor(removable))).toBe(false);
+    expect(existsSync(join(removable, 'BOQ.xlsx'))).toBe(true);
+
+    const again = await app.inject({ method: 'DELETE', url: '/api/folder' });
+    expect(again.json().error.code).toBe('not_indexed');
   });
 });
 

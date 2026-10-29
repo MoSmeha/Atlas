@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { mkdirSync, rmSync } from 'node:fs';
+import { rm } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import type { DocumentIndexFactory } from '../../application/ports/DocumentIndex';
 import { SqliteIndex } from './SqliteIndex';
@@ -26,6 +27,12 @@ export class SqliteIndexFactory implements DocumentIndexFactory {
       for (const suffix of ['', '-wal', '-shm']) rmSync(`${file}${suffix}`, { force: true });
       return new SqliteIndex(file);
     }
+  }
+
+  /** Deletes the folder's index file. On Windows a just-closed file can stay locked for a moment, so removal retries. */
+  async discard(folder: string): Promise<void> {
+    const file = this.fileFor(folder);
+    for (const suffix of ['', '-wal', '-shm']) await rm(`${file}${suffix}`, { force: true, maxRetries: 5, retryDelay: 100 });
   }
 
   /** The index file for a folder; the same folder spelt with different case maps to one file on Windows. */
