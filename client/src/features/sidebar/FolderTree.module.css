@@ -73,6 +73,15 @@
   flex: 1;
 }
 
+/*
+ * A Latin file name keeps its own direction, so its dots and extension stay put and a long one still
+ * trails off at its end, but in Arabic it lines up with the Arabic lines on the right.
+ */
+:where([dir='rtl']) .name,
+:where([dir='rtl']) .fileName {
+  text-align: right;
+}
+
 .count {
   flex-shrink: 0;
   color: var(--mantine-color-dimmed);

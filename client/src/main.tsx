@@ -6,7 +6,6 @@ import './styles/global.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { DirectionProvider, localStorageColorSchemeManager, MantineProvider } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { App } from './App';
 import { ChatProvider } from './features/chat/ChatProvider';
@@ -33,7 +32,6 @@ createRoot(rootElement).render(
         defaultColorScheme="light"
       >
         <LanguageProvider>
-          <Notifications position="bottom-right" limit={3} />
           <QueryClientProvider client={queryClient}>
             <SessionProvider>
               <ChatProvider>
