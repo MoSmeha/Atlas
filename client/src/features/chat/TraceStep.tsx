@@ -1,9 +1,12 @@
 import { Code, Text, VisuallyHidden } from '@mantine/core';
 import type { ToolStep } from '@atlas/shared';
-import { TraceStepIcon, type TraceStepState, stepStateWords } from './TraceStepIcon';
+import { useCopy } from '../../i18n/useCopy';
+import { useLanguage } from '../../i18n/useLanguage';
+import { TraceStepIcon, type TraceStepState } from './TraceStepIcon';
 import { formatDuration } from './formatDuration';
-import { describeStepInput } from './stepInput';
+import { describeStepInput, stepInputDir } from './stepInput';
 import { stepLabel } from './stepLabel';
+import { traceCopy } from './traceCopy';
 import classes from './Trace.module.css';
 
 interface TraceStepProps {
@@ -15,13 +18,15 @@ interface TraceStepProps {
 /**
  * One tool call in "How I found this": what Atlas did, what it asked for (SQL and formulas in
  * monospace), what came back and how long it took. A failed or skipped call shows why instead.
+ * What came back is the server's own line, shown in its own direction.
  */
 export function TraceStep({ step, ended }: TraceStepProps) {
+  const { language } = useLanguage();
+  const copy = useCopy(traceCopy);
   const state: TraceStepState = ended && step.status === 'running' ? 'unfinished' : step.status;
-  const input = describeStepInput(step.name, step.inputSummary);
-  const failed = state === 'error' || state === 'refused';
+  const input = describeStepInput(step.name, step.inputSummary, language);
   const duration =
-    step.durationMs !== null && (state === 'ok' || step.durationMs > 0) ? formatDuration(step.durationMs) : null;
+    step.durationMs !== null && (state === 'ok' || step.durationMs > 0) ? formatDuration(step.durationMs, language) : null;
 
   return (
     <li className={classes.step} data-status={state}>
@@ -31,9 +36,9 @@ export function TraceStep({ step, ended }: TraceStepProps) {
       <div className={classes.body}>
         <div className={classes.head}>
           <Text component="span" fz="sm" fw={600} c="gray.9">
-            {stepLabel(step.name)}
+            {stepLabel(step.name, language)}
           </Text>
-          <VisuallyHidden>{`, ${stepStateWords[state]}`}</VisuallyHidden>
+          <VisuallyHidden>{`${copy.pause}${copy.states[state]}`}</VisuallyHidden>
           {duration && (
             <Text component="span" fz="xs" c="dimmed" className={`${classes.duration} tabular-nums`}>
               {duration}
@@ -41,26 +46,26 @@ export function TraceStep({ step, ended }: TraceStepProps) {
           )}
         </div>
         {input &&
-          (input.code ? (
+          (input.kind === 'code' ? (
             <Code block dir="ltr" className={classes.code}>
               {input.text}
             </Code>
           ) : (
-            <Text fz="sm" c="gray.8" dir="ltr" className={classes.wrap}>
+            <Text fz="sm" c="gray.8" dir={stepInputDir(input)} className={classes.wrap}>
               {input.text}
             </Text>
           ))}
-        {failed ? (
-          <Text fz="sm" c="var(--mantine-color-error)" className={classes.wrap}>
-            {step.error ?? stepStateWords[state]}
+        {state === 'error' || state === 'refused' ? (
+          <Text fz="sm" c="var(--mantine-color-error)" dir="auto" className={classes.wrap}>
+            {copy.failed(state, step.error)}
           </Text>
         ) : state === 'unfinished' ? (
           <Text fz="sm" c="dimmed">
-            Did not finish.
+            {copy.unfinished}
           </Text>
         ) : (
           step.resultSummary && (
-            <Text fz="sm" c="dimmed" className={classes.wrap}>
+            <Text fz="sm" c="dimmed" dir="auto" className={classes.wrap}>
               {step.resultSummary}
             </Text>
           )

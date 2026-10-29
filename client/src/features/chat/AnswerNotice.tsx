@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { Box, Group, List, Stack, Text } from '@mantine/core';
 import { IconFileOff, IconFileSearch, IconInfoCircle } from '@tabler/icons-react';
 import type { AnswerKind } from '@atlas/shared';
+import { useCopy } from '../../i18n/useCopy';
+import { chatCopy } from './chatCopy';
 
 interface AnswerNoticeProps {
   kind: Exclude<AnswerKind, 'answer'>;
@@ -16,6 +18,7 @@ interface AnswerNoticeProps {
  * could not read, so the reader knows where the answer might still be.
  */
 export function AnswerNotice({ kind, unreadableFiles, children }: AnswerNoticeProps) {
+  const copy = useCopy(chatCopy).answer;
   const Icon = kind === 'not_found' ? IconFileSearch : IconInfoCircle;
   return (
     <Box bg="gray.0" bd="1px solid var(--mantine-color-gray-3)" bdrs="md" px="md" py="sm">
@@ -28,7 +31,7 @@ export function AnswerNotice({ kind, unreadableFiles, children }: AnswerNoticePr
           {unreadableFiles.length > 0 && (
             <Stack gap={6}>
               <Text fz="xs" fw={600} c="dimmed">
-                {unreadableFiles.length === 1 ? 'File Atlas could not read' : 'Files Atlas could not read'}
+                {copy.unreadableFiles(unreadableFiles.length)}
               </Text>
               <List spacing={4} fz="sm" c="gray.8" listStyleType="none" p={0} m={0}>
                 {unreadableFiles.map((file) => (
