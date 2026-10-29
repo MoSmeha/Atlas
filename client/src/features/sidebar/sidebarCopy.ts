@@ -51,6 +51,26 @@ export interface SidebarCopy {
   /** "3 of 12", added to the step's line when the server's own line is not shown. */
   progressOf: (current: number, total: number) => string;
   indexingStopped: string;
+  /** The remove button's tooltip on a file or folder row. */
+  removeTip: string;
+  /** The remove button's name for a screen reader, with the file or folder's name. */
+  removeItem: (name: string) => string;
+  /** Asked before an uploaded file or folder is deleted. */
+  deleteUploaded: { title: (name: string) => string; body: string };
+  /** Asked before the loaded folder is removed: a folder loaded by its path, then the uploads folder. */
+  removeFolder: { title: (name: string) => string; body: string };
+  removeUploads: { title: string; body: (n: number) => string };
+  cancel: string;
+  remove: string;
+  delete: string;
+  removeFailed: string;
+  /** The foot line that lists what was removed from a folder loaded by its path. */
+  removed: (n: number) => string;
+  removedTitle: string;
+  removedNote: string;
+  putBack: string;
+  putBackItem: (name: string) => string;
+  putBackFailed: string;
 }
 
 /** Interface text for the documents sidebar. */
@@ -122,6 +142,30 @@ export const sidebarCopy: Bilingual<SidebarCopy> = {
     stepOf: (step, total) => `Step ${figure(step)} of ${figure(total)}`,
     progressOf: (current, total) => `${figure(current)} of ${figure(total)}`,
     indexingStopped: 'Indexing stopped.',
+    removeTip: 'Remove from Atlas',
+    removeItem: (name) => `Remove ${name} from Atlas`,
+    deleteUploaded: {
+      title: (name) => `Delete ${name}?`,
+      body: 'Atlas deletes its uploaded copy and forgets what it read from it. This cannot be undone.',
+    },
+    removeFolder: {
+      title: (name) => `Remove ${name} from Atlas?`,
+      body: 'Atlas forgets everything it read from this folder. The files on your disk stay as they are.',
+    },
+    removeUploads: {
+      title: 'Delete all uploaded files?',
+      body: (n) => `Atlas deletes the ${countEn(n, 'uploaded file', 'uploaded files')} and forgets what it read from them. This cannot be undone.`,
+    },
+    cancel: 'Cancel',
+    remove: 'Remove',
+    delete: 'Delete',
+    removeFailed: 'Atlas could not remove it',
+    removed: (n) => `${figure(n)} removed from Atlas`,
+    removedTitle: 'Removed from Atlas',
+    removedNote: 'They stay on your disk. Atlas leaves them out until you put them back.',
+    putBack: 'Put back',
+    putBackItem: (name) => `Put ${name} back`,
+    putBackFailed: 'Atlas could not put it back',
   },
   ar: {
     projectFolder: 'مجلد المشروع',
@@ -190,5 +234,29 @@ export const sidebarCopy: Bilingual<SidebarCopy> = {
     stepOf: (step, total) => `الخطوة ${figure(step)} من ${figure(total)}`,
     progressOf: (current, total) => `${figure(current)} من ${figure(total)}`,
     indexingStopped: 'توقفت الفهرسة.',
+    removeTip: 'إزالة من Atlas',
+    removeItem: (name) => `إزالة ${isolate(name)} من Atlas`,
+    deleteUploaded: {
+      title: (name) => `حذف ${isolate(name)}؟`,
+      body: 'يحذف Atlas نسخته المرفوعة وينسى ما قرأه منها. لا يمكن التراجع عن ذلك.',
+    },
+    removeFolder: {
+      title: (name) => `إزالة ${isolate(name)} من Atlas؟`,
+      body: 'ينسى Atlas كل ما قرأه من هذا المجلد. تبقى الملفات على جهازك كما هي.',
+    },
+    removeUploads: {
+      title: 'حذف كل الملفات المرفوعة؟',
+      body: (n) => `يحذف Atlas الملفات المرفوعة (${countAr(n, files)}) وينسى ما قرأه منها. لا يمكن التراجع عن ذلك.`,
+    },
+    cancel: 'إلغاء',
+    remove: 'إزالة',
+    delete: 'حذف',
+    removeFailed: 'تعذّر على Atlas إزالته',
+    removed: (n) => `أُزيل من Atlas: ${figure(n)}`,
+    removedTitle: 'أُزيلت من Atlas',
+    removedNote: 'تبقى على جهازك، ويتركها Atlas جانبًا حتى تعيدها.',
+    putBack: 'إعادة',
+    putBackItem: (name) => `إعادة ${isolate(name)}`,
+    putBackFailed: 'تعذّر على Atlas إعادته',
   },
 };

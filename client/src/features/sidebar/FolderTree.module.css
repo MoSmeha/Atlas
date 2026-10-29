@@ -185,18 +185,74 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* A folder's row and its remove button, which sits over the row's end. */
+.folderLine {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * Remove from Atlas, at the row's end. It takes the row's own ground, so a long name runs under it, and it shows
+ * under the pointer, on keyboard focus and while its question is open.
+ */
+.removeSlot {
+  position: absolute;
+  z-index: 1;
+  inset-inline-end: 3px;
+  top: 4px;
+  display: flex;
+  border-radius: var(--mantine-radius-sm);
+  background-color: inherit;
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.folderLine > .removeSlot {
+  top: 50%;
+  translate: 0 -50%;
+}
+
+.file:hover > .removeSlot,
+.file:focus-within > .removeSlot,
+.folderLine:hover > .removeSlot,
+.folderLine:focus-within > .removeSlot,
+.removeSlot[data-open] {
+  opacity: 1;
+}
+
 /* On the chrome ground, a row lifts to the surface ground under the pointer. */
 @media (hover: hover) {
   .row:hover,
   .file:not([data-active]):hover {
     background-color: var(--atlas-surface);
   }
+
+  /* The folder's button holds the row's ground, so the remove button takes it from there. */
+  .folderLine:hover > .removeSlot {
+    background-color: var(--atlas-surface);
+  }
+
+  .folderLine:hover .count,
+  .folderLine:focus-within .count {
+    visibility: hidden;
+  }
+}
+
+/* With no pointer to hover, the remove button stays in view at the end of each row. */
+@media (hover: none) {
+  .removeSlot {
+    position: static;
+    translate: none;
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .row,
   .file,
-  .chevron {
+  .chevron,
+  .removeSlot {
     transition: none;
   }
 }

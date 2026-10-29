@@ -63,6 +63,12 @@ flowchart LR
 
 A watcher re-reads a file as soon as it is added or changed. The index is cached per folder, so loading a folder again takes milliseconds.
 
+Each row of the sidebar's tree has a × that removes it from Atlas, and its pages, tables and passages from the index, at once (`IndexFolder.remove`):
+
+- **In the uploads folder** (`<ATLAS_DATA_DIR>/uploads`) the uploaded copy is deleted, after a question, since that cannot be undone.
+- **In a folder loaded by its path** the file stays on disk. Its path goes on the index's `excluded` list, which every scan and watcher update skips, and the sidebar's foot lists it with Put back (`POST /api/folder/restore`), which scans the folder again.
+- **The top folder's ×** unloads the folder (`DELETE /api/folder`): indexing and watching stop and its index file is deleted. Uploaded files are deleted too; a folder loaded by its path keeps its files.
+
 ## Every answer is checked
 
 ```mermaid

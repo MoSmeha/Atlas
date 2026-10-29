@@ -75,6 +75,8 @@ function activityAfter(event: IndexEvent): IndexActivity | null {
       return { phase: 'ready', progress: null };
     case 'error':
       return { phase: 'error', progress: null };
+    case 'unloaded':
+      return { phase: 'idle', progress: null };
     default:
       return null;
   }

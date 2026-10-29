@@ -45,7 +45,7 @@ export function DocumentRegister() {
       <RegisterEmpty reason={status.data.folder === null ? 'no-folder' : 'no-files'} />
     );
   } else {
-    body = <FolderTree root={buildFolderTree(folderName(status.data.folder ?? ''), listed)} />;
+    body = <FolderTree root={buildFolderTree(folderName(status.data.folder ?? ''), listed)} uploads={status.data.uploads} />;
   }
 
   return (

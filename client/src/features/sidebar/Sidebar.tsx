@@ -4,6 +4,7 @@ import { Preferences } from '../topbar/Preferences';
 import { DocumentRegister } from './DocumentRegister';
 import { FolderForm } from './FolderForm';
 import { IndexProgress } from './IndexProgress';
+import { RemovedLine } from './RemovedLine';
 import { SkippedLine } from './SkippedLine';
 import { UploadDrop } from './UploadDrop';
 
@@ -14,7 +15,7 @@ interface SidebarProps {
 
 /**
  * The left sidebar inside AppShell.Navbar: folder path and dropzone at the top, the indexing
- * line while a folder loads, the scrolling folder tree, and the skipped files at the foot. On a
+ * line while a folder loads, the scrolling folder tree, and the removed and skipped files at the foot. On a
  * phone the foot also holds the language and theme, which the top bar has no room for.
  */
 export function Sidebar({ activity }: SidebarProps) {
@@ -31,6 +32,7 @@ export function Sidebar({ activity }: SidebarProps) {
         <DocumentRegister />
       </AppShell.Section>
       <AppShell.Section>
+        <RemovedLine />
         <SkippedLine />
         <Box hiddenFrom="sm" pt="xs" mt="xs" style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
           <Preferences />
