@@ -1,4 +1,4 @@
-import type { ModelTier } from '@atlas/shared';
+import type { ModelProvider, ModelTier } from '@atlas/shared';
 import { type ArabicNoun, countAr, countEn } from '../../i18n/count';
 import type { Bilingual, Language } from '../../i18n/language';
 import type { FreeProvider } from './freeTier';
@@ -17,7 +17,9 @@ interface TopbarCopy {
   tiers: Record<ModelTier, string>;
   /** The same, for a provider that charges nothing. */
   freeTiers: Record<ModelTier, string>;
-  /** The badge beside the picker while a free provider answers, and what it means. */
+  /** Each provider's heading in the picker's list, shown when there are several. */
+  providers: Record<ModelProvider, string>;
+  /** The badge beside the picker while a free model is chosen, and what it means. */
   free: Record<FreeProvider, { label: string; hint: string }>;
   /** The cost of an answer that cost nothing. */
   freeCost: string;
@@ -56,6 +58,7 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       balanced: 'Good balance of depth and speed, free',
       small: 'Fastest, free',
     },
+    providers: { openai: 'OpenAI', gemini: 'Gemini, free tier', ollama: 'On this computer, free' },
     free: {
       gemini: {
         label: 'Free tier',
@@ -98,6 +101,7 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       balanced: 'توازن جيد بين العمق والسرعة، ومجاني',
       small: 'الأسرع، ومجاني',
     },
+    providers: { openai: 'OpenAI', gemini: 'Gemini، الباقة المجانية', ollama: 'على هذا الجهاز، مجاني' },
     free: {
       gemini: {
         label: 'الباقة المجانية',
