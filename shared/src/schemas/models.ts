@@ -33,6 +33,7 @@ export type Usage = z.infer<typeof Usage>;
 
 export const UsageResponse = z.object({
   last: Usage.nullable(),
-  session: z.object({ questions: z.number().int(), costUsd: z.number() }),
+  /** costUsd includes voice calls and dictation; voiceSeconds is the length of this chat's calls. */
+  session: z.object({ questions: z.number().int(), costUsd: z.number(), voiceSeconds: z.number().nonnegative() }),
 });
 export type UsageResponse = z.infer<typeof UsageResponse>;

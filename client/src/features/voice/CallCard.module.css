@@ -1,0 +1,140 @@
+/* The call card sits where the composer was: the same white 8px frame and hairline, settling in like an answer. */
+
+.card {
+  display: grid;
+  gap: var(--mantine-spacing-sm);
+  padding: var(--mantine-spacing-sm);
+  border: 1px solid var(--mantine-color-gray-4);
+  border-radius: var(--mantine-radius-lg);
+  background-color: var(--mantine-color-white);
+  animation-name: settle;
+  animation-fill-mode: both;
+}
+
+.top {
+  display: flex;
+  gap: var(--mantine-spacing-sm);
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+  padding-block-start: 4px;
+}
+
+.status {
+  display: flex;
+  gap: var(--mantine-spacing-xs);
+  align-items: baseline;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.captions {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.caption {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: var(--mantine-spacing-xs);
+  align-items: start;
+}
+
+/* The label takes one line box of the words beside it, so it sits on their first visible line however long they run. */
+.speaker {
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 600;
+  line-height: calc(var(--mantine-font-size-sm) * var(--mantine-line-height-sm));
+  color: var(--mantine-color-dimmed);
+}
+
+/*
+ * Two lines at most, always showing the newest words: the box sets its text against its end, so as a reply grows its
+ * earlier words leave at the top instead of the caption stopping on its first line.
+ */
+.words {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-block-size: calc(2em * var(--mantine-line-height-sm));
+  overflow: hidden;
+  font-size: var(--mantine-font-size-sm);
+  line-height: var(--mantine-line-height-sm);
+  color: var(--mantine-color-dimmed);
+  unicode-bidi: plaintext;
+  overflow-wrap: anywhere;
+}
+
+/* The latest speaker's line reads at full strength; the other steps back to the dimmed meta colour. */
+.caption[data-latest] .words {
+  color: var(--mantine-color-text);
+}
+
+/* On a phone only the latest line shows, so the card leaves the answer most of the screen. */
+@media (max-width: 36em) {
+  .caption:not([data-latest]) {
+    display: none;
+  }
+}
+
+.waiting {
+  color: var(--mantine-color-dimmed);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mantine-spacing-xs);
+  align-items: center;
+  justify-content: space-between;
+  padding-block-start: var(--mantine-spacing-xs);
+  border-block-start: 1px solid var(--mantine-color-gray-2);
+}
+
+.actions {
+  display: flex;
+  gap: var(--mantine-spacing-xs);
+  align-items: center;
+  margin-inline-start: auto;
+}
+
+.picker {
+  inline-size: 208px;
+}
+
+/* On a phone the picker takes what the 40px controls leave, so everything stays on one row. */
+@media (max-width: 36em) {
+  .controls {
+    flex-wrap: nowrap;
+  }
+
+  .picker {
+    flex: 1;
+    inline-size: auto;
+    min-inline-size: 0;
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+  }
+}

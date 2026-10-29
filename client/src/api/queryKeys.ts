@@ -5,6 +5,7 @@
 export const queryKeys = {
   health: ['health'] as const,
   models: ['models'] as const,
+  voices: ['voices'] as const,
   usage: (sessionId: string) => ['usage', sessionId] as const,
   folder: {
     all: ['folder'] as const,

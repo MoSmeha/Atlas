@@ -4,6 +4,12 @@ import { loadModelConfig, type ModelConfig } from '../config/modelConfig';
 
 const LIST_TIMEOUT_MS = 8_000;
 
+export interface ResolvedModels {
+  lineup: Lineup;
+  /** The model IDs the account can see; null without a client, or when listing failed or took too long. */
+  visible: string[] | null;
+}
+
 /**
  * Picks the model per tier from the catalog, preferring models the account can see.
  * Without a client, or when listing fails or takes too long, it trusts the catalog order.
@@ -13,8 +19,17 @@ export async function resolveLineup(
   config: ModelConfig = loadModelConfig(),
   timeoutMs: number = LIST_TIMEOUT_MS,
 ): Promise<Lineup> {
+  return (await resolveModels(modelClient, config, timeoutMs)).lineup;
+}
+
+/** resolveLineup, and the list of models it was picked from, which also tells whether voice models are on. */
+export async function resolveModels(
+  modelClient: ModelClient | null,
+  config: ModelConfig = loadModelConfig(),
+  timeoutMs: number = LIST_TIMEOUT_MS,
+): Promise<ResolvedModels> {
   const visible = modelClient === null ? null : await visibleModels(modelClient, timeoutMs);
-  return pickLineup(config.catalog, visible);
+  return { lineup: pickLineup(config.catalog, visible), visible };
 }
 
 async function visibleModels(modelClient: ModelClient, timeoutMs: number): Promise<string[] | null> {

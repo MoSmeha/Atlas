@@ -5,6 +5,8 @@ import { useHealth } from '../../api/useHealth';
 import { MainColumn } from '../../shell/MainColumn';
 import { UsageReadout } from '../topbar/UsageReadout';
 import { SourceViewerModal } from '../viewer/SourceViewerModal';
+import { CallCard } from '../voice/CallCard';
+import { useVoiceCall } from '../voice/useVoiceCall';
 import { Composer } from './Composer';
 import { EmptyState } from './EmptyState';
 import { Turn } from './Turn';
@@ -15,11 +17,13 @@ import { useOpenedSource } from './useOpenedSource';
 
 /**
  * The conversation column: the empty state, then one turn per question, with the composer
- * docked at the bottom. The page scrolls to each new turn and follows its answer as it streams.
- * Clicking an answer's source opens it in the source viewer, at its page or rows.
+ * docked at the bottom, or the call card while a voice call is open. The page scrolls to each new
+ * turn and follows its answer as it streams. Clicking an answer's source opens it in the source
+ * viewer, at its page or rows.
  */
 export function ChatThread() {
   const { turns, streaming, ask, retry, stop } = useChat();
+  const voice = useVoiceCall();
   const folder = useFolderStatus();
   const health = useHealth();
   const thread = useRef<HTMLDivElement>(null);
@@ -35,13 +39,20 @@ export function ChatThread() {
   return (
     <MainColumn
       composer={
-        <Composer
-          readiness={readiness}
-          streaming={streaming}
-          onSend={ask}
-          onStop={stop}
-          hintAside={<UsageReadout placement="composer" />}
-        />
+        voice.call !== null ? (
+          <CallCard />
+        ) : (
+          <Composer
+            readiness={readiness}
+            streaming={streaming}
+            onSend={ask}
+            onStop={stop}
+            hintAside={<UsageReadout placement="composer" />}
+            onStartCall={voice.callsAvailable ? voice.start : undefined}
+            maxDictationSeconds={voice.dictationAvailable ? voice.maxDictationSeconds : undefined}
+            notice={voice.notice}
+          />
+        )
       }
     >
       {turns.length === 0 ? (

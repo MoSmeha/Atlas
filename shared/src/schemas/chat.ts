@@ -7,6 +7,8 @@ export const ChatRequest = z.object({
   sessionId: z.string().min(1).max(100),
   question: z.string().trim().min(1).max(4000),
   model: z.string().nullable().optional(),
+  /** True when the question was spoken in a voice call: a short text to read aloud then comes before the answer. */
+  spoken: z.boolean().optional(),
 });
 export type ChatRequest = z.infer<typeof ChatRequest>;
 
@@ -31,6 +33,8 @@ export const ChatEvent = z.discriminatedUnion('type', [
   z.object({ type: z.literal('step'), step: ToolStep }),
   z.object({ type: z.literal('answer_delta'), delta: z.string() }),
   z.object({ type: z.literal('answer_reset') }),
+  /** What a voice call says aloud for the answer that follows; only for spoken questions. */
+  z.object({ type: z.literal('speech'), text: z.string() }),
   z.object({ type: z.literal('answer'), answer: Answer, usage: Usage }),
   z.object({ type: z.literal('error'), error: ErrorDetail }),
 ]);

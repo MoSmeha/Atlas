@@ -19,6 +19,12 @@
   align-self: center;
 }
 
+/* While dictating, the level bars and the timer take the text's place, at its height. */
+.recording {
+  align-self: center;
+  min-block-size: calc(var(--mantine-font-size-md) * var(--mantine-line-height-md) + var(--mantine-spacing-xs));
+}
+
 .input textarea {
   padding-block: calc(var(--mantine-spacing-xs) / 2);
   font-size: var(--mantine-font-size-md);

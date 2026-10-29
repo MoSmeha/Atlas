@@ -8,3 +8,5 @@ export type * from './ModelClient';
 export type * from './PageRenderer';
 export type * from './ResultExporter';
 export type * from './RunLogger';
+export type * from './Transcriber';
+export type * from './VoiceClient';

@@ -1,0 +1,40 @@
+/* A still waveform glyph: five bars of set heights, quiet gray until the microphone hears speech. */
+
+.bars {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+  block-size: 16px;
+  flex: none;
+}
+
+.bar {
+  inline-size: 3px;
+  border-radius: var(--mantine-radius-xs);
+  background-color: var(--mantine-color-gray-4);
+  transition: background-color 150ms ease-out;
+}
+
+.bar:nth-child(1),
+.bar:nth-child(5) {
+  block-size: 6px;
+}
+
+.bar:nth-child(2),
+.bar:nth-child(4) {
+  block-size: 11px;
+}
+
+.bar:nth-child(3) {
+  block-size: 16px;
+}
+
+.bars[data-hearing] .bar {
+  background-color: var(--mantine-color-gray-7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+  }
+}

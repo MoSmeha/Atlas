@@ -39,6 +39,8 @@ export const errors = {
     ),
   modelRefusal: (reason: string) => new AppError('model_refusal', `The model declined to answer: ${reason}`),
   modelError: (message: string) => new AppError('model_error', `The model call failed: ${message}`),
+  voiceUnavailable: (model: string) =>
+    new AppError('model_error', `Voice calls need the ${model} model, which this OpenAI account cannot use.`),
   stopped: () => new AppError('stopped', 'The question was stopped.'),
   invalidRequest: (message: string) => new AppError('invalid_request', message),
 };
