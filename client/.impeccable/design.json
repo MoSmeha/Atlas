@@ -1,112 +1,142 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-29T11:16:50.509Z",
+  "generatedAt": "2026-10-29T12:10:19.998Z",
   "title": "Design System: Atlas",
   "extensions": {
     "colorMeta": {
       "ink": {
         "role": "primary",
-        "displayName": "Atlas Ink",
-        "canonical": "#2a488b (ink.7, primaryShade light; --mantine-primary-color-filled)",
+        "displayName": "Graphite",
+        "canonical": "#373532 (ink.7, primaryShade in light; --mantine-primary-color-filled; OKLCH hue 85, almost no chroma; white text 12.2:1)",
         "tonalRamp": [
-          "#172953",
-          "#2a488b",
-          "#3b5da7",
-          "#5478c1",
-          "#9cb8eb",
-          "#c2d5f6",
-          "#e0eafb",
-          "#f1f6fe"
+          "#1b1916",
+          "#373532",
+          "#51504c",
+          "#706e6b",
+          "#bcbab7",
+          "#d5d4d1",
+          "#e4e3e0",
+          "#f0eeeb"
+        ]
+      },
+      "ink-hover": {
+        "role": "primary",
+        "displayName": "Graphite Hover",
+        "canonical": "#282623 (ink.8, filled hover in light)",
+        "tonalRamp": [
+          "#1b1916",
+          "#373532",
+          "#51504c",
+          "#706e6b",
+          "#bcbab7",
+          "#d5d4d1",
+          "#e4e3e0",
+          "#f0eeeb"
         ]
       },
       "ink-wash": {
         "role": "primary",
-        "displayName": "Ink Wash",
-        "canonical": "#f1f6fe (ink.0)",
+        "displayName": "Graphite Wash",
+        "canonical": "#f0eeeb (ink.0; no component marks with it now)",
         "tonalRamp": [
-          "#172953",
-          "#2a488b",
-          "#3b5da7",
-          "#5478c1",
-          "#9cb8eb",
-          "#c2d5f6",
-          "#e0eafb",
-          "#f1f6fe"
+          "#1b1916",
+          "#373532",
+          "#51504c",
+          "#706e6b",
+          "#bcbab7",
+          "#d5d4d1",
+          "#e4e3e0",
+          "#f0eeeb"
         ]
       },
       "ink-tint": {
         "role": "primary",
-        "displayName": "Ink Tint",
-        "canonical": "#e0eafb (ink.1)",
+        "displayName": "Graphite Tint",
+        "canonical": "#e4e3e0 (ink.1, --mantine-color-ink-light; open source row, cited sheet rows, <mark>)",
         "tonalRamp": [
-          "#172953",
-          "#2a488b",
-          "#3b5da7",
-          "#5478c1",
-          "#9cb8eb",
-          "#c2d5f6",
-          "#e0eafb",
-          "#f1f6fe"
+          "#1b1916",
+          "#373532",
+          "#51504c",
+          "#706e6b",
+          "#bcbab7",
+          "#d5d4d1",
+          "#e4e3e0",
+          "#f0eeeb"
         ]
       },
       "ink-selection": {
         "role": "primary",
-        "displayName": "Ink Selection",
-        "canonical": "#c2d5f6 (ink.2)",
+        "displayName": "Graphite Selection",
+        "canonical": "#d5d4d1 (ink.2, ::selection, --mantine-color-ink-light-hover; the open file in the tree)",
         "tonalRamp": [
-          "#172953",
-          "#2a488b",
-          "#3b5da7",
-          "#5478c1",
-          "#9cb8eb",
-          "#c2d5f6",
-          "#e0eafb",
-          "#f1f6fe"
+          "#1b1916",
+          "#373532",
+          "#51504c",
+          "#706e6b",
+          "#bcbab7",
+          "#d5d4d1",
+          "#e4e3e0",
+          "#f0eeeb"
         ]
       },
       "ink-mark": {
         "role": "primary",
-        "displayName": "Ink Mark",
-        "canonical": "color-mix(in srgb, #9cb8eb 45%, transparent) over the white PDF page (ink.3, not remapped)",
+        "displayName": "Pencil Mark",
+        "canonical": "color-mix(in srgb, #94928f 45%, transparent) over the white PDF page (ink.4, not remapped)",
         "tonalRamp": [
-          "#172953",
-          "#2a488b",
-          "#3b5da7",
-          "#5478c1",
-          "#9cb8eb",
-          "#c2d5f6",
-          "#e0eafb",
-          "#f1f6fe"
+          "#1b1916",
+          "#373532",
+          "#51504c",
+          "#706e6b",
+          "#bcbab7",
+          "#d5d4d1",
+          "#e4e3e0",
+          "#f0eeeb"
         ]
       },
       "ink-deep": {
         "role": "primary",
-        "displayName": "Ink Deep",
-        "canonical": "#172953 (ink.9)",
+        "displayName": "Graphite Deep",
+        "canonical": "#1b1916 (ink.9, selection text, --mantine-color-ink-light-color)",
         "tonalRamp": [
-          "#172953",
-          "#2a488b",
-          "#3b5da7",
-          "#5478c1",
-          "#9cb8eb",
-          "#c2d5f6",
-          "#e0eafb",
-          "#f1f6fe"
+          "#1b1916",
+          "#373532",
+          "#51504c",
+          "#706e6b",
+          "#bcbab7",
+          "#d5d4d1",
+          "#e4e3e0",
+          "#f0eeeb"
+        ]
+      },
+      "on-ink": {
+        "role": "primary",
+        "displayName": "On Graphite",
+        "canonical": "#ffffff (--atlas-on-ink in light; text on any primary fill, set on filled Button and ActionIcon through theme vars)",
+        "tonalRamp": [
+          "#1b1916",
+          "#373532",
+          "#51504c",
+          "#706e6b",
+          "#bcbab7",
+          "#d5d4d1",
+          "#e4e3e0",
+          "#f0eeeb"
         ]
       },
       "page-ground": {
         "role": "neutral",
         "displayName": "Page Ground",
-        "canonical": "#fcfcfd (--mantine-color-body, the inset sheet)",
+        "canonical": "#fdfcfb (--mantine-color-body, the inset sheet)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "white": {
@@ -114,179 +144,239 @@
         "displayName": "Surface (light)",
         "canonical": "#ffffff (--atlas-surface in light; --mantine-color-white)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "hover-ground": {
         "role": "neutral",
         "displayName": "Hover Ground",
-        "canonical": "#f6f8fb (gray.0)",
+        "canonical": "#f9f8f6 (gray.0)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "chrome-ground": {
         "role": "neutral",
         "displayName": "Chrome Ground",
-        "canonical": "#f1f4f9 (gray.1; AppShell header, navbar and main)",
+        "canonical": "#f5f4f1 (gray.1; AppShell header, navbar and main; the opening screen)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "quiet-chip": {
         "role": "neutral",
         "displayName": "Quiet Chip",
-        "canonical": "#e6eaef (gray.2, --mantine-color-gray-light, --mantine-color-disabled)",
+        "canonical": "#ebe9e7 (gray.2, --mantine-color-gray-light, --mantine-color-disabled)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "hairline": {
         "role": "neutral",
         "displayName": "Hairline",
-        "canonical": "#d8dde2 (gray.3, --mantine-color-disabled-border)",
+        "canonical": "#dddcda (gray.3, --mantine-color-disabled-border)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "border": {
         "role": "neutral",
         "displayName": "Border",
-        "canonical": "#c3c8ce (gray.4, --mantine-color-default-border, scrollbar thumbs)",
+        "canonical": "#c9c7c5 (gray.4, --mantine-color-default-border, scrollbar thumbs)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "faint-glyph": {
         "role": "neutral",
         "displayName": "Faint Glyph",
-        "canonical": "#9da2a9 (gray.5, --mantine-color-disabled-color)",
+        "canonical": "#a3a19f (gray.5, --mantine-color-disabled-color)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "dimmed": {
         "role": "neutral",
         "displayName": "Dimmed",
-        "canonical": "#626871 (gray.6, --mantine-color-dimmed, --mantine-color-placeholder)",
+        "canonical": "#696765 (gray.6, --mantine-color-dimmed, --mantine-color-placeholder)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "secondary-text": {
         "role": "neutral",
         "displayName": "Secondary Text",
-        "canonical": "#4a505a (gray.7)",
+        "canonical": "#514f4d (gray.7)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "soft-text": {
         "role": "neutral",
         "displayName": "Soft Text",
-        "canonical": "#30363f (gray.8)",
+        "canonical": "#373533 (gray.8)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "body-text": {
         "role": "neutral",
         "displayName": "Body Text",
-        "canonical": "#151a21 (gray.9, black, bright; tooltip ground in light)",
+        "canonical": "#1b1917 (gray.9, black, bright; tooltip ground in light)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
         ]
       },
       "overlay": {
         "role": "neutral",
         "displayName": "Overlay",
-        "canonical": "rgba(21, 26, 33, 0.32) (--atlas-overlay in light)",
+        "canonical": "rgba(27, 25, 23, 0.32) (--atlas-overlay in light, graphite)",
         "tonalRamp": [
-          "#151a21",
-          "#4a505a",
-          "#626871",
-          "#9da2a9",
-          "#d8dde2",
-          "#e6eaef",
-          "#f1f4f9",
-          "#f6f8fb"
+          "#1b1917",
+          "#514f4d",
+          "#696765",
+          "#a3a19f",
+          "#dddcda",
+          "#ebe9e7",
+          "#f5f4f1",
+          "#f9f8f6"
+        ]
+      },
+      "kind-pdf": {
+        "role": "tertiary",
+        "displayName": "PDF Red",
+        "canonical": "#c44037 (--atlas-kind-pdf in light; the PDF icon only)",
+        "tonalRamp": [
+          "#c44037",
+          "#2d7b48",
+          "#b07a2a",
+          "#dea645",
+          "#f4c352"
+        ]
+      },
+      "kind-excel": {
+        "role": "tertiary",
+        "displayName": "Excel Green",
+        "canonical": "#2d7b48 (--atlas-kind-excel in light; the Excel icon only)",
+        "tonalRamp": [
+          "#c44037",
+          "#2d7b48",
+          "#b07a2a",
+          "#dea645",
+          "#f4c352"
+        ]
+      },
+      "folder-back": {
+        "role": "tertiary",
+        "displayName": "Manila Back",
+        "canonical": "#dea645 (--atlas-folder-back in light; the folder glyph back panel)",
+        "tonalRamp": [
+          "#c44037",
+          "#2d7b48",
+          "#b07a2a",
+          "#dea645",
+          "#f4c352"
+        ]
+      },
+      "folder-front": {
+        "role": "tertiary",
+        "displayName": "Manila Front",
+        "canonical": "#f4c352 (--atlas-folder-front in light; the folder glyph front panel)",
+        "tonalRamp": [
+          "#c44037",
+          "#2d7b48",
+          "#b07a2a",
+          "#dea645",
+          "#f4c352"
+        ]
+      },
+      "folder-edge": {
+        "role": "tertiary",
+        "displayName": "Manila Edge",
+        "canonical": "#b07a2a (--atlas-folder-edge in light; 0.9-unit stroke round the glyph)",
+        "tonalRamp": [
+          "#c44037",
+          "#2d7b48",
+          "#b07a2a",
+          "#dea645",
+          "#f4c352"
         ]
       },
       "amber-wash": {
@@ -456,317 +546,407 @@
       },
       "ink-dark": {
         "role": "primary",
-        "displayName": "Atlas Ink (dark)",
-        "canonical": "#3b5da7 (ink.6, primaryShade dark; white text 6.3:1)",
+        "displayName": "Chalk (dark)",
+        "canonical": "#e8e6e2 (ink.7 role in dark, primaryShade 7; graphite text 14.4:1)",
         "tonalRamp": [
-          "#182136",
-          "#1f2b47",
-          "#2c3e66",
-          "#3b5da7",
-          "#5478c1",
-          "#7698d9",
-          "#9cb8eb",
-          "#c9d8f5"
+          "#2e2c29",
+          "#3a3834",
+          "#4b4945",
+          "#94928f",
+          "#bcbab7",
+          "#d3d1cd",
+          "#e8e6e2",
+          "#e9e8e4"
         ]
       },
-      "ink-bright-dark": {
+      "ink-hover-dark": {
         "role": "primary",
-        "displayName": "Ink Bright (dark)",
-        "canonical": "#7698d9 (ink.4; --mantine-color-anchor and --atlas-focus in dark)",
+        "displayName": "Chalk Hover (dark)",
+        "canonical": "#d3d1cd (ink.8 role in dark, filled hover)",
         "tonalRamp": [
-          "#182136",
-          "#1f2b47",
-          "#2c3e66",
-          "#3b5da7",
-          "#5478c1",
-          "#7698d9",
-          "#9cb8eb",
-          "#c9d8f5"
+          "#2e2c29",
+          "#3a3834",
+          "#4b4945",
+          "#94928f",
+          "#bcbab7",
+          "#d3d1cd",
+          "#e8e6e2",
+          "#e9e8e4"
+        ]
+      },
+      "on-ink-dark": {
+        "role": "primary",
+        "displayName": "On Chalk (dark)",
+        "canonical": "#181715 (--atlas-on-ink in dark, dark.7)",
+        "tonalRamp": [
+          "#2e2c29",
+          "#3a3834",
+          "#4b4945",
+          "#94928f",
+          "#bcbab7",
+          "#d3d1cd",
+          "#e8e6e2",
+          "#e9e8e4"
+        ]
+      },
+      "focus-dark": {
+        "role": "primary",
+        "displayName": "Focus (dark)",
+        "canonical": "#c6c4c0 (--atlas-focus in dark; links take --mantine-color-anchor, dark.0)",
+        "tonalRamp": [
+          "#2e2c29",
+          "#3a3834",
+          "#4b4945",
+          "#94928f",
+          "#bcbab7",
+          "#d3d1cd",
+          "#e8e6e2",
+          "#e9e8e4"
         ]
       },
       "ink-wash-dark": {
         "role": "primary",
-        "displayName": "Ink Wash (dark)",
-        "canonical": "#182136 (ink.0 role in dark)",
+        "displayName": "Graphite Wash (dark)",
+        "canonical": "#2e2c29 (ink.0 role in dark, above the hover tone)",
         "tonalRamp": [
-          "#182136",
-          "#1f2b47",
-          "#2c3e66",
-          "#3b5da7",
-          "#5478c1",
-          "#7698d9",
-          "#9cb8eb",
-          "#c9d8f5"
+          "#2e2c29",
+          "#3a3834",
+          "#4b4945",
+          "#94928f",
+          "#bcbab7",
+          "#d3d1cd",
+          "#e8e6e2",
+          "#e9e8e4"
         ]
       },
       "ink-tint-dark": {
         "role": "primary",
-        "displayName": "Ink Tint (dark)",
-        "canonical": "#1f2b47 (ink.1 role in dark)",
+        "displayName": "Graphite Tint (dark)",
+        "canonical": "#3a3834 (ink.1 role in dark)",
         "tonalRamp": [
-          "#182136",
-          "#1f2b47",
-          "#2c3e66",
-          "#3b5da7",
-          "#5478c1",
-          "#7698d9",
-          "#9cb8eb",
-          "#c9d8f5"
+          "#2e2c29",
+          "#3a3834",
+          "#4b4945",
+          "#94928f",
+          "#bcbab7",
+          "#d3d1cd",
+          "#e8e6e2",
+          "#e9e8e4"
         ]
       },
       "ink-selection-dark": {
         "role": "primary",
-        "displayName": "Ink Selection (dark)",
-        "canonical": "#2c3e66 (ink.2 role in dark)",
+        "displayName": "Graphite Selection (dark)",
+        "canonical": "#4b4945 (ink.2 role in dark)",
         "tonalRamp": [
-          "#182136",
-          "#1f2b47",
-          "#2c3e66",
-          "#3b5da7",
-          "#5478c1",
-          "#7698d9",
-          "#9cb8eb",
-          "#c9d8f5"
+          "#2e2c29",
+          "#3a3834",
+          "#4b4945",
+          "#94928f",
+          "#bcbab7",
+          "#d3d1cd",
+          "#e8e6e2",
+          "#e9e8e4"
         ]
       },
       "ink-deep-dark": {
         "role": "primary",
-        "displayName": "Ink Deep (dark)",
-        "canonical": "#c9d8f5 (ink.9 role in dark)",
+        "displayName": "Graphite Deep (dark)",
+        "canonical": "#e9e8e4 (ink.9 role in dark)",
         "tonalRamp": [
-          "#182136",
-          "#1f2b47",
-          "#2c3e66",
-          "#3b5da7",
-          "#5478c1",
-          "#7698d9",
-          "#9cb8eb",
-          "#c9d8f5"
+          "#2e2c29",
+          "#3a3834",
+          "#4b4945",
+          "#94928f",
+          "#bcbab7",
+          "#d3d1cd",
+          "#e8e6e2",
+          "#e9e8e4"
         ]
       },
       "chrome-ground-dark": {
         "role": "neutral",
         "displayName": "Chrome Ground (dark)",
-        "canonical": "#0f1217 (gray.1 role in dark, dark.8)",
+        "canonical": "#131210 (gray.1 role in dark, dark.8; the opening screen)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "page-ground-dark": {
         "role": "neutral",
         "displayName": "Page Ground (dark)",
-        "canonical": "#14171d (--mantine-color-body in dark, dark.7)",
+        "canonical": "#181715 (--mantine-color-body in dark, dark.7)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "surface-dark": {
         "role": "neutral",
         "displayName": "Surface (dark)",
-        "canonical": "#1a1e25 (--atlas-surface in dark, dark.6)",
+        "canonical": "#1f1e1c (--atlas-surface in dark, dark.6)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "hover-ground-dark": {
         "role": "neutral",
         "displayName": "Hover Ground (dark)",
-        "canonical": "#1f242c (gray.0 role in dark)",
+        "canonical": "#252422 (gray.0 role in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "quiet-chip-dark": {
         "role": "neutral",
         "displayName": "Quiet Chip (dark)",
-        "canonical": "#272d36 (gray.2 role in dark)",
+        "canonical": "#2d2c2a (gray.2 role in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "hairline-dark": {
         "role": "neutral",
         "displayName": "Hairline (dark)",
-        "canonical": "#2b313a (gray.3 role in dark)",
+        "canonical": "#31302e (gray.3 role in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "border-dark": {
         "role": "neutral",
         "displayName": "Border (dark)",
-        "canonical": "#3f4651 (gray.4 role in dark; --atlas-float-edge, dark.4)",
+        "canonical": "#464543 (gray.4 role in dark; --atlas-float-edge, dark.4)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "faint-glyph-dark": {
         "role": "neutral",
         "displayName": "Faint Glyph (dark)",
-        "canonical": "#5f6774 (gray.5 role in dark)",
+        "canonical": "#676664 (gray.5 role in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "placeholder-dark": {
         "role": "neutral",
         "displayName": "Placeholder (dark)",
-        "canonical": "#8a92a0 (--mantine-color-placeholder in dark, dark.3)",
+        "canonical": "#93918f (--mantine-color-placeholder in dark, dark.3)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "dimmed-dark": {
         "role": "neutral",
         "displayName": "Dimmed (dark)",
-        "canonical": "#939ba8 (gray.6 role in dark)",
+        "canonical": "#9b9a98 (gray.6 role in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "secondary-text-dark": {
         "role": "neutral",
         "displayName": "Secondary Text (dark)",
-        "canonical": "#aeb5c0 (gray.7 role in dark)",
+        "canonical": "#b6b4b2 (gray.7 role in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "soft-text-dark": {
         "role": "neutral",
         "displayName": "Soft Text (dark)",
-        "canonical": "#cdd2d9 (gray.8 role in dark)",
+        "canonical": "#d3d1cf (gray.8 role in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "body-text-dark": {
         "role": "neutral",
         "displayName": "Body Text (dark)",
-        "canonical": "#e9ecf1 (gray.9 role, --mantine-color-text in dark; tooltip ground in dark)",
+        "canonical": "#edece9 (gray.9 role, --mantine-color-text and --mantine-color-anchor in dark; tooltip ground in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "bright-dark": {
         "role": "neutral",
         "displayName": "Bright (dark)",
-        "canonical": "#f4f6f9 (--mantine-color-bright in dark)",
+        "canonical": "#f7f6f3 (--mantine-color-bright in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
         ]
       },
       "overlay-dark": {
         "role": "neutral",
         "displayName": "Overlay (dark)",
-        "canonical": "rgba(5, 6, 9, 0.62) (--atlas-overlay in dark)",
+        "canonical": "rgba(8, 7, 6, 0.62) (--atlas-overlay in dark)",
         "tonalRamp": [
-          "#0a0c10",
-          "#0f1217",
-          "#14171d",
-          "#1a1e25",
-          "#272d36",
-          "#3f4651",
-          "#939ba8",
-          "#e9ecf1"
+          "#0d0c0a",
+          "#131210",
+          "#181715",
+          "#1f1e1c",
+          "#2d2c2a",
+          "#464543",
+          "#9b9a98",
+          "#edece9"
+        ]
+      },
+      "kind-pdf-dark": {
+        "role": "tertiary",
+        "displayName": "PDF Red (dark)",
+        "canonical": "#f07f76 (--atlas-kind-pdf in dark)",
+        "tonalRamp": [
+          "#7a5a26",
+          "#b28235",
+          "#d0a348",
+          "#65c281",
+          "#f07f76"
+        ]
+      },
+      "kind-excel-dark": {
+        "role": "tertiary",
+        "displayName": "Excel Green (dark)",
+        "canonical": "#65c281 (--atlas-kind-excel in dark)",
+        "tonalRamp": [
+          "#7a5a26",
+          "#b28235",
+          "#d0a348",
+          "#65c281",
+          "#f07f76"
+        ]
+      },
+      "folder-back-dark": {
+        "role": "tertiary",
+        "displayName": "Manila Back (dark)",
+        "canonical": "#b28235 (--atlas-folder-back in dark)",
+        "tonalRamp": [
+          "#7a5a26",
+          "#b28235",
+          "#d0a348",
+          "#65c281",
+          "#f07f76"
+        ]
+      },
+      "folder-front-dark": {
+        "role": "tertiary",
+        "displayName": "Manila Front (dark)",
+        "canonical": "#d0a348 (--atlas-folder-front in dark)",
+        "tonalRamp": [
+          "#7a5a26",
+          "#b28235",
+          "#d0a348",
+          "#65c281",
+          "#f07f76"
+        ]
+      },
+      "folder-edge-dark": {
+        "role": "tertiary",
+        "displayName": "Manila Edge (dark)",
+        "canonical": "#7a5a26 (--atlas-folder-edge in dark)",
+        "tonalRamp": [
+          "#7a5a26",
+          "#b28235",
+          "#d0a348",
+          "#65c281",
+          "#f07f76"
         ]
       },
       "amber-wash-dark": {
@@ -940,6 +1120,10 @@
         "displayName": "Display",
         "purpose": "The one empty-state heading that names the folder or the state."
       },
+      "opening-quote": {
+        "displayName": "Opening quote",
+        "purpose": "Atlas's line on the opening screen: 26px/400, 20px on a phone; Arabic at 1.55 with no tracking."
+      },
       "headline": {
         "displayName": "Headline",
         "purpose": "Each question at the top of its turn; dir=auto for Arabic."
@@ -962,7 +1146,7 @@
       },
       "body-sm": {
         "displayName": "Body small",
-        "purpose": "Tree names, source rows, tables, trace, form labels, usage line."
+        "purpose": "Tree names, source rows, tables, trace, form labels, the opening's \"— Atlas\" (600), usage line."
       },
       "label": {
         "displayName": "Label",
@@ -976,32 +1160,32 @@
     "shadows": [
       {
         "name": "xs / page",
-        "value": "0 1px 2px rgba(21,26,33,0.06)",
+        "value": "0 1px 2px rgba(27,25,23,0.06)",
         "purpose": "The rendered PDF page on the viewer stage."
       },
       {
         "name": "sm",
-        "value": "0 2px 6px rgba(21,26,33,0.07), 0 1px 2px rgba(21,26,33,0.05)",
+        "value": "0 2px 6px rgba(27,25,23,0.07), 0 1px 2px rgba(27,25,23,0.05)",
         "purpose": "Theme step; not used directly by app components."
       },
       {
         "name": "md / overlay",
-        "value": "0 6px 16px -4px rgba(21,26,33,0.14), 0 2px 4px rgba(21,26,33,0.05)",
+        "value": "0 6px 16px -4px rgba(27,25,23,0.14), 0 2px 4px rgba(27,25,23,0.05)",
         "purpose": "Menus, popovers, comboboxes (model picker, voice picker)."
       },
       {
         "name": "lg / modal",
-        "value": "0 12px 32px -8px rgba(21,26,33,0.2), 0 4px 8px rgba(21,26,33,0.06)",
-        "purpose": "Viewer and confirmation modals, over the overlay veil (32% ink in light, 62% near-black in dark)."
+        "value": "0 12px 32px -8px rgba(27,25,23,0.2), 0 4px 8px rgba(27,25,23,0.06)",
+        "purpose": "Viewer and confirmation modals, over the overlay veil (32% graphite in light, 62% near-black in dark)."
       },
       {
         "name": "xl",
-        "value": "0 24px 48px -12px rgba(21,26,33,0.24), 0 6px 12px rgba(21,26,33,0.06)",
+        "value": "0 24px 48px -12px rgba(27,25,23,0.24), 0 6px 12px rgba(27,25,23,0.06)",
         "purpose": "Theme step; not used directly by app components."
       },
       {
         "name": "float-edge (dark)",
-        "value": "1px solid #3f4651 (--atlas-float-edge; transparent in light)",
+        "value": "1px solid #464543 (--atlas-float-edge; transparent in light)",
         "purpose": "A shadow does not read on the near-black page, so modals take a hairline edge in dark and sit on the raised surface."
       }
     ],
@@ -1009,22 +1193,22 @@
       {
         "name": "settle",
         "value": "180ms cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Theme motion token: finished parts fade and rise (4px turns, 2px tree rows), folder open and close, collapses, AppShell and modal transitions, trace chevron."
+        "purpose": "Theme motion token: finished parts fade and rise (4px turns, 2px tree rows), folder open and close, collapses, AppShell (the sidebar sliding, the sheet's 8px start margin) and modal transitions, trace chevron. AppShell drops it to zero while the sidebar edge is dragged."
       },
       {
         "name": "hover",
         "value": "150ms ease-out",
-        "purpose": "Background, colour and border changes on rows, quiet controls and the composer focus border; the tree chevron turning; tooltips fade at 150ms."
+        "purpose": "Background, colour and border changes on rows, quiet controls and the composer focus border; the tree chevron turning; tooltips fade at 150ms; the sidebar edge line, 200ms after the pointer arrives."
       },
       {
         "name": "caret-pulse",
         "value": "900ms ease-in-out infinite alternate, opacity 1 to 0.3",
-        "purpose": "The streaming ink caret; static under reduced motion."
+        "purpose": "The streaming caret on the primary fill; static under reduced motion."
       },
       {
         "name": "avatar-loop",
         "value": "requestAnimationFrame; pose eases with a 110ms half-life, the mouth with 45ms",
-        "purpose": "The call avatar only, while a call is open (The Living Face Rule). Paused in a hidden tab; a still pose per state under reduced motion."
+        "purpose": "The bust only: in the call avatar while a call is open, and on the opening screen while it says its line (The Living Face Rule). Paused in a hidden tab; a still pose per state under reduced motion."
       },
       {
         "name": "avatar-blink",
@@ -1040,18 +1224,43 @@
         "name": "avatar-ring-turn",
         "value": "7s linear infinite rotate, ring dashed 4 5",
         "purpose": "The dashed ring while the call connects and while a spoken question runs; no animation under reduced motion."
+      },
+      {
+        "name": "opening-focus",
+        "value": "760ms cubic-bezier(0.16, 1, 0.3, 1), from scale 0.92, blur 10px, opacity 0",
+        "purpose": "The bust comes into focus on the opening screen once the tab is visible; eyes lowered, looking up at 380ms."
+      },
+      {
+        "name": "opening-words",
+        "value": "460ms cubic-bezier(0.16, 1, 0.3, 1) per word, 150ms apart from 760ms; 6px rise out of a 4px blur; mouth in 112ms syllables",
+        "purpose": "Atlas's line rising word by word as the bust says it."
+      },
+      {
+        "name": "opening-byline",
+        "value": "360ms ease-out opacity",
+        "purpose": "\"— Atlas\" once the line is said."
+      },
+      {
+        "name": "opening-lift",
+        "value": "420ms cubic-bezier(0.16, 1, 0.3, 1) after a 620ms hold; figure up 8px, scale 0.985, blur 3px, screen fades",
+        "purpose": "The opening lifts away to the app; any click or key jumps here. About 2.5s in all."
+      },
+      {
+        "name": "opening-still",
+        "value": "1.4s hold, then a 220ms opacity fade",
+        "purpose": "The opening under reduced motion: still face and the whole line, no focus pull, rising words or lift."
       }
     ],
     "breakpoints": [
       {
         "name": "xs",
         "value": "36em",
-        "purpose": "Below it a source place always drops under its name; the call avatar drops to 56px with heavier lines, call controls grow to 40px, and only the latest caption shows."
+        "purpose": "Below it a source place always drops under its name; the call avatar drops to 56px with heavier lines, call controls grow to 40px, and only the latest caption shows; the opening bust drops to 120px and its line to 20px."
       },
       {
         "name": "sm",
         "value": "48em",
-        "purpose": "Below it the sidebar folds behind a burger, the sheet goes edge to edge with only its top hairline, language and theme move to the sidebar foot, Clear chat becomes an icon, the cost pair moves to the composer hint line, and the viewer goes full screen."
+        "purpose": "Below it the sidebar folds behind a burger in place of the sidebar toggle, its resize edge and the closed-sidebar sheet margin drop away, the sheet goes edge to edge with only its top hairline, language and theme move to the sidebar foot, Clear chat becomes an icon, the cost pair moves to the composer hint line, and the viewer goes full screen."
       }
     ]
   },
@@ -1060,9 +1269,9 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Filled ink action, one per region: Load, Send, Stop.",
+      "description": "Filled graphite action with On Graphite text, one per region: Load, Send, Stop. Chalk with graphite text in dark.",
       "html": "<button class=\"ds-btn-primary\">Load</button>",
-      "css": ".ds-btn-primary{font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:13px;font-weight:600;height:36px;padding:0 18px;border:1px solid transparent;border-radius:6px;background:#2a488b;color:#fff;cursor:pointer;transition:background-color 150ms ease-out}.ds-btn-primary:hover{background:#213870}.ds-btn-primary:focus-visible{outline:2px solid #2a488b;outline-offset:2px}.ds-btn-primary:active{transform:translateY(1px)}"
+      "css": ".ds-btn-primary{font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:13px;font-weight:600;height:36px;padding:0 18px;border:1px solid transparent;border-radius:6px;background:#373532;color:#fff;cursor:pointer;transition:background-color 150ms ease-out}.ds-btn-primary:hover{background:#282623}.ds-btn-primary:focus-visible{outline:2px solid #373532;outline-offset:2px}.ds-btn-primary:active{transform:translateY(1px)}"
     },
     {
       "name": "Default Button",
@@ -1070,15 +1279,15 @@
       "refersTo": "button-default",
       "description": "White hairline button for secondary actions: Export, Clear chat, Try again.",
       "html": "<button class=\"ds-btn-default\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2\"/><path d=\"M7 11l5 5l5 -5\"/><path d=\"M12 4l0 12\"/></svg>Export</button>",
-      "css": ".ds-btn-default{display:inline-flex;align-items:center;gap:6px;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:12px;font-weight:600;height:30px;padding:0 14px;border:1px solid #c3c8ce;border-radius:6px;background:#fff;color:#151a21;cursor:pointer;transition:background-color 150ms ease-out}.ds-btn-default:hover{background:#f6f8fb}.ds-btn-default:focus-visible{outline:2px solid #2a488b;outline-offset:2px}"
+      "css": ".ds-btn-default{display:inline-flex;align-items:center;gap:6px;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:12px;font-weight:600;height:30px;padding:0 14px;border:1px solid #c9c7c5;border-radius:6px;background:#fff;color:#1b1917;cursor:pointer;transition:background-color 150ms ease-out}.ds-btn-default:hover{background:#f9f8f6}.ds-btn-default:focus-visible{outline:2px solid #373532;outline-offset:2px}"
     },
     {
       "name": "Composer",
       "kind": "input",
       "refersTo": "composer",
-      "description": "The docked question box: white 8px box, hairline border that turns ink on focus, a subtle dictation microphone and the ink send square (a filled ink phone while the box is empty).",
+      "description": "The docked question box: white 8px box, hairline border that turns the focus colour on focus, a subtle dictation microphone and the graphite send square (a filled graphite phone while the box is empty).",
       "html": "<form class=\"ds-composer\"><textarea rows=\"1\" placeholder=\"Ask a question about these documents\" aria-label=\"Question\"></textarea><button type=\"button\" class=\"mic\" aria-label=\"Dictate a question\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 2m0 3a3 3 0 0 1 3 -3h0a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h0a3 3 0 0 1 -3 -3z\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M8 21l8 0\"/><path d=\"M12 17l0 4\"/></svg></button><button type=\"submit\" aria-label=\"Send the question\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5l0 14\"/><path d=\"M18 11l-6 -6\"/><path d=\"M6 11l6 -6\"/></svg></button></form>",
-      "css": ".ds-composer{display:flex;align-items:flex-end;gap:8px;max-width:760px;padding:4px 4px 4px 12px;border:1px solid #c3c8ce;border-radius:8px;background:#fff;transition:border-color 150ms ease-out}.ds-composer:focus-within{border-color:#2a488b}.ds-composer textarea{flex:1;align-self:center;resize:none;border:0;outline:none;background:transparent;padding:4px 0;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:15px;line-height:1.55;color:#151a21;caret-color:#2a488b}.ds-composer textarea::placeholder{color:#626871}.ds-composer button{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:0;border-radius:6px;background:#2a488b;color:#fff;cursor:pointer}.ds-composer button:focus-visible{outline:2px solid #2a488b;outline-offset:2px}.ds-composer button.mic{background:transparent;color:#4a505a;transition:background-color 150ms ease-out}.ds-composer button.mic:hover{background:#f6f8fb}"
+      "css": ".ds-composer{display:flex;align-items:flex-end;gap:8px;max-width:760px;padding:4px 4px 4px 12px;border:1px solid #c9c7c5;border-radius:8px;background:#fff;transition:border-color 150ms ease-out}.ds-composer:focus-within{border-color:#373532}.ds-composer textarea{flex:1;align-self:center;resize:none;border:0;outline:none;background:transparent;padding:4px 0;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:15px;line-height:1.55;color:#1b1917;caret-color:#373532}.ds-composer textarea::placeholder{color:#696765}.ds-composer button{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:0;border-radius:6px;background:#373532;color:#fff;cursor:pointer}.ds-composer button:focus-visible{outline:2px solid #373532;outline-offset:2px}.ds-composer button.mic{background:transparent;color:#514f4d;transition:background-color 150ms ease-out}.ds-composer button.mic:hover{background:#f9f8f6}"
     },
     {
       "name": "Badges",
@@ -1086,23 +1295,23 @@
       "refersTo": "badge-neutral",
       "description": "20px sentence-case chips: neutral for document type, amber for partly read, red for unreadable.",
       "html": "<span class=\"ds-badges\"><span class=\"ds-badge\">BOQ</span><span class=\"ds-badge ds-badge-warning\">Scanned</span><span class=\"ds-badge ds-badge-error\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\"/><path d=\"M12 8v4\"/><path d=\"M12 16h.01\"/></svg>Damaged</span></span>",
-      "css": ".ds-badges{display:inline-flex;gap:4px}.ds-badge{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 6px;border-radius:4px;background:#e6eaef;color:#30363f;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:0;text-transform:none}.ds-badge-warning{background:#fef0c3;color:#6e4015}.ds-badge-error{background:#ffe3e1;color:#7a1615}"
+      "css": ".ds-badges{display:inline-flex;gap:4px}.ds-badge{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 6px;border-radius:4px;background:#ebe9e7;color:#373533;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:0;text-transform:none}.ds-badge-warning{background:#fef0c3;color:#6e4015}.ds-badge-error{background:#ffe3e1;color:#7a1615}"
     },
     {
       "name": "Folder Tree",
       "kind": "nav",
       "refersTo": "tree-file",
-      "description": "The loaded folder as a tree on the chrome ground: a root row with a turning chevron and tabular count, files on a hairline rail; rows lift to the surface on hover and the open file takes the Ink Tint.",
-      "html": "<ul class=\"ds-tree\"><li><button class=\"ds-tree-row\" data-root aria-expanded=\"true\"><svg class=\"ds-tree-chev\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6l6 -6\"/></svg><svg class=\"ds-tree-folder\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2\"/></svg><span class=\"ds-tree-name\">riyadh-tower</span><span class=\"ds-tree-count\">15</span></button><ul class=\"ds-tree-children\"><li class=\"ds-tree-file\"><span class=\"ds-tree-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14 3v4a1 1 0 0 0 1 1h4\"/><path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\"/></svg></span><span class=\"ds-tree-text\"><span class=\"ds-tree-line\"><button class=\"ds-tree-open\">BOQ_Phase1_Rev1.xlsx</button></span><span class=\"ds-tree-meta\">4 sheets, 4 tables</span></span></li><li class=\"ds-tree-file\" data-active><span class=\"ds-tree-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14 3v4a1 1 0 0 0 1 1h4\"/><path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\"/></svg></span><span class=\"ds-tree-text\"><span class=\"ds-tree-line\"><button class=\"ds-tree-open\" aria-current=\"true\">Contract_Main_Works.pdf</button></span><span class=\"ds-tree-meta\">8 pages</span></span></li><li class=\"ds-tree-file\"><span class=\"ds-tree-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14 3v4a1 1 0 0 0 1 1h4\"/><path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\"/></svg></span><span class=\"ds-tree-text\"><span class=\"ds-tree-line\"><button class=\"ds-tree-open\">Drawing_Register.pdf</button><span class=\"ds-tree-badge\">Damaged</span></span><span class=\"ds-tree-meta\">3 KB</span></span></li></ul></li></ul>",
-      "css": ".ds-tree,.ds-tree-children{list-style:none;margin:0;padding:0}.ds-tree{max-width:268px;padding:8px;background:#f1f4f9;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-tree-children{margin-inline-start:10px;padding-inline-start:7px;border-inline-start:1px solid #d8dde2}.ds-tree-row{display:flex;align-items:center;gap:6px;width:100%;min-height:30px;padding-block:5px;padding-inline:3px 6px;border:0;border-radius:4px;background:transparent;color:#30363f;font-family:inherit;font-size:13px;line-height:1.4;text-align:start;cursor:pointer;transition:background-color 150ms ease-out}.ds-tree-row[data-root]{color:#151a21;font-weight:600}.ds-tree-chev{flex-shrink:0;color:#626871;transition:transform 150ms ease-out}.ds-tree-row[aria-expanded=\"false\"] .ds-tree-chev{transform:rotate(-90deg)}.ds-tree-folder{flex-shrink:0;color:#4a505a}.ds-tree-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ds-tree-count{color:#626871;font-size:12px;font-weight:400;font-variant-numeric:tabular-nums}.ds-tree-file{position:relative;display:flex;align-items:flex-start;gap:8px;padding-block:6px;padding-inline:4px 6px;border-radius:4px;transition:background-color 150ms ease-out}.ds-tree-icon{display:flex;margin-top:1px;color:#626871}.ds-tree-text{display:flex;flex:1;flex-direction:column;gap:2px;min-width:0}.ds-tree-line{display:flex;align-items:center;gap:6px;min-width:0}.ds-tree-open{flex:1;min-width:0;padding:0;border:0;background:transparent;color:#151a21;font-family:inherit;font-size:13px;line-height:1.4;text-align:start;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.ds-tree-open::after{position:absolute;inset:0;border-radius:4px;content:\"\"}.ds-tree-open:focus-visible{outline:none}.ds-tree-open:focus-visible::after{outline:2px solid #2a488b;outline-offset:-2px}.ds-tree-meta{color:#626871;font-size:12px;line-height:1.4;font-variant-numeric:tabular-nums}.ds-tree-badge{position:relative;z-index:1;display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;background:#ffe3e1;color:#7a1615;font-size:12px;font-weight:600}.ds-tree-file[data-active]{background:#f1f6fe}.ds-tree-row:hover,.ds-tree-file:not([data-active]):hover{background:#fff}"
+      "description": "The loaded folder as a tree on the chrome ground: a root row with a turning chevron, the manila folder glyph and a tabular count, files on a hairline rail with kind-coloured icons (PDF red, Excel green); rows lift to the surface on hover and the open file takes Graphite Selection with its name in the bright tone.",
+      "html": "<ul class=\"ds-tree\"><li><button class=\"ds-tree-row\" data-root aria-expanded=\"true\"><svg class=\"ds-tree-chev\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9l6 6l6 -6\"/></svg><svg class=\"ds-tree-folder\" width=\"18\" height=\"18\" viewBox=\"0 0 20 20\" aria-hidden=\"true\"><path class=\"back\" d=\"M2.5 5a1.5 1.5 0 0 1 1.5-1.5h3.38a1.5 1.5 0 0 1 1.06.44L9.9 5.4H16a1.5 1.5 0 0 1 1.5 1.5V15a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 15z\"/><path class=\"front\" d=\"M3.4 16.5a1 1 0 0 1-.97-1.24l1.36-5.4a1 1 0 0 1 .97-.76h13.3a.8.8 0 0 1 .78 1l-1.48 5.64a1 1 0 0 1-.97.76z\"/></svg><span class=\"ds-tree-name\">riyadh-tower</span><span class=\"ds-tree-count\">15</span></button><ul class=\"ds-tree-children\"><li class=\"ds-tree-file\"><span class=\"ds-tree-icon\" data-kind=\"excel\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14 3v4a1 1 0 0 0 1 1h4\"/><path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\"/></svg></span><span class=\"ds-tree-text\"><span class=\"ds-tree-line\"><button class=\"ds-tree-open\">BOQ_Phase1_Rev1.xlsx</button></span><span class=\"ds-tree-meta\">4 sheets, 4 tables</span></span></li><li class=\"ds-tree-file\" data-active><span class=\"ds-tree-icon\" data-kind=\"pdf\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14 3v4a1 1 0 0 0 1 1h4\"/><path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\"/></svg></span><span class=\"ds-tree-text\"><span class=\"ds-tree-line\"><button class=\"ds-tree-open\" aria-current=\"true\">Contract_Main_Works.pdf</button></span><span class=\"ds-tree-meta\">8 pages</span></span></li><li class=\"ds-tree-file\"><span class=\"ds-tree-icon\" data-kind=\"pdf\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14 3v4a1 1 0 0 0 1 1h4\"/><path d=\"M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z\"/></svg></span><span class=\"ds-tree-text\"><span class=\"ds-tree-line\"><button class=\"ds-tree-open\">Drawing_Register.pdf</button><span class=\"ds-tree-badge\">Damaged</span></span><span class=\"ds-tree-meta\">3 KB</span></span></li></ul></li></ul>",
+      "css": ".ds-tree,.ds-tree-children{list-style:none;margin:0;padding:0}.ds-tree{max-width:268px;padding:8px;background:#f5f4f1;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-tree-children{margin-inline-start:10px;padding-inline-start:7px;border-inline-start:1px solid #dddcda}.ds-tree-row{display:flex;align-items:center;gap:6px;width:100%;min-height:30px;padding-block:5px;padding-inline:3px 6px;border:0;border-radius:4px;background:transparent;color:#373533;font-family:inherit;font-size:13px;line-height:1.4;text-align:start;cursor:pointer;transition:background-color 150ms ease-out}.ds-tree-row[data-root]{color:#1b1917;font-weight:600}.ds-tree-chev{flex-shrink:0;color:#696765;transition:transform 150ms ease-out}.ds-tree-row[aria-expanded=\"false\"] .ds-tree-chev{transform:rotate(-90deg)}.ds-tree-folder{flex-shrink:0;stroke:#b07a2a;stroke-width:0.9;stroke-linejoin:round}.ds-tree-folder .back{fill:#dea645}.ds-tree-folder .front{fill:#f4c352}.ds-tree-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ds-tree-count{color:#696765;font-size:12px;font-weight:400;font-variant-numeric:tabular-nums}.ds-tree-file{position:relative;display:flex;align-items:flex-start;gap:8px;padding-block:6px;padding-inline:4px 6px;border-radius:4px;transition:background-color 150ms ease-out}.ds-tree-icon{display:flex;margin-top:1px;color:#696765}.ds-tree-text{display:flex;flex:1;flex-direction:column;gap:2px;min-width:0}.ds-tree-line{display:flex;align-items:center;gap:6px;min-width:0}.ds-tree-open{flex:1;min-width:0;padding:0;border:0;background:transparent;color:#1b1917;font-family:inherit;font-size:13px;line-height:1.4;text-align:start;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.ds-tree-open::after{position:absolute;inset:0;border-radius:4px;content:\"\"}.ds-tree-open:focus-visible{outline:none}.ds-tree-open:focus-visible::after{outline:2px solid #373532;outline-offset:-2px}.ds-tree-meta{color:#696765;font-size:12px;line-height:1.4;font-variant-numeric:tabular-nums}.ds-tree-badge{position:relative;z-index:1;display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;background:#ffe3e1;color:#7a1615;font-size:12px;font-weight:600}.ds-tree-file[data-active]{background:#d5d4d1}.ds-tree-file[data-active] .ds-tree-open{color:#1b1917}.ds-tree-row:hover,.ds-tree-file:not([data-active]):hover{background:#fff}.ds-tree-icon[data-kind=\"pdf\"]{color:#c44037}.ds-tree-icon[data-kind=\"excel\"]{color:#2d7b48}"
     },
     {
       "name": "Numbered Source Row",
       "kind": "custom",
       "refersTo": "source-row",
-      "description": "Quiet full-width citation row; the open source turns ink.",
+      "description": "Quiet full-width citation row with a kind-coloured icon; the open source takes Graphite Tint and its number the primary fill.",
       "html": "<ol class=\"ds-sources\"><li><button class=\"ds-source\"><span class=\"ds-source-n\">1</span><span class=\"ds-source-main\"><span class=\"ds-source-name\">BOQ_Phase1_Rev1.xlsx</span><span class=\"ds-source-place\">Summary, rows 4 to 12</span></span></button></li><li><button class=\"ds-source\" data-active><span class=\"ds-source-n\">2</span><span class=\"ds-source-main\"><span class=\"ds-source-name\">Contract_Main_Works.pdf</span><span class=\"ds-source-place\">Page 3</span><span class=\"ds-source-quote\">The Contractor shall complete the Works within 540 days.</span></span></button></li></ol>",
-      "css": ".ds-sources{list-style:none;margin:0;padding:0;max-width:420px}.ds-source{display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:8px;align-items:start;width:100%;padding:6px 8px;border:0;border-radius:4px;background:transparent;color:#30363f;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:13px;line-height:20px;text-align:start;cursor:pointer;transition:background-color 150ms ease-out}.ds-source:hover{background:#f6f8fb}.ds-source:focus-visible{outline:2px solid #2a488b;outline-offset:2px}.ds-source-n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;margin-top:1px;border-radius:4px;background:#e6eaef;color:#30363f;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}.ds-source-main{display:flex;flex-direction:column;gap:2px;min-width:0}.ds-source-name{font-weight:600;color:#151a21}.ds-source-place{color:#626871;font-variant-numeric:tabular-nums}.ds-source-quote{padding-inline-start:8px;border-inline-start:1px solid #d8dde2;color:#4a505a}.ds-source[data-active]{background:#f1f6fe}.ds-source[data-active] .ds-source-n{background:#2a488b;color:#fff}"
+      "css": ".ds-sources{list-style:none;margin:0;padding:0;max-width:420px}.ds-source{display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:8px;align-items:start;width:100%;padding:6px 8px;border:0;border-radius:4px;background:transparent;color:#373533;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:13px;line-height:20px;text-align:start;cursor:pointer;transition:background-color 150ms ease-out}.ds-source:hover{background:#f9f8f6}.ds-source:focus-visible{outline:2px solid #373532;outline-offset:2px}.ds-source-n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;margin-top:1px;border-radius:4px;background:#ebe9e7;color:#373533;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}.ds-source-main{display:flex;flex-direction:column;gap:2px;min-width:0}.ds-source-name{font-weight:600;color:#1b1917}.ds-source-place{color:#696765;font-variant-numeric:tabular-nums}.ds-source-quote{padding-inline-start:8px;border-inline-start:1px solid #dddcda;color:#514f4d}.ds-source[data-active]{background:#e4e3e0}.ds-source[data-active] .ds-source-n{background:#373532;color:#fff}"
     },
     {
       "name": "Suggested Question Row",
@@ -1110,7 +1319,7 @@
       "refersTo": "suggested-question",
       "description": "Full-width quiet rows between hairlines on the empty state; the arrow nudges on hover.",
       "html": "<ul class=\"ds-suggest\"><li><button>Which cost items are above SAR 1 million?<span aria-hidden=\"true\">&#8594;</span></button></li><li><button>What is the scope of the main contract?<span aria-hidden=\"true\">&#8594;</span></button></li></ul>",
-      "css": ".ds-suggest{list-style:none;margin:0;padding:0;max-width:760px;border-top:1px solid #e6eaef}.ds-suggest li{border-bottom:1px solid #e6eaef}.ds-suggest button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 8px;border:0;border-radius:4px;background:transparent;color:#30363f;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:15px;line-height:1.55;text-align:start;cursor:pointer;transition:background-color 150ms ease-out,color 150ms ease-out}.ds-suggest span{margin-inline-start:auto;color:#9da2a9;transition:color 150ms ease-out,transform 150ms ease-out}.ds-suggest button:hover{background:#f6f8fb;color:#151a21}.ds-suggest button:hover span{color:#30363f;transform:translateX(2px)}.ds-suggest button:focus-visible{outline:2px solid #2a488b;outline-offset:2px}"
+      "css": ".ds-suggest{list-style:none;margin:0;padding:0;max-width:760px;border-top:1px solid #ebe9e7}.ds-suggest li{border-bottom:1px solid #ebe9e7}.ds-suggest button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 8px;border:0;border-radius:4px;background:transparent;color:#373533;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:15px;line-height:1.55;text-align:start;cursor:pointer;transition:background-color 150ms ease-out,color 150ms ease-out}.ds-suggest span{margin-inline-start:auto;color:#a3a19f;transition:color 150ms ease-out,transform 150ms ease-out}.ds-suggest button:hover{background:#f9f8f6;color:#1b1917}.ds-suggest button:hover span{color:#373533;transform:translateX(2px)}.ds-suggest button:focus-visible{outline:2px solid #373532;outline-offset:2px}"
     },
     {
       "name": "Result Table",
@@ -1118,7 +1327,7 @@
       "refersTo": "result-table-frame",
       "description": "White hairline frame, sticky gray-0 header, tabular right-aligned numbers.",
       "html": "<div class=\"ds-table\"><table><thead><tr><th>Item</th><th class=\"n\">Amount (SAR)</th></tr></thead><tbody><tr><td>Structural steel</td><td class=\"n\">1,842,500.00</td></tr><tr><td>Curtain wall</td><td class=\"n\">1,210,000.00</td></tr></tbody></table></div>",
-      "css": ".ds-table{max-width:520px;overflow:hidden;border:1px solid #d8dde2;border-radius:6px;background:#fff;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:13px;line-height:1.45}.ds-table table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}.ds-table th{position:sticky;top:0;background:#f6f8fb;color:#626871;font-weight:600;text-align:start;padding:8px 12px;white-space:nowrap;border-bottom:1px solid #e6eaef}.ds-table td{padding:8px 12px;color:#151a21;border-bottom:1px solid #e6eaef}.ds-table tr:last-child td{border-bottom:0}.ds-table tbody tr:hover td{background:#f6f8fb}.ds-table .n{text-align:right;white-space:nowrap}"
+      "css": ".ds-table{max-width:520px;overflow:hidden;border:1px solid #dddcda;border-radius:6px;background:#fff;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:13px;line-height:1.45}.ds-table table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}.ds-table th{position:sticky;top:0;background:#f9f8f6;color:#696765;font-weight:600;text-align:start;padding:8px 12px;white-space:nowrap;border-bottom:1px solid #ebe9e7}.ds-table td{padding:8px 12px;color:#1b1917;border-bottom:1px solid #ebe9e7}.ds-table tr:last-child td{border-bottom:0}.ds-table tbody tr:hover td{background:#f9f8f6}.ds-table .n{text-align:right;white-space:nowrap}"
     },
     {
       "name": "Trace Toggle",
@@ -1126,60 +1335,70 @@
       "refersTo": "trace-toggle",
       "description": "\"How I found this\": a quiet text control whose chevron turns as the steps open.",
       "html": "<button class=\"ds-trace\" aria-expanded=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 6l6 6l-6 6\"/></svg><span class=\"l\">How I found this</span><span class=\"m\">&#183; 3 steps, 14.2 s</span></button>",
-      "css": ".ds-trace{display:inline-flex;align-items:center;gap:6px;padding:4px 6px;border:0;border-radius:4px;background:transparent;color:#4a505a;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:13px;line-height:1.45;cursor:pointer;transition:background-color 150ms ease-out,color 150ms ease-out}.ds-trace svg{transition:transform 180ms cubic-bezier(0.16,1,0.3,1)}.ds-trace:hover{background:#f6f8fb;color:#151a21}.ds-trace[aria-expanded=\"true\"] svg{transform:rotate(90deg)}.ds-trace .l{font-weight:600}.ds-trace .m{color:#626871}.ds-trace:focus-visible{outline:2px solid #2a488b;outline-offset:2px}"
+      "css": ".ds-trace{display:inline-flex;align-items:center;gap:6px;padding:4px 6px;border:0;border-radius:4px;background:transparent;color:#514f4d;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif;font-size:13px;line-height:1.45;cursor:pointer;transition:background-color 150ms ease-out,color 150ms ease-out}.ds-trace svg{transition:transform 180ms cubic-bezier(0.16,1,0.3,1)}.ds-trace:hover{background:#f9f8f6;color:#1b1917}.ds-trace[aria-expanded=\"true\"] svg{transform:rotate(90deg)}.ds-trace .l{font-weight:600}.ds-trace .m{color:#696765}.ds-trace:focus-visible{outline:2px solid #373532;outline-offset:2px}"
     },
     {
       "name": "Top Bar",
       "kind": "nav",
       "refersTo": "top-bar",
-      "description": "52px chrome bar, one field with the sidebar: folded-map mark and wordmark at the start; cost pair, Clear chat, a hairline, then the language switch (the other language in its own script) and the theme toggle at the end.",
-      "html": "<header class=\"ds-topbar\"><span class=\"ds-wordmark\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M2 4.6 7 2.5v13l-5 2.1z\"/><path d=\"M7.6 2.6 12.4 4.6v13l-4.8-2z\" opacity=\"0.42\"/><path d=\"M13 4.6 18 2.5v13L13 17.6z\"/></svg><span>Atlas</span></span><span class=\"ds-topbar-right\"><span class=\"ds-usage\">$0.042 &#183; 14.2 s</span><button class=\"ds-topbar-btn\">Clear chat</button><span class=\"ds-topbar-rule\"></span><button class=\"ds-topbar-quiet\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 5h7\"/><path d=\"M9 3v2c0 4.418 -2.239 8 -5 8\"/><path d=\"M5 9c0 2.144 2.952 3.908 6.7 4\"/><path d=\"M12 20l4 -9l4 9\"/><path d=\"M19.1 18h-6.2\"/></svg><span lang=\"ar\">&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</span></button><button class=\"ds-topbar-quiet ds-topbar-icon\" aria-label=\"Switch to dark\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z\"/></svg></button></span></header>",
-      "css": ".ds-topbar{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 16px;background:#f1f4f9;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-wordmark{display:inline-flex;align-items:center;gap:8px;font-size:17px;font-weight:700;letter-spacing:-0.015em;line-height:1;color:#151a21}.ds-topbar-right{display:flex;align-items:center;gap:8px}.ds-usage{font-size:13px;color:#626871;font-variant-numeric:tabular-nums}.ds-topbar-btn{height:30px;padding:0 14px;border:1px solid #c3c8ce;border-radius:6px;background:#fff;color:#151a21;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:background-color 150ms ease-out}.ds-topbar-btn:hover{background:#f6f8fb}.ds-topbar-rule{width:1px;height:24px;margin:0 4px;background:#d8dde2}.ds-topbar-quiet{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 8px;border:0;border-radius:6px;background:transparent;color:#4a505a;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background-color 150ms ease-out}.ds-topbar-icon{width:34px;justify-content:center;padding:0}.ds-topbar-quiet:hover{background:#e6eaef}.ds-topbar-btn:focus-visible,.ds-topbar-quiet:focus-visible{outline:2px solid #2a488b;outline-offset:2px}"
+      "description": "52px chrome bar, one field with the sidebar: the sidebar toggle, folded-map mark and wordmark at the start; cost pair, Clear chat, a hairline, then the language switch (the other language in its own script) and the theme toggle at the end.",
+      "html": "<header class=\"ds-topbar\"><span class=\"ds-topbar-start\"><button class=\"ds-topbar-quiet ds-topbar-icon ds-topbar-toggle\" aria-label=\"Hide documents\" aria-expanded=\"true\" title=\"Hide documents Ctrl+B\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z\"/><path d=\"M9 4v16\"/><path d=\"M15 10l-2 2l2 2\"/></svg></button><span class=\"ds-wordmark\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M2 4.6 7 2.5v13l-5 2.1z\"/><path d=\"M7.6 2.6 12.4 4.6v13l-4.8-2z\" opacity=\"0.42\"/><path d=\"M13 4.6 18 2.5v13L13 17.6z\"/></svg><span>Atlas</span></span></span><span class=\"ds-topbar-right\"><span class=\"ds-usage\">$0.042 &#183; 14.2 s</span><button class=\"ds-topbar-btn\">Clear chat</button><span class=\"ds-topbar-rule\"></span><button class=\"ds-topbar-quiet\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 5h7\"/><path d=\"M9 3v2c0 4.418 -2.239 8 -5 8\"/><path d=\"M5 9c0 2.144 2.952 3.908 6.7 4\"/><path d=\"M12 20l4 -9l4 9\"/><path d=\"M19.1 18h-6.2\"/></svg><span lang=\"ar\">&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</span></button><button class=\"ds-topbar-quiet ds-topbar-icon\" aria-label=\"Switch to dark\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z\"/></svg></button></span></header>",
+      "css": ".ds-topbar{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 16px;background:#f5f4f1;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-wordmark{display:inline-flex;align-items:center;gap:8px;font-size:17px;font-weight:700;letter-spacing:-0.015em;line-height:1;color:#1b1917}.ds-topbar-right{display:flex;align-items:center;gap:8px}.ds-usage{font-size:13px;color:#696765;font-variant-numeric:tabular-nums}.ds-topbar-btn{height:30px;padding:0 14px;border:1px solid #c9c7c5;border-radius:6px;background:#fff;color:#1b1917;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:background-color 150ms ease-out}.ds-topbar-btn:hover{background:#f9f8f6}.ds-topbar-rule{width:1px;height:24px;margin:0 4px;background:#dddcda}.ds-topbar-quiet{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 8px;border:0;border-radius:6px;background:transparent;color:#514f4d;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background-color 150ms ease-out}.ds-topbar-icon{width:34px;justify-content:center;padding:0}.ds-topbar-quiet:hover{background:#ebe9e7}.ds-topbar-btn:focus-visible,.ds-topbar-quiet:focus-visible{outline:2px solid #373532;outline-offset:2px}.ds-topbar-start{display:flex;align-items:center;gap:8px}.ds-topbar-toggle{margin-inline-start:-8px}"
     },
     {
       "name": "Call Card",
       "kind": "custom",
       "refersTo": "call-card",
-      "description": "The voice call in the composer's frame: the graphite bust with its state ring (ink while Atlas speaks), status, tabular clock and cost, the newest captions, and the controls.",
-      "html": "<section class=\"ds-call\" aria-label=\"Voice call with Atlas\"><div class=\"ds-call-top\"><svg class=\"ds-call-face\" viewBox=\"0 0 120 120\" role=\"img\" aria-label=\"Atlas\"><circle cx=\"60\" cy=\"60\" r=\"58\" fill=\"#f6f8fb\"/><path d=\"M10 124 C12 106 28 97 45 94 C52 98 68 98 75 94 C92 97 108 106 110 124 Z\" fill=\"#fff\" stroke=\"#30363f\" stroke-width=\"1.4\"/><path d=\"M38.5 52 C38.5 35 48 26.5 60 26.5 C72 26.5 81.5 35 81.5 52 L81.5 64 C81.5 79 72 89 60 89 C48 89 38.5 79 38.5 64 Z\" fill=\"#fff\" stroke=\"#30363f\" stroke-width=\"1.4\"/><path d=\"M45.5 47.2 Q50.5 45 55 46.6 M65 46.6 Q69.5 45 74.5 47.2\" fill=\"none\" stroke=\"#30363f\" stroke-width=\"1.7\" stroke-linecap=\"round\"/><ellipse cx=\"50.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#151a21\"/><ellipse cx=\"69.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#151a21\"/><path d=\"M60.6 53 Q58.4 58.2 59.1 61.3 Q60.2 62.4 61.8 61.7\" fill=\"none\" stroke=\"#30363f\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><path d=\"M51.5 73.2 Q55.8 71.2 60 72.8 Q64.2 71.2 68.5 73.2\" fill=\"none\" stroke=\"#30363f\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><circle class=\"ring\" cx=\"60\" cy=\"60\" r=\"58\"/></svg><div class=\"ds-call-body\"><div class=\"ds-call-status\"><span class=\"s\">Atlas is speaking</span><span class=\"t\">1:24 &#183; $0.11</span></div><div class=\"ds-call-cap\"><span class=\"who\">You</span><span class=\"w\">Which cost items are above one million riyals?</span></div><div class=\"ds-call-cap\" data-latest><span class=\"who\">Atlas</span><span class=\"w\">Three items are above one million riyals. The largest is structural steel.</span></div></div></div><div class=\"ds-call-controls\"><span class=\"ds-call-picker\">Gulf &#183; female</span><span class=\"ds-call-actions\"><button class=\"ds-call-mute\" aria-label=\"Mute the microphone\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 2m0 3a3 3 0 0 1 3 -3h0a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h0a3 3 0 0 1 -3 -3z\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M8 21l8 0\"/><path d=\"M12 17l0 4\"/></svg></button><button class=\"ds-call-end\">End call</button></span></div></section>",
-      "css": ".ds-call{display:grid;gap:12px;max-width:760px;padding:12px;border:1px solid #c3c8ce;border-radius:8px;background:#fff;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-call-top{display:flex;gap:12px;align-items:flex-start}.ds-call-face{display:block;width:72px;height:72px;flex:none}.ds-call-face .ring{fill:none;stroke:#2a488b;stroke-width:1.5px;vector-effect:non-scaling-stroke}.ds-call-body{display:grid;gap:6px;flex:1;min-width:0;padding-top:4px}.ds-call-status{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.ds-call-status .s{font-size:13px;font-weight:600;color:#151a21}.ds-call-status .t{font-size:12px;color:#626871;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-call-cap{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;align-items:baseline}.ds-call-cap .who{font-size:12px;font-weight:600;color:#626871}.ds-call-cap .w{font-size:13px;line-height:1.45;max-height:calc(2em * 1.45);overflow:hidden;color:#626871}.ds-call-cap[data-latest] .w{color:#151a21}.ds-call-controls{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:8px;border-top:1px solid #e6eaef}.ds-call-picker{display:inline-flex;align-items:center;width:208px;height:36px;padding:0 12px;border:1px solid #c3c8ce;border-radius:6px;font-size:13px;color:#151a21;box-sizing:border-box}.ds-call-actions{display:flex;gap:8px}.ds-call-mute{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #c3c8ce;border-radius:6px;background:#fff;color:#151a21;cursor:pointer;transition:background-color 150ms ease-out}.ds-call-mute:hover{background:#f6f8fb}.ds-call-end{height:36px;padding:0 18px;border:0;border-radius:6px;background:#2a488b;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background-color 150ms ease-out}.ds-call-end:hover{background:#213870}.ds-call-mute:focus-visible,.ds-call-end:focus-visible{outline:2px solid #2a488b;outline-offset:2px}"
+      "description": "The voice call in the composer's frame: the graphite bust with its state ring (the link colour while Atlas speaks), status, tabular clock and cost, the newest captions, and the controls.",
+      "html": "<section class=\"ds-call\" aria-label=\"Voice call with Atlas\"><div class=\"ds-call-top\"><svg class=\"ds-call-face\" viewBox=\"0 0 120 120\" role=\"img\" aria-label=\"Atlas\"><circle cx=\"60\" cy=\"60\" r=\"58\" fill=\"#f9f8f6\"/><path d=\"M10 124 C12 106 28 97 45 94 C52 98 68 98 75 94 C92 97 108 106 110 124 Z\" fill=\"#fff\" stroke=\"#373533\" stroke-width=\"1.4\"/><path d=\"M38.5 52 C38.5 35 48 26.5 60 26.5 C72 26.5 81.5 35 81.5 52 L81.5 64 C81.5 79 72 89 60 89 C48 89 38.5 79 38.5 64 Z\" fill=\"#fff\" stroke=\"#373533\" stroke-width=\"1.4\"/><path d=\"M45.5 47.2 Q50.5 45 55 46.6 M65 46.6 Q69.5 45 74.5 47.2\" fill=\"none\" stroke=\"#373533\" stroke-width=\"1.7\" stroke-linecap=\"round\"/><ellipse cx=\"50.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#1b1917\"/><ellipse cx=\"69.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#1b1917\"/><path d=\"M60.6 53 Q58.4 58.2 59.1 61.3 Q60.2 62.4 61.8 61.7\" fill=\"none\" stroke=\"#373533\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><path d=\"M51.5 73.2 Q55.8 71.2 60 72.8 Q64.2 71.2 68.5 73.2\" fill=\"none\" stroke=\"#373533\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><circle class=\"ring\" cx=\"60\" cy=\"60\" r=\"58\"/></svg><div class=\"ds-call-body\"><div class=\"ds-call-status\"><span class=\"s\">Atlas is speaking</span><span class=\"t\">1:24 &#183; $0.11</span></div><div class=\"ds-call-cap\"><span class=\"who\">You</span><span class=\"w\">Which cost items are above one million riyals?</span></div><div class=\"ds-call-cap\" data-latest><span class=\"who\">Atlas</span><span class=\"w\">Three items are above one million riyals. The largest is structural steel.</span></div></div></div><div class=\"ds-call-controls\"><span class=\"ds-call-picker\">Gulf &#183; female</span><span class=\"ds-call-actions\"><button class=\"ds-call-mute\" aria-label=\"Mute the microphone\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 2m0 3a3 3 0 0 1 3 -3h0a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h0a3 3 0 0 1 -3 -3z\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M8 21l8 0\"/><path d=\"M12 17l0 4\"/></svg></button><button class=\"ds-call-end\">End call</button></span></div></section>",
+      "css": ".ds-call{display:grid;gap:12px;max-width:760px;padding:12px;border:1px solid #c9c7c5;border-radius:8px;background:#fff;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-call-top{display:flex;gap:12px;align-items:flex-start}.ds-call-face{display:block;width:72px;height:72px;flex:none}.ds-call-face .ring{fill:none;stroke:#373532;stroke-width:1.5px;vector-effect:non-scaling-stroke}.ds-call-body{display:grid;gap:6px;flex:1;min-width:0;padding-top:4px}.ds-call-status{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.ds-call-status .s{font-size:13px;font-weight:600;color:#1b1917}.ds-call-status .t{font-size:12px;color:#696765;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-call-cap{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;align-items:baseline}.ds-call-cap .who{font-size:12px;font-weight:600;color:#696765}.ds-call-cap .w{font-size:13px;line-height:1.45;max-height:calc(2em * 1.45);overflow:hidden;color:#696765}.ds-call-cap[data-latest] .w{color:#1b1917}.ds-call-controls{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:8px;border-top:1px solid #ebe9e7}.ds-call-picker{display:inline-flex;align-items:center;width:208px;height:36px;padding:0 12px;border:1px solid #c9c7c5;border-radius:6px;font-size:13px;color:#1b1917;box-sizing:border-box}.ds-call-actions{display:flex;gap:8px}.ds-call-mute{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #c9c7c5;border-radius:6px;background:#fff;color:#1b1917;cursor:pointer;transition:background-color 150ms ease-out}.ds-call-mute:hover{background:#f9f8f6}.ds-call-end{height:36px;padding:0 18px;border:0;border-radius:6px;background:#373532;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background-color 150ms ease-out}.ds-call-end:hover{background:#282623}.ds-call-mute:focus-visible,.ds-call-end:focus-visible{outline:2px solid #373532;outline-offset:2px}"
     },
     {
       "name": "Inset Sheet (dark)",
       "kind": "card",
       "refersTo": "sheet-dark",
-      "description": "The conversation on its inset sheet in the dark scheme: page ground a step above the chrome, a hairline and 8px corners, the docked composer on the raised surface with the page-ground fade above it.",
+      "description": "The conversation on its inset sheet in the dark scheme: warm graphite page a step above the chrome, a hairline and 8px corners, the docked composer on the raised surface with the page-ground fade above it, and the chalk send key with graphite text.",
       "html": "<div class=\"ds-shell\"><div class=\"ds-sheet\"><p class=\"ds-sheet-text\">The contract period is 540 days from the commencement date.</p><p class=\"ds-sheet-text\">Liquidated damages are SAR&#160;25,000 per day.</p><div class=\"ds-dock\"><div class=\"ds-dock-box\"><span>Ask a question about these documents</span><button aria-label=\"Send the question\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5l0 14\"/><path d=\"M18 11l-6 -6\"/><path d=\"M6 11l6 -6\"/></svg></button></div></div></div></div>",
-      "css": ".ds-shell{padding:0 8px 8px 0;background:#0f1217;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-sheet{position:relative;max-width:560px;padding:24px 16px 0;border:1px solid #2b313a;border-radius:8px;background:#14171d;color:#e9ecf1}.ds-sheet-text{margin:0 0 12px;font-size:15px;line-height:1.55}.ds-dock{position:relative;padding:8px 0 16px;background:#14171d}.ds-dock::before{position:absolute;inset-inline:0;bottom:100%;height:24px;background:linear-gradient(to bottom,transparent,#14171d);pointer-events:none;content:\"\"}.ds-dock-box{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 4px 12px;border:1px solid #3f4651;border-radius:8px;background:#1a1e25;color:#8a92a0;font-size:15px;transition:border-color 150ms ease-out}.ds-dock-box:focus-within{border-color:#7698d9}.ds-dock-box button{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:0;border-radius:6px;background:#3b5da7;color:#fff;cursor:pointer}.ds-dock-box button:hover{background:#2a488b}.ds-dock-box button:focus-visible{outline:2px solid #7698d9;outline-offset:2px}"
+      "css": ".ds-shell{padding:0 8px 8px 0;background:#131210;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-sheet{position:relative;max-width:560px;padding:24px 16px 0;border:1px solid #31302e;border-radius:8px;background:#181715;color:#edece9}.ds-sheet-text{margin:0 0 12px;font-size:15px;line-height:1.55}.ds-dock{position:relative;padding:8px 0 16px;background:#181715}.ds-dock::before{position:absolute;inset-inline:0;bottom:100%;height:24px;background:linear-gradient(to bottom,transparent,#181715);pointer-events:none;content:\"\"}.ds-dock-box{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 4px 12px;border:1px solid #464543;border-radius:8px;background:#1f1e1c;color:#93918f;font-size:15px;transition:border-color 150ms ease-out}.ds-dock-box:focus-within{border-color:#c6c4c0}.ds-dock-box button{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:0;border-radius:6px;background:#e8e6e2;color:#181715;cursor:pointer}.ds-dock-box button:hover{background:#d3d1cd}.ds-dock-box button:focus-visible{outline:2px solid #c6c4c0;outline-offset:2px}"
+    },
+    {
+      "name": "Opening Screen",
+      "kind": "custom",
+      "refersTo": "opening",
+      "description": "On every page load: the bust at 156px on the chrome ground comes into focus, looks up and says \"Every answer, with its page.\" as the words rise one by one, then \"— Atlas\" and a 420ms lift. Any click or key skips it; reduced motion shows the still face and the whole line, then a 220ms fade.",
+      "html": "<figure class=\"ds-opening\"><svg class=\"ds-opening-face\" viewBox=\"0 0 120 120\" role=\"img\" aria-label=\"Atlas\"><circle cx=\"60\" cy=\"60\" r=\"58\" fill=\"#f9f8f6\"/><path d=\"M10 124 C12 106 28 97 45 94 C52 98 68 98 75 94 C92 97 108 106 110 124 Z\" fill=\"#fff\" stroke=\"#373533\" stroke-width=\"1.4\"/><path d=\"M38.5 52 C38.5 35 48 26.5 60 26.5 C72 26.5 81.5 35 81.5 52 L81.5 64 C81.5 79 72 89 60 89 C48 89 38.5 79 38.5 64 Z\" fill=\"#fff\" stroke=\"#373533\" stroke-width=\"1.4\"/><path d=\"M45.5 47.2 Q50.5 45 55 46.6 M65 46.6 Q69.5 45 74.5 47.2\" fill=\"none\" stroke=\"#373533\" stroke-width=\"1.7\" stroke-linecap=\"round\"/><ellipse cx=\"50.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#1b1917\"/><ellipse cx=\"69.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#1b1917\"/><path d=\"M60.6 53 Q58.4 58.2 59.1 61.3 Q60.2 62.4 61.8 61.7\" fill=\"none\" stroke=\"#373533\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><path d=\"M51.5 73.2 Q55.8 71.2 60 72.8 Q64.2 71.2 68.5 73.2\" fill=\"none\" stroke=\"#373533\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><circle class=\"ring\" cx=\"60\" cy=\"60\" r=\"58\"/></svg><blockquote class=\"ds-opening-quote\">“Every answer, with its page.”</blockquote><figcaption class=\"ds-opening-by\">— <span lang=\"en\" dir=\"ltr\">Atlas</span></figcaption></figure>",
+      "css": ".ds-opening{display:flex;flex-direction:column;align-items:center;gap:24px;margin:0;padding:48px 16px;background:#f5f4f1;text-align:center;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", \"Geeza Pro\", Tahoma, Arial, sans-serif}.ds-opening-face{display:block;width:156px;height:156px}.ds-opening-face .ring{fill:none;stroke:#dddcda;stroke-width:1px;vector-effect:non-scaling-stroke}.ds-opening-quote{max-inline-size:20ch;margin:0;color:#1b1917;font-size:26px;font-weight:400;line-height:1.3;letter-spacing:-0.01em;text-wrap:balance}.ds-opening-by{color:#696765;font-size:13px;font-weight:600}@media (max-width:36em){.ds-opening-face{width:120px;height:120px}.ds-opening-quote{font-size:20px}}"
     }
   ],
   "narrative": {
     "northStar": "The Quiet Register",
-    "overview": "Atlas is the category standard for chat-with-your-documents tools, built to the craft of Claude.ai's calm reading column (and its question box under the heading on a fresh chat), Perplexity's numbered sources and Linear's dense, quiet chrome with the content on an inset sheet. The owner chose the conventions on purpose and the build doesn't dress them up. The 52px top bar and the 300px sidebar are one continuous cool-neutral chrome field. The conversation sits on it as an inset sheet: the page ground, a 1px hairline and 8px corners, scrolling on its own while the chrome stays still. The sheet holds one 760px column. Everything is drawn with 1px hairlines on flat grounds. The one ink blue appears only where the reader acts or where the system points at evidence.\n\nThe same world runs in two schemes and two languages. Dark is the same roles on blue-black slate: the chrome darkest, the page a step up, raised surfaces a step above that. Every gray, ink, amber and red shade is a role, not a lightness step, and each role has its dark value, so a component that asks for \"dimmed\" or \"red tint\" reads correctly in both. Arabic mirrors the whole layout, while content (answers, questions, quotes, table cells, file names) keeps its own direction. Figures are Western digits in both languages, so a number on screen matches the number in the file.\n\nDensity follows Linear more than a marketing page. Tree rows are 13px names over 12px meta. Tables run at 13px with tabular figures. The answer reads at 15px with a 75ch measure. Motion only marks state changes: a hover tint, a chevron turning, a folder opening, and the finished answer's table and sources settling in once with a short fade-and-rise. One exception, approved by the owner on 2026-10-29: during a voice call, Atlas's face (a philosopher's bust in graphite line work, marble in both schemes) moves continuously, and nothing else does.\n\nThe system refuses the demo look named in the direction contract: decorative gradients, glowing AI sparkles, bubble chat and cards inside cards. The question is a heading-weight line, not a bubble. The answer is plain prose on the page ground, not a card.",
+    "overview": "Atlas is the category standard for chat-with-your-documents tools, built to the craft of Claude.ai's calm reading column (and its question box under the heading on a fresh chat), Perplexity's numbered sources and Linear's dense, quiet chrome with the content on an inset sheet. The owner chose the conventions on purpose and the build doesn't dress them up. The palette is grounded in paper, pencil and a desk's manila folders: graphite and warm stone, with no blue cast. The 52px top bar and the sidebar (300px by default, dragged between 240 and 480px, or closed) are one continuous stone chrome field. The conversation sits on it as an inset sheet: the page ground, a 1px hairline and 8px corners, scrolling on its own while the chrome stays still. The sheet holds one 760px column. Everything is drawn with 1px hairlines on flat grounds. The one graphite appears only where the reader acts or where the system points at evidence.\n\nThe same world runs in two schemes and two languages. Dark is the same roles on warm graphite: the chrome darkest, the page a step up, raised surfaces a step above that. Every gray, ink, amber and red shade is a role, not a lightness step, and each role has its dark value, so a component that asks for \"dimmed\" or \"red tint\" reads correctly in both. The primary inverts by scheme: a graphite fill with white text in light, a chalk fill with graphite text in dark. Arabic mirrors the whole layout, while content (answers, questions, quotes, table cells, file names) keeps its own direction. Figures are Western digits in both languages, so a number on screen matches the number in the file.\n\nDensity follows Linear more than a marketing page. Tree rows are 13px names over 12px meta. Tables run at 13px with tabular figures. The answer reads at 15px with a 75ch measure. Motion only marks state changes: a hover tint, a chevron turning, a folder opening, the sidebar sliding, and the finished answer's table and sources settling in once with a short fade-and-rise. Two exceptions, both approved by the owner on 2026-10-29, and both are Atlas's face (a philosopher's bust in graphite line work, marble in both schemes): the opening screen on every page load, where the bust looks up and says its line, and a voice call, during which the face moves continuously.\n\nThe system refuses the demo look named in the direction contract: decorative gradients, glowing AI sparkles, bubble chat and cards inside cards. The question is a heading-weight line, not a bubble. The answer is plain prose on the page ground, not a card.",
     "keyCharacteristics": [
-      "One brand hue (deep ink blue, shade 7 in light and shade 6 in dark of a 10-step ramp) for actions, focus, selection, links, citations, the open file, the streaming caret and the call avatar's ring while Atlas speaks",
-      "One chrome field (top bar and sidebar) with the conversation on an inset sheet of page ground",
+      "One brand tone (graphite, a near-black at OKLCH hue 85 with almost no chroma, shade 7 of a 10-step ramp in both schemes; chalk in dark) for actions, focus, selection, links, citations, the open file, the streaming caret and the call avatar's ring while Atlas speaks",
+      "Warm stone neutrals in both schemes; nothing reads blue",
+      "One chrome field (top bar and sidebar) with the conversation on an inset sheet of page ground; the sidebar closes and resizes",
       "Light and dark schemes from one set of colour roles; the PDF page and the bust stay white in both",
+      "File kinds wear the colour they are known by on their icons only: PDF red, Excel green, manila folders",
       "1px hairline borders instead of shadows on every resting surface; floating surfaces also take a hairline edge in dark",
       "One system UI family for everything (Segoe UI carries Arabic on Windows); monospace only for SQL and tool input",
       "Tabular Western figures wherever numbers appear, in English and Arabic",
       "The whole layout mirrors in Arabic; content keeps its own direction",
-      "Continuous motion lives only in the call avatar, and only while a call is open"
+      "Continuous motion lives only in the bust: on the opening screen, and in the call avatar while a call is open"
     ],
     "rules": [
       {
-        "name": "The Ink Is Evidence Rule",
-        "body": "Ink blue marks only what you can act on and where an answer points (primary action, focus, link, selection, active citation, cited text, the open file, streaming caret, and the call avatar's ring while Atlas speaks). The wordmark and its mark, headings, icons and the drawing of the bust stay neutral.",
+        "name": "The Graphite Is Evidence Rule",
+        "body": "Graphite marks only what you can act on and where an answer points (primary action, focus, link, selection, active citation, cited text and cited rows, the open file, streaming caret, the sidebar edge while it moves, and the call avatar's ring while Atlas speaks). The wordmark and its mark, headings, icons and the drawing of the bust stay neutral.",
         "section": "colors"
       },
       {
         "name": "The Colour Means Trouble Rule",
-        "body": "Amber and red mean a file or request has a problem, nothing else. Document types and the ok state use neutral badges, empty and skipped files use gray, and \"not found\" answers use a neutral notice.",
+        "body": "Amber and red mean a file or request has a problem, nothing else. The one other use of colour is a file's kind, on its icon only: PDF red, Excel green, folders manila. A kind colour never reaches a name, a badge, a row ground or a notice. Document types and the ok state use neutral badges, empty and skipped files use gray, and \"not found\" answers use a neutral notice.",
         "section": "colors"
       },
       {
         "name": "The Roles Not Shades Rule",
-        "body": "A component asks for a role (gray 6 for dimmed, red 1 for the error tint, `--atlas-surface` for a raised surface) and never for a lightness. The dark scheme gives every role its own value, so nothing is coloured per scheme in a component. The only fixed values are the ones that are real objects: the white PDF page and the marble bust.",
+        "body": "A component asks for a role (gray 6 for dimmed, red 1 for the error tint, `--atlas-surface` for a raised surface, `--atlas-on-ink` for text on the primary, `--atlas-kind-pdf` for a PDF icon) and never for a lightness. The dark scheme gives every role its own value, so nothing is coloured per scheme in a component. The only fixed values are the ones that are real objects: the white PDF page and the marble bust.",
         "section": "colors"
       },
       {
@@ -1209,36 +1428,41 @@
       },
       {
         "name": "The Living Face Rule",
-        "body": "Continuous motion is allowed inside the call avatar only, and only while a call is open: blinks every 2.8 to 6.5s, a slow 4.2s breath, brows up while the user speaks, eyes up while a question runs, the mouth following Atlas's measured voice, and the ring dashed and turning while the call connects and while it checks. Under reduced motion it holds one still pose per state, and it does not move in a hidden tab. Every other surface keeps motion for state changes only.",
+        "body": "Continuous motion is allowed inside the bust only: on the opening screen while it says its line, and in the call avatar while a call is open. In a call it blinks every 2.8 to 6.5s, breathes on a slow 4.2s cycle, raises its brows while the user speaks, looks up while a question runs, moves its mouth with Atlas's measured voice, and its ring is dashed and turning while the call connects and while it checks. On the opening it comes into focus with its eyes lowered, looks up, and moves its mouth syllable by syllable with its line. Under reduced motion it holds one still pose per state, and it does not move in a hidden tab. Every other surface keeps motion for state changes only.",
         "section": "components"
       }
     ],
     "dos": [
       "Do take every colour, size, radius and shadow from the Mantine theme (`theme.ts`). Components carry no hex values.",
-      "Do ask for colour roles (gray 0 to 9, ink, yellow and red shades, `--atlas-surface`, `--atlas-focus`) so each surface reads in both schemes (The Roles Not Shades Rule).",
-      "Do keep ink blue to actions, focus, selection, links, citations, the open file, the streaming caret and the call avatar's speaking ring (The Ink Is Evidence Rule).",
+      "Do ask for colour roles (gray 0 to 9, ink, yellow and red shades, `--atlas-surface`, `--atlas-focus`, `--atlas-on-ink`, `--atlas-kind-*`, `--atlas-folder-*`) so each surface reads in both schemes (The Roles Not Shades Rule).",
+      "Do keep graphite to actions, focus, selection, links, citations, cited rows, the open file, the streaming caret, the sidebar edge while it moves and the call avatar's speaking ring (The Graphite Is Evidence Rule).",
+      "Do put text on a primary fill in `--atlas-on-ink`, so it is white on graphite and graphite on chalk.",
+      "Do underline every link; graphite alone does not set a link apart from body text.",
       "Do separate resting surfaces with 1px hairlines on chrome, page or surface grounds, and keep shadows for modals, menus and the PDF page; give floating surfaces a hairline edge in dark.",
-      "Do keep the conversation on the inset sheet, which scrolls on its own inside the still chrome field.",
+      "Do keep the conversation on the inset sheet, which scrolls on its own inside the still chrome field, and keep it off both window edges when the sidebar is closed.",
+      "Do make a hidden sidebar `inert`, and keep its width and open state for the next visit.",
       "Do put the question box under the heading until the first question, then dock it at the sheet's foot with the page-ground fade above it.",
       "Do set every figure in tabular Western digits and right-align numeric columns physically, in both languages.",
       "Do use logical properties so the whole layout mirrors in Arabic, `dir=\"auto\"` on content, and isolates around file names, paths and codes inside Arabic sentences.",
       "Do keep SQL, formulas, paths and the Excel grid left to right in both languages.",
       "Do join an amount and its currency, and a number and its unit, with a no-break space.",
-      "Do use 150ms ease-out for hover and colour changes and 180ms `cubic-bezier(0.16, 1, 0.3, 1)` for content settling in, collapsing or a folder opening, and disable both under reduced motion.",
-      "Do use Tabler outline icons at 1.5 to 2 stroke, sized 12 to 18px.",
-      "Do give the call avatar a still pose per state under reduced motion, and stop its motion in a hidden tab (The Living Face Rule)."
+      "Do use 150ms ease-out for hover and colour changes and 180ms `cubic-bezier(0.16, 1, 0.3, 1)` for content settling in, collapsing, a folder opening or the sidebar sliding, and disable both under reduced motion.",
+      "Do use Tabler outline icons at 1.5 to 2 stroke, sized 12 to 18px. The manila folder glyph is the one authored icon.",
+      "Do give the bust a still pose per state under reduced motion, and stop its motion in a hidden tab (The Living Face Rule).",
+      "Do let any click or key skip the opening, and wait for the tab to be seen before it plays."
     ],
     "donts": [
       "Don't use decorative gradients, glowing AI sparkles, chat bubbles or cards inside cards. The page-ground fade above the docked composer is the only gradient (The Fade Above The Dock Rule).",
-      "Don't colour document types or ok files. Amber and red are for files and requests with problems only.",
+      "Don't colour document types or ok files. Amber and red are for files and requests with problems only. A file's kind colour goes on its icon only, never on its name, badge, row or notice.",
       "Don't put a shadow on a surface that sits in the page, including the inset sheet.",
       "Don't pick a colour per scheme inside a component, or turn the PDF page or the bust dark.",
       "Don't set uppercase or letterspaced labels. Labels are sentence case at 12px/600.",
       "Don't add a second typeface or a display face. Monospace is for SQL and tool input only.",
       "Don't use Eastern Arabic digits or round an amount for display.",
       "Don't translate the wordmark, file names, item codes or numbers.",
-      "Don't choreograph page loads. Motion marks state changes only, except inside the call avatar while a call is open.",
-      "Don't colour the bust. Its drawing stays graphite on white marble in both schemes, and ink touches only its ring while Atlas speaks."
+      "Don't choreograph page loads. The one exception, approved by the owner on 2026-10-29, is the opening screen, where the bust says its line; it plays once per load, never blocks the app, and any click or key skips it. Elsewhere motion marks state changes only, except inside the call avatar while a call is open.",
+      "Don't let a blue cast back into the neutrals or the brand tone. Grays and the dark ramp are warm stone; graphite has almost no chroma.",
+      "Don't colour the bust. Its drawing stays graphite on white marble in both schemes, and the brand tone touches only its ring while Atlas speaks."
     ]
   }
 }
