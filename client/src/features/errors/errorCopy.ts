@@ -48,7 +48,10 @@ const minutes: ArabicNoun = { one: 'دقيقة واحدة', two: 'دقيقتين
 
 const copy: Bilingual<Record<ApiErrorCode, Entry>> = {
   en: {
-    missing_api_key: { title: 'OpenAI key missing', detail: 'Add OPENAI_API_KEY to .env and restart Atlas.' },
+    missing_api_key: {
+      title: 'No model is set up',
+      detail: 'Add OPENAI_API_KEY or GEMINI_API_KEY to .env, or start Ollama, then restart Atlas.',
+    },
     folder_not_found: {
       title: 'Folder not found',
       detail: 'Check the path. It must be a folder on the computer running Atlas.',
@@ -61,7 +64,7 @@ const copy: Bilingual<Record<ApiErrorCode, Entry>> = {
     },
     result_not_found: { title: 'That result is no longer available', detail: 'Ask the question again to get a fresh table.' },
     rate_limited: {
-      title: 'OpenAI is busy',
+      title: 'The model is busy',
       detail: (error) => `Wait ${waitText(error.retryAfterSeconds, 'en')}, then ask again.`,
     },
     model_refusal: { title: 'The model would not answer this', detail: 'Try asking in different words.' },
@@ -80,7 +83,10 @@ const copy: Bilingual<Record<ApiErrorCode, Entry>> = {
   },
   // The server's own messages are English, so Arabic gives the plain next step instead of quoting them.
   ar: {
-    missing_api_key: { title: 'مفتاح OpenAI غير موجود', detail: 'أضف OPENAI_API_KEY إلى ملف ‎.env ثم أعد تشغيل Atlas.' },
+    missing_api_key: {
+      title: 'لا يوجد نموذج مُعدّ',
+      detail: 'أضف OPENAI_API_KEY أو GEMINI_API_KEY إلى ملف ‎.env، أو شغّل Ollama، ثم أعد تشغيل Atlas.',
+    },
     folder_not_found: {
       title: 'لم يُعثر على المجلد',
       detail: 'تحقق من المسار. يجب أن يكون مجلدًا على الجهاز الذي يعمل عليه Atlas.',
@@ -90,7 +96,7 @@ const copy: Bilingual<Record<ApiErrorCode, Entry>> = {
     document_not_found: { title: 'هذا الملف لم يعد في المجلد', detail: 'ربما نُقل أو حُذف. افتح المجلد مرة أخرى.' },
     result_not_found: { title: 'هذه النتيجة لم تعد متاحة', detail: 'اطرح السؤال مرة أخرى لتحصل على جدول جديد.' },
     rate_limited: {
-      title: 'خدمة OpenAI مشغولة',
+      title: 'النموذج مشغول',
       detail: (error) => `انتظر ${waitText(error.retryAfterSeconds, 'ar')}، ثم اسأل مرة أخرى.`,
     },
     model_refusal: { title: 'رفض النموذج الإجابة عن هذا', detail: 'جرّب أن تسأل بكلمات أخرى.' },

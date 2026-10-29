@@ -196,7 +196,7 @@ describe('CallSession', () => {
     await vi.advanceTimersByTimeAsync(500);
     finish((turnId) => ({ status: 'error', turnId, error: { code: 'rate_limited', message: 'Slow down.', retryAfterSeconds: 20 } }));
     await vi.advanceTimersByTimeAsync(0);
-    expect(said(sent).at(-1)).toBe(spokenUpdates.failed('OpenAI is busy. Wait 20 seconds, then ask again.'));
+    expect(said(sent).at(-1)).toBe(spokenUpdates.failed('The model is busy. Wait 20 seconds, then ask again.'));
   });
 
   it('says once that a slow question is still running, and keeps a stopped one quiet', async () => {
