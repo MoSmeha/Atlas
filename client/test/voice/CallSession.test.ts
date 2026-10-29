@@ -1,5 +1,6 @@
-import type { Answer } from '@atlas/shared';
+import type { Answer, CallDiagnosis } from '@atlas/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { AudioLevels } from '../../src/api/audioMeter';
 import type { LiveConnection } from '../../src/api/liveCall';
 import type { LiveCommand, LiveEvent } from '../../src/api/liveEvents';
 import type { TurnEnd } from '../../src/features/chat/ChatContext';
@@ -16,24 +17,41 @@ const answer: Answer = {
   warnings: [],
 };
 
-/** A call connection that records what the call sends; the test decides when a close is confirmed. */
+const measured: CallDiagnosis = {
+  micLabel: 'Microphone',
+  micState: 'live',
+  micPeak: 0.3,
+  micEnergy: 0.8,
+  packetsSent: 500,
+  direction: 'sendrecv',
+  events: { 'session.started': 1 },
+  notes: [],
+};
+
+/**
+ * A call connection that records what the call sends; the test decides when a close is confirmed, how loud each side
+ * is, and whether the microphone is silent.
+ */
 function fakeConnection() {
   const sent: LiveCommand[] = [];
   const mic: boolean[] = [];
+  const audio = { levels: { mic: 0, voice: 0 } as AudioLevels, silent: false };
   let confirmClose: ((seconds: number | null) => void) | null = null;
   const connection: LiveConnection = {
     callId: 'live_1',
     greeting: 'Greet the user now in English.',
     send: (command) => sent.push(command),
     setMicEnabled: (enabled) => mic.push(enabled),
-    levels: () => ({ mic: 0, voice: 0 }),
+    levels: () => audio.levels,
+    micSilent: () => audio.silent,
+    diagnosis: () => measured,
     close: () =>
       new Promise((resolve) => {
         confirmClose = resolve;
       }),
     dispose: vi.fn(),
   };
-  return { connection, sent, mic, confirmClose: (seconds: number | null) => confirmClose?.(seconds) };
+  return { connection, sent, mic, audio, confirmClose: (seconds: number | null) => confirmClose?.(seconds) };
 }
 
 /** A chat whose questions stay open until the test ends them; stop ends the running one as stopped. */
@@ -224,14 +242,14 @@ describe('CallSession', () => {
     expect(session.snapshot()).toMatchObject({ status: 'ending', endReason: 'idle' });
 
     confirmClose(10.4);
-    await expect(session.ended).resolves.toEqual({ callId: 'live_1', seconds: 10.4, confirmed: true });
+    await expect(session.ended).resolves.toEqual({ callId: 'live_1', seconds: 10.4, confirmed: true, diagnosis: measured });
     expect(session.snapshot().status).toBe('ended');
   });
 
   it('ends when the service closes the call, and reports a broken one as unconfirmed', async () => {
     const closed = setup();
     closed.session.handle({ type: 'session.closed', reason: 'expired', usage: { seconds: 1800 } });
-    await expect(closed.session.ended).resolves.toEqual({ callId: 'live_1', seconds: 1800, confirmed: true });
+    await expect(closed.session.ended).resolves.toEqual({ callId: 'live_1', seconds: 1800, confirmed: true, diagnosis: measured });
     expect(closed.session.snapshot().endReason).toBe('limit');
 
     const dropped = setup();
@@ -255,5 +273,48 @@ describe('CallSession', () => {
     finish((turnId) => ({ status: 'done', turnId, answer, speech: 'Too late.' }));
     await vi.advanceTimersByTimeAsync(0);
     expect(sent).toHaveLength(before);
+  });
+});
+
+describe('CallSession hearing the user', () => {
+  it('says when the microphone picks up speech but none of it reaches the call, until words arrive', async () => {
+    const { session, audio } = setup();
+    audio.levels = { mic: 0.3, voice: 0 };
+
+    await vi.advanceTimersByTimeAsync(4_500);
+    expect(session.snapshot().micTrouble).toBeNull();
+    await vi.advanceTimersByTimeAsync(700);
+    expect(session.snapshot().micTrouble).toBe('unheard');
+
+    session.handle(user('Hello?', 4000, 4500));
+    expect(session.snapshot().micTrouble).toBeNull();
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(session.snapshot().micTrouble).toBeNull();
+  });
+
+  it('does not count sound while Atlas speaks or while the microphone is muted', async () => {
+    const { session, audio } = setup();
+    audio.levels = { mic: 0.3, voice: 0.3 };
+    await vi.advanceTimersByTimeAsync(6_000);
+    expect(session.snapshot().micTrouble).toBeNull();
+
+    audio.levels = { mic: 0.3, voice: 0 };
+    session.setMuted(true);
+    await vi.advanceTimersByTimeAsync(6_000);
+    expect(session.snapshot().micTrouble).toBeNull();
+  });
+
+  it('says when the microphone gives no sound at all, once its first readings are in', async () => {
+    const { session, audio } = setup();
+    audio.silent = true;
+
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(session.snapshot().micTrouble).toBeNull();
+    await vi.advanceTimersByTimeAsync(1_200);
+    expect(session.snapshot().micTrouble).toBe('silent');
+
+    audio.silent = false;
+    await vi.advanceTimersByTimeAsync(300);
+    expect(session.snapshot().micTrouble).toBeNull();
   });
 });

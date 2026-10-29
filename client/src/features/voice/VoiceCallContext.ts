@@ -19,6 +19,8 @@ export interface VoiceCallValue {
   dictationAvailable: boolean;
   maxDictationSeconds: number;
   voices: VoiceOption[];
+  /** The server is still making the voices that are not ready. */
+  preparingVoices: boolean;
   /** The voice the next call uses, and the one the open call uses. */
   voiceId: string | null;
   /** Picks a voice and remembers it; an open call reconnects in the new voice. */

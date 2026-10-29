@@ -8,7 +8,7 @@ import { formatCost } from '../topbar/usageText';
 import { AtlasFace } from './AtlasFace';
 import classes from './CallCard.module.css';
 import type { CallView } from './CallSession';
-import { clockText } from './callCopy';
+import { clockText, micTroubleMessage, preparingVoiceHint } from './callCopy';
 import { faceMood } from './faceMotion';
 import { useVoiceCall } from './useVoiceCall';
 import { VoicePicker } from './VoicePicker';
@@ -18,11 +18,14 @@ const settleTiming = { animationDuration: `${motion.durationMs}ms`, animationTim
 /** Below Mantine's xs breakpoint the call's controls grow to 40px and End call becomes an icon. */
 const PHONE = '(max-width: 36em)';
 
-/** The line beside Atlas's face: what the call is doing right now. `working` names the step, as the thread does. */
-function statusText(call: CallView, voiceLabel: string, working: string): string {
+/**
+ * The line beside Atlas's face: what the call is doing right now. `working` names the step, as the thread does;
+ * `preparing` means the call waits for its voice to be made.
+ */
+function statusText(call: CallView, voiceLabel: string, working: string, preparing: boolean): string {
   switch (call.status) {
     case 'connecting':
-      return `Calling Atlas in ${voiceLabel}…`;
+      return preparing ? `Preparing the ${voiceLabel} voice…` : `Calling Atlas in ${voiceLabel}…`;
     case 'ending':
       return call.endReason === 'switching' ? 'Changing the voice…' : 'Ending the call…';
     case 'ended':
@@ -34,10 +37,14 @@ function statusText(call: CallView, voiceLabel: string, working: string): string
   }
 }
 
-/** A hint that needs reading now; null for the standing one, which a phone leaves out to save room. */
-function urgentHint(call: CallView): string | null {
-  if (call.status === 'connecting') return 'Allow the microphone if the browser asks.';
-  if (call.muted) return 'Atlas cannot hear you while the microphone is muted.';
+/**
+ * A hint that needs reading now, as an alert when Atlas may not be hearing the user; null for the standing one, which
+ * a phone leaves out to save room.
+ */
+function urgentHint(call: CallView, preparing: boolean): { text: string; alert: boolean } | null {
+  if (call.status === 'connecting') return { text: preparing ? preparingVoiceHint : 'Allow the microphone if the browser asks.', alert: false };
+  if (call.muted) return { text: 'Atlas cannot hear you while the microphone is muted.', alert: false };
+  if (call.status === 'live' && call.micTrouble !== null) return { text: micTroubleMessage(call.micTrouble), alert: true };
   return null;
 }
 
@@ -60,7 +67,8 @@ export function CallCard() {
   const cost = (call.seconds / 60) * voice.pricePerMinute;
   // Before anyone speaks, the user's line, with its prompt, counts as the latest.
   const userLatest = call.lastSpeaker !== 'atlas';
-  const hint = urgentHint(call);
+  const preparing = call.status === 'connecting' && current?.ready === false;
+  const hint = urgentHint(call, preparing);
   // While a spoken question runs, the card names its step in the thread's own words.
   const newest = turns.at(-1);
   const working = newest?.spoken && newest.status === 'streaming' ? pendingActivity(newest.steps).label : 'Reading the question';
@@ -70,11 +78,11 @@ export function CallCard() {
     <Stack gap={6}>
       <section className={classes.card} style={settleTiming} aria-label="Voice call with Atlas">
         <div className={classes.top}>
-          <AtlasFace mood={faceMood({ live, activity: call.activity })} levels={voice.levels} />
+          <AtlasFace mood={faceMood({ status: call.status, activity: call.activity })} levels={voice.levels} />
           <div className={classes.body}>
             <div className={classes.status}>
               <Text fz="sm" fw={600} aria-live="polite" truncate>
-                {statusText(call, voiceLabel, working)}
+                {statusText(call, voiceLabel, working, preparing)}
               </Text>
               <Tooltip label={`Calls cost $${voice.pricePerMinute.toFixed(2)} a minute, billed by the second.`}>
                 <Text fz="xs" c="dimmed" className="tabular-nums" tabIndex={0} style={{ whiteSpace: 'nowrap', cursor: 'default' }}>
@@ -105,6 +113,7 @@ export function CallCard() {
             className={classes.picker}
             size={phone ? 'md' : 'sm'}
             voices={voice.voices}
+            preparing={voice.preparingVoices}
             voiceId={voice.voiceId}
             onChange={voice.chooseVoice}
             disabled={!live}
@@ -153,8 +162,13 @@ export function CallCard() {
         </div>
       </section>
       <Group gap="xs" wrap="nowrap" px="xs">
-        <Text fz="xs" c="dimmed" visibleFrom={hint === null ? 'xs' : undefined}>
-          {hint ?? STANDING_HINT}
+        <Text
+          fz="xs"
+          c={hint?.alert ? 'var(--mantine-color-error)' : 'dimmed'}
+          role={hint?.alert ? 'alert' : undefined}
+          visibleFrom={hint === null ? 'xs' : undefined}
+        >
+          {hint?.text ?? STANDING_HINT}
         </Text>
       </Group>
     </Stack>

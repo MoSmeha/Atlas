@@ -1,3 +1,4 @@
+import type { CallDiagnosis } from '@atlas/shared';
 import { type AudioLevels, silence } from '../../api/audioMeter';
 import type { LiveConnection } from '../../api/liveCall';
 import type { LiveCommand, LiveEvent } from '../../api/liveEvents';
@@ -13,6 +14,11 @@ export type CallActivity = 'listening' | 'hearing' | 'thinking' | 'speaking';
  * start that failed.
  */
 export type EndReason = 'hung_up' | 'idle' | 'limit' | 'dropped' | 'content' | 'switching' | 'failed';
+/**
+ * Why Atlas may not be hearing the user: the microphone gives no sound at all, or it picks up speech but not one word
+ * of it has reached the call.
+ */
+export type MicTrouble = 'silent' | 'unheard';
 
 /** What the call card shows. */
 export interface CallView {
@@ -28,6 +34,7 @@ export interface CallView {
   /** A question from this call is being answered in the chat. */
   busy: boolean;
   endReason: EndReason | null;
+  micTrouble: MicTrouble | null;
 }
 
 /** The chat as a call uses it: every question it hands over is asked as a spoken turn. */
@@ -48,6 +55,8 @@ export interface CallOutcome {
   seconds: number;
   /** The voice service confirmed the end; otherwise the server hangs the call up. */
   confirmed: boolean;
+  /** What the call measured about its audio; null when it never connected. */
+  diagnosis: CallDiagnosis | null;
 }
 
 const TICK_MS = 150;
@@ -61,6 +70,10 @@ const SETTLE_MAX_MS = 1_200;
 /** A question still running after this long gets one spoken "still checking". */
 const STILL_WORKING_MS = 12_000;
 const CLOSE_WAIT_MS = 8_000;
+/** The microphone is checked for total silence once the call has been live this long, so its first readings are in. */
+const SILENT_CHECK_MS = 6_000;
+/** Speech the microphone picks up for this long in all, with no word of it reaching the call, means Atlas cannot hear. */
+const UNHEARD_MS = 5_000;
 /** A rejected result is sent again once, this short. */
 const RETRY_CHARS = 600;
 
@@ -108,6 +121,7 @@ export class CallSession {
     lastSpeaker: null,
     busy: false,
     endReason: null,
+    micTrouble: null,
   };
   private connection: LiveConnection | null = null;
   private resolveEnded: (outcome: CallOutcome) => void = () => undefined;
@@ -120,6 +134,10 @@ export class CallSession {
   private lastUserPieceAt = Number.NEGATIVE_INFINITY;
   private heardVoiceAt = Number.NEGATIVE_INFINITY;
   private heardMicAt = Number.NEGATIVE_INFINITY;
+  /** Some of the user's words have reached the call, so their audio gets through. */
+  private heardUser = false;
+  /** How long the microphone has picked up speech while none of the user's words reached the call. */
+  private unheardMs = 0;
   /** The user's words before this point on the call's timeline were part of an earlier question. */
   private consumedMs = 0;
   private asking: Asking | null = null;
@@ -231,6 +249,8 @@ export class CallSession {
     const reply = this.reply;
     if (piece.speaker === 'user') {
       this.lastUserPieceAt = this.now();
+      this.heardUser = true;
+      if (this.view.micTrouble === 'unheard') this.update({ micTrouble: null });
       if (reply !== null && startsNewTurn(piece, reply.atlasEndMs)) this.reply = null;
     } else if (reply !== null && piece.startMs >= reply.fromMs) {
       this.chat.noteSaid(reply.turnId, piece.text);
@@ -342,7 +362,12 @@ export class CallSession {
     clearInterval(this.timer);
     const seconds = finalSeconds ?? Math.max(this.billedSeconds, this.elapsedSeconds());
     this.update({ status: 'ended', seconds: Math.round(seconds), activity: 'listening' });
-    this.resolveEnded({ callId: this.connection?.callId ?? null, seconds, confirmed: finalSeconds !== null });
+    this.resolveEnded({
+      callId: this.connection?.callId ?? null,
+      seconds,
+      confirmed: finalSeconds !== null,
+      diagnosis: this.connection?.diagnosis() ?? null,
+    });
   }
 
   private tick(): void {
@@ -360,9 +385,21 @@ export class CallSession {
           : this.view.busy
             ? 'thinking'
             : 'listening';
-    this.update({ activity, seconds: Math.floor(this.elapsedSeconds()) });
+    this.update({ activity, seconds: Math.floor(this.elapsedSeconds()), micTrouble: this.micTrouble(activity) });
     if (now - this.lastActivityAt >= this.limits.idleMs) void this.end('idle');
     else if (this.elapsedSeconds() * 1000 >= this.limits.maxMs) void this.end('limit');
+  }
+
+  /**
+   * Whether Atlas may not be hearing the user, worked out each tick. Speech counts only while the user is not muted and
+   * Atlas is not speaking, and once any of their words has reached the call it never counts again.
+   */
+  private micTrouble(activity: CallActivity): MicTrouble | null {
+    if (this.view.muted || this.connection === null) return this.view.micTrouble;
+    if (this.elapsedSeconds() * 1000 >= SILENT_CHECK_MS && this.connection.micSilent()) return 'silent';
+    if (this.heardUser) return null;
+    if (activity === 'hearing') this.unheardMs += TICK_MS;
+    return this.unheardMs >= UNHEARD_MS ? 'unheard' : null;
   }
 
   private elapsedSeconds(): number {

@@ -49,8 +49,8 @@ export function findVoice(catalog: VoiceCatalog, id: string): CatalogVoice {
   return voice;
 }
 
-/** The voices as the call picker lists them. */
-export function voiceOptions(catalog: VoiceCatalog): VoiceOption[] {
+/** The voices as the call picker lists them; `isReady` says which can start a call without being made first. */
+export function voiceOptions(catalog: VoiceCatalog, isReady: (voiceId: string) => boolean): VoiceOption[] {
   return catalog.voices.map((voice) => {
     const dialect = catalog.dialects[voice.dialect];
     return {
@@ -60,6 +60,7 @@ export function voiceOptions(catalog: VoiceCatalog): VoiceOption[] {
       language: dialect.language,
       dialect: voice.dialect,
       gender: voice.gender,
+      ready: isReady(voice.id),
     };
   });
 }

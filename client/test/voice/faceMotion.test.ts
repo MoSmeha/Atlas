@@ -72,8 +72,10 @@ describe('breath and mood', () => {
     expect(breath(4_200)).toBeCloseTo(0, 6);
   });
 
-  it('rests until the call is live', () => {
-    expect(faceMood({ live: false, activity: 'speaking' })).toBe('resting');
-    expect(faceMood({ live: true, activity: 'thinking' })).toBe('thinking');
+  it('shows the connecting ring until the call is live, and rests once it ends', () => {
+    expect(faceMood({ status: 'connecting', activity: 'listening' })).toBe('connecting');
+    expect(faceMood({ status: 'ending', activity: 'speaking' })).toBe('resting');
+    expect(faceMood({ status: 'ended', activity: 'listening' })).toBe('resting');
+    expect(faceMood({ status: 'live', activity: 'thinking' })).toBe('thinking');
   });
 });

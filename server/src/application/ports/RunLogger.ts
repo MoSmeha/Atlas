@@ -1,3 +1,4 @@
+import type { CallDiagnosis } from '@atlas/shared';
 import type { TokenUsage } from '../../domain/pricing';
 
 export interface ToolLogEntry {
@@ -31,15 +32,19 @@ export interface IndexLogEntry {
 }
 
 export interface VoiceLogEntry {
-  event: 'call_start' | 'call_end' | 'dictation';
-  sessionId: string;
-  /** Null for a dictation, and for a call that never started. */
+  /** voice_design: a designed voice was made ahead of its first call, and `seconds` is how long that took. */
+  event: 'call_start' | 'call_end' | 'dictation' | 'voice_design';
+  /** Null for a voice design. */
+  sessionId: string | null;
+  /** Null for a dictation or a voice design, and for a call that never started. */
   callId: string | null;
   /** The catalog voice; null for a dictation. */
   voice: string | null;
   seconds: number;
   costUsd: number;
   error: string | null;
+  /** What the browser measured about the call's audio, on call_end; null otherwise or when it never connected. */
+  diagnosis: CallDiagnosis | null;
 }
 
 /** Writes what happened to local log files so a bad answer can be explained afterwards. */

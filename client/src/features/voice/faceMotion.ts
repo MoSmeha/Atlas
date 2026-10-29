@@ -1,5 +1,5 @@
-/** What Atlas's face is doing, from the call's state and its live audio. */
-export type FaceMood = 'resting' | 'listening' | 'hearing' | 'thinking' | 'speaking';
+/** What Atlas's face is doing, from the call's state and its live audio. Connecting includes making a new voice. */
+export type FaceMood = 'connecting' | 'resting' | 'listening' | 'hearing' | 'thinking' | 'speaking';
 
 /** One frame of the face. Every value is unitless; the face scales them to its own drawing. */
 export interface FacePose {
@@ -21,6 +21,8 @@ export interface FacePose {
 export const restingPose: FacePose = { eyeOpen: 0.14, lookX: 0, lookY: 0.35, brow: 0, smile: 0.25, mouth: 0, tilt: 0 };
 
 const poses: Record<Exclude<FaceMood, 'speaking'>, FacePose> = {
+  // Still resting while the call connects; the ring shows the wait, and the eyes open once Atlas can hear.
+  connecting: restingPose,
   resting: restingPose,
   listening: { eyeOpen: 1, lookX: 0, lookY: 0, brow: 0.12, smile: 0.4, mouth: 0, tilt: 0 },
   // Brows up and a slight lean in: it has noticed the user speaking.
@@ -88,6 +90,10 @@ export function breath(ms: number): number {
 }
 
 /** Which mood the face shows, from the call's state and the loudness of each side. */
-export function faceMood(state: { live: boolean; activity: 'listening' | 'hearing' | 'thinking' | 'speaking' }): FaceMood {
-  return state.live ? state.activity : 'resting';
+export function faceMood(state: {
+  status: 'connecting' | 'live' | 'ending' | 'ended';
+  activity: 'listening' | 'hearing' | 'thinking' | 'speaking';
+}): FaceMood {
+  if (state.status === 'connecting') return 'connecting';
+  return state.status === 'live' ? state.activity : 'resting';
 }
