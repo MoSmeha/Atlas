@@ -41,6 +41,7 @@ describe('CallDiagnostics', () => {
 
   it('reads how the microphone audio was sent, and the loudest the microphone got', async () => {
     const diagnostics = new CallDiagnostics();
+    diagnostics.noteAnswer(true);
     diagnostics.noteMicLevel(0.12);
     diagnostics.noteMicLevel(0.4567);
     diagnostics.noteMicLevel(0.2);
@@ -54,6 +55,7 @@ describe('CallDiagnostics', () => {
       micEnergy: 1.25,
       packetsSent: 1400,
       direction: 'sendrecv',
+      answerDtx: true,
       events: {},
       notes: [],
     });
@@ -75,6 +77,6 @@ describe('CallDiagnostics', () => {
 
     expect(diagnostics.report(track({ muted: true })).micState).toBe('muted');
     expect(diagnostics.report(track({ ended: true })).micState).toBe('ended');
-    expect(diagnostics.report(null)).toMatchObject({ micState: 'none', micLabel: '', direction: null });
+    expect(diagnostics.report(null)).toMatchObject({ micState: 'none', micLabel: '', direction: null, answerDtx: null });
   });
 });

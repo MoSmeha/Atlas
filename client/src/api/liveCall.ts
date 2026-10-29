@@ -4,6 +4,7 @@ import { CallDiagnostics } from './CallDiagnostics';
 import { api } from './endpoints';
 import { type LiveCommand, type LiveEvent, parseLiveEvent } from './liveEvents';
 import { closeMicrophone, openMicrophone } from './microphone';
+import { turnOffDtx } from './opusDtx';
 
 /** An open voice call: Atlas's voice plays on its own, events arrive through `onEvent`. */
 export interface LiveConnection {
@@ -106,7 +107,9 @@ export async function openLiveCall(options: OpenCallOptions): Promise<LiveConnec
     const offer = peer.localDescription?.sdp;
     if (offer === undefined || offer === '') throw new Error('The browser could not prepare the call.');
     const started = await api.startCall({ sessionId: options.sessionId, voiceId: options.voiceId, sdp: offer });
-    await peer.setRemoteDescription({ type: 'answer', sdp: started.sdp });
+    const answer = turnOffDtx(started.sdp);
+    diagnostics.noteAnswer(answer.dtx);
+    await peer.setRemoteDescription({ type: 'answer', sdp: answer.sdp });
 
     const open = channel;
     const mic = microphone;

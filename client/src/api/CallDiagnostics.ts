@@ -19,6 +19,12 @@ export class CallDiagnostics {
   private micEnergy: number | null = null;
   private packetsSent: number | null = null;
   private direction: string | null = null;
+  private answerDtx: boolean | null = null;
+
+  /** Whether the service's answer had asked for Opus DTX, which the call turns off. */
+  noteAnswer(dtx: boolean): void {
+    this.answerDtx = dtx;
+  }
 
   /** Counts one event channel message by its type, and keeps the text of the service's errors and notices. */
   noteEvent(data: unknown): void {
@@ -60,6 +66,7 @@ export class CallDiagnostics {
       micEnergy: this.micEnergy,
       packetsSent: this.packetsSent,
       direction: this.direction?.slice(0, 20) ?? null,
+      answerDtx: this.answerDtx,
       events: { ...this.events },
       notes: [...this.notes],
     };

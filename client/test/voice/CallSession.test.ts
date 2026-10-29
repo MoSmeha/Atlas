@@ -24,6 +24,7 @@ const measured: CallDiagnosis = {
   micEnergy: 0.8,
   packetsSent: 500,
   direction: 'sendrecv',
+  answerDtx: false,
   events: { 'session.started': 1 },
   notes: [],
 };
