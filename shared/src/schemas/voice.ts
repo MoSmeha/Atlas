@@ -73,6 +73,11 @@ export const CallDiagnosis = z.object({
   packetsSent: z.number().int().nonnegative().nullable(),
   /** How the browser and the service agreed to carry the audio: sendrecv when both ways. Null if they never agreed. */
   direction: z.string().max(20).nullable(),
+  /**
+   * The service's answer asked the browser to stop sending audio in silence (Opus DTX), which the call turns off. Null
+   * before the answer arrived.
+   */
+  answerDtx: z.boolean().nullable(),
   /** Each event type the service sent, with how many of it. */
   events: z.record(z.string().max(80), z.number().int().nonnegative()),
   /** The errors and notices the service sent, oldest first. */

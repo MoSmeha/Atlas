@@ -61,6 +61,7 @@ const heardNothing: CallDiagnosis = {
   micEnergy: 1.2,
   packetsSent: 1400,
   direction: 'sendrecv',
+  answerDtx: true,
   events: { 'session.started': 1, 'session.output_transcript.delta': 12 },
   notes: [],
 };

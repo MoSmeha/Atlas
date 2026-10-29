@@ -54,7 +54,7 @@ describe('shared schemas', () => {
     expect(StartCallRequest.safeParse({ sessionId: 's1', voiceId: 'gulf-female', sdp: '' }).success).toBe(false);
     expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 75.5, hangUp: false, diagnosis: null }).success).toBe(true);
     expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: -1, hangUp: false, diagnosis: null }).success).toBe(false);
-    const diagnosis = { micLabel: 'Mic', micState: 'live', micPeak: 0.4, micEnergy: 1.2, packetsSent: 900, direction: 'sendrecv', events: { 'session.started': 1 }, notes: [] };
+    const diagnosis = { micLabel: 'Mic', micState: 'live', micPeak: 0.4, micEnergy: 1.2, packetsSent: 900, direction: 'sendrecv', answerDtx: false, events: { 'session.started': 1 }, notes: [] };
     expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 30, hangUp: false, diagnosis }).success).toBe(true);
     expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 30, hangUp: false, diagnosis: { ...diagnosis, micPeak: 2 } }).success).toBe(false);
   });
