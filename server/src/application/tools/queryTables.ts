@@ -102,7 +102,7 @@ export const queryTables = defineTool({
       sources: sources.slice(0, SHOWN_SOURCES),
       note: notes.length > 0 ? notes.join(' ') : null,
     };
-    return { output, summary: summarize(result, read, saved.id) };
+    return { output, summary: summarize(result, read) };
   },
 });
 
@@ -181,16 +181,19 @@ function defaultTitle(read: TableSchema[]): string {
   return read.every((table) => table.document === first.document) ? `Rows from ${file}` : `Rows from ${read.length} tables`;
 }
 
-/** For example "42 rows from t_boq_phase1_rev0_bill_2 (saved as r3)". */
-function summarize(result: QueryResult, read: TableSchema[], id: string): string {
+/** For example "42 rows from BOQ_Phase1_Rev0.xlsx, sheet MEP", in the words the trace shows the user. */
+function summarize(result: QueryResult, read: TableSchema[]): string {
   const count = result.rows.length;
   const rows = count === 0 ? 'No rows' : result.truncated ? `First ${count} rows` : `${count} ${count === 1 ? 'row' : 'rows'}`;
-  const names = read.map((table) => table.name);
-  const from =
-    names.length === 0
-      ? ''
-      : names.length > 3
-        ? ` from ${names.length} tables`
-        : ` from ${names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`}`;
-  return `${rows}${from} (saved as ${id})`;
+  return `${rows}${readFrom(read)}`;
+}
+
+/** Where the rows came from, by file and sheet name rather than SQL table name. */
+function readFrom(read: TableSchema[]): string {
+  const files = [...new Set(read.map((table) => table.document.split('/').pop() ?? table.document))];
+  const [first] = read;
+  if (first === undefined) return '';
+  if (read.length === 1) return ` from ${files[0]}${first.sheet === null ? '' : `, sheet ${first.sheet}`}`;
+  if (files.length === 1) return ` from ${read.length} tables in ${files[0]}`;
+  return files.length === 2 ? ` from ${files[0]} and ${files[1]}` : ` from ${read.length} tables in ${files.length} files`;
 }

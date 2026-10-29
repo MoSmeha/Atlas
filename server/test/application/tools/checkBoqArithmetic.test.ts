@@ -87,7 +87,7 @@ describe('check_boq_arithmetic', () => {
 
   it('finds wrong amounts and wrong sub-totals in every BOQ table and saves them with sources', async () => {
     const { output, summary, context } = await run({ document: null, table: null });
-    expect(summary).toBe('2 mismatches in 3 tables (r1)');
+    expect(summary).toBe('2 mismatches in 3 tables');
     expect(output.result_id).toBe('r1');
     expect(output.checked_rows).toBe(8);
     expect(output.checked_tables.map(({ table, sheet, rows, mismatches }) => ({ table, sheet, rows, mismatches }))).toEqual([
@@ -158,7 +158,7 @@ describe('check_boq_arithmetic', () => {
   it('checks only the tables of one document', async () => {
     const { output, summary } = await run({ document: 'BOQ_Rev1', table: null });
     expect(output.checked_tables.map((table) => table.table)).toEqual(['boq_rev1_1']);
-    expect(summary).toBe('No mismatches in 1 table (r1)');
+    expect(summary).toBe('No mismatches in 1 table');
   });
 
   it('checks one table by name, ignoring case', async () => {
@@ -182,7 +182,7 @@ describe('check_boq_arithmetic', () => {
     const rows = Array.from({ length: 35 }, (_, i): [string, string, number, number, number] => [`X${i + 1}`, 'Wrong', 2, 10, 21]);
     index.save(excelRecord('Big.xlsx', [boqTable(rows)]));
     const { output, summary, context } = await run({ document: null, table: null }, makeToolContext({ index }));
-    expect(summary).toBe('35 mismatches in 1 table (r1)');
+    expect(summary).toBe('35 mismatches in 1 table');
     expect(output.mismatches).toHaveLength(30);
     expect(output.mismatch_count).toBe(35);
     expect(output.note).toBe('Showing the first 30 of 35 mismatches; all of them are saved in r1.');

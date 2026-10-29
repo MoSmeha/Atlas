@@ -86,7 +86,7 @@ describe('compare_revisions', () => {
 
   it('reports added, removed and changed items with per-currency totals', async () => {
     const { output, summary } = await run('BOQ_Rev0.xlsx', 'BOQ_Rev1');
-    expect(summary).toBe('1 added, 1 removed, 2 changed (r1)');
+    expect(summary).toBe('1 added, 1 removed, 2 changed');
     expect(output).toMatchObject({
       result_id: 'r1',
       document_a: 'BOQ_Rev0.xlsx',
@@ -317,7 +317,7 @@ describe('compare_revisions', () => {
     ];
     const context = withIndex(excelRecord('Rev0.xlsx', [boqTable(items)]), excelRecord('Rev1.xlsx', [boqTable(items)]));
     const { output, summary, context: used } = await run('Rev0.xlsx', 'Rev1.xlsx', context);
-    expect(summary).toBe('0 added, 0 removed, 0 changed (r1)');
+    expect(summary).toBe('0 added, 0 removed, 0 changed');
     expect(output).toMatchObject({ unchanged: 2, differences: [], total_delta_by_currency: { SAR: 0 } });
     expect(output.note).toBe('Every item matches: the same quantity, rate and amount in both documents.');
     expect(used.session.result('r1')).toMatchObject({
@@ -337,7 +337,7 @@ describe('compare_revisions', () => {
       excelRecord('Rev1.xlsx', [boqTable(rows((i) => 100 + i + 1))]),
     );
     const { output, summary, context: used } = await run('Rev0.xlsx', 'Rev1.xlsx', context);
-    expect(summary).toBe('0 added, 0 removed, 40 changed (r1)');
+    expect(summary).toBe('0 added, 0 removed, 40 changed');
     expect(output.differences).toHaveLength(30);
     expect(output.differences[0]?.item).toBe('X11');
     expect(output.differences.at(-1)?.item).toBe('X40');

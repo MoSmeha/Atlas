@@ -138,7 +138,7 @@ describe('query_tables', () => {
       sources,
       note: null,
     });
-    expect(summary).toBe(`3 rows from ${BILL} (saved as r1)`);
+    expect(summary).toBe(`3 rows from BOQ_Phase1_Rev0.xlsx, sheet Bill 2 - Superstructure`);
     expect(session.result('r1')).toEqual({
       id: 'r1',
       title: 'Items over 100,000 SAR',
@@ -157,7 +157,7 @@ describe('query_tables', () => {
     expect(output.sources).toEqual([
       { kind: 'excel', document: 'BOQ_Phase1_Rev0.xlsx', sheet: 'Bill 2 - Superstructure', rowFrom: 5, rowTo: 9 },
     ]);
-    expect(summary).toBe(`1 row from ${BILL} (saved as r1)`);
+    expect(summary).toBe(`1 row from BOQ_Phase1_Rev0.xlsx, sheet Bill 2 - Superstructure`);
   });
 
   it('cites PDF pages from _page values', async () => {
@@ -213,7 +213,7 @@ describe('query_tables', () => {
 
     expect(output.truncated).toBe(true);
     expect(output.row_count).toBe(500);
-    expect(summary).toBe(`First 500 rows from ${BILL} (saved as r1)`);
+    expect(summary).toBe(`First 500 rows from BOQ_Phase1_Rev0.xlsx, sheet Bill 2 - Superstructure`);
     expect(output.note).toContain('only the first 500 were kept');
     expect(output.note).toContain('use COUNT(*), SUM or GROUP BY');
   });
@@ -222,7 +222,7 @@ describe('query_tables', () => {
     const index = answering(indexWith(boq), { columns: ['item_code', '_row'], rows: [] });
     const { output, summary, session } = await query(index, `SELECT item_code, _row FROM ${BILL} WHERE _is_total = 0 AND amount > 1e9`);
 
-    expect(summary).toBe(`No rows from ${BILL} (saved as r1)`);
+    expect(summary).toBe(`No rows from BOQ_Phase1_Rev0.xlsx, sheet Bill 2 - Superstructure`);
     expect(output.note).toContain('No rows matched.');
     expect(output.sources).toEqual([
       { kind: 'excel', document: 'BOQ_Phase1_Rev0.xlsx', sheet: 'Bill 2 - Superstructure', rowFrom: 5, rowTo: 9 },
@@ -243,7 +243,7 @@ describe('query_tables', () => {
 
     expect(output.sources).toEqual([]);
     expect(output.note).toBe('This query reads none of the loaded tables, so its result has no source.');
-    expect(summary).toBe('1 row (saved as r1)');
+    expect(summary).toBe('1 row');
   });
 
   it('cites each row of a UNION ALL from its own file, by the document column it selects', async () => {
@@ -278,7 +278,7 @@ describe('query_tables', () => {
       `SELECT count(*) AS n FROM (SELECT amount FROM ${TENDER} UNION ALL SELECT amount FROM ${BILL} WHERE _is_total = 0)`,
     );
 
-    expect(summary).toBe(`1 row from ${TENDER} and ${BILL} (saved as r1)`);
+    expect(summary).toBe('1 row from Tender BOQ.pdf and BOQ_Phase1_Rev0.xlsx');
   });
 
   it('refuses SQL that is not one read-only SELECT, without running it', async () => {
