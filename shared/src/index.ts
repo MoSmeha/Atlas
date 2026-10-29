@@ -8,4 +8,5 @@ export * from './schemas/folder';
 export * from './schemas/sheets';
 export * from './schemas/exports';
 export * from './schemas/health';
+export * from './schemas/voice';
 export * from './routes';

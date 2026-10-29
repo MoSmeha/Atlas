@@ -14,4 +14,8 @@ export const routes = {
   usage: '/api/usage',
   exports: '/api/exports',
   exportFile: (fileName: string) => `/api/exports/${encodeURIComponent(fileName)}`,
+  voices: '/api/voice/voices',
+  voiceCalls: '/api/voice/calls',
+  voiceCallEnd: (callId: string) => `/api/voice/calls/${encodeURIComponent(callId)}/end`,
+  transcriptions: '/api/voice/transcriptions',
 } as const;

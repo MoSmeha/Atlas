@@ -15,8 +15,12 @@ import type { FileSystem } from './application/ports/FileSystem';
 import type { ModelClient } from './application/ports/ModelClient';
 import type { RunLogger } from './application/ports/RunLogger';
 import { SessionStore } from './application/session/SessionStore';
+import { TranscribeSpeech } from './application/voice/TranscribeSpeech';
+import type { VoiceCatalog } from './application/voice/VoiceCatalog';
+import { VoiceCalls } from './application/voice/VoiceCalls';
 import { Workspace } from './application/workspace/Workspace';
 import { loadModelConfig, type ModelConfig } from './infrastructure/config/modelConfig';
+import { loadVoiceConfig } from './infrastructure/config/voiceConfig';
 import { XlsxExporter } from './infrastructure/export/XlsxExporter';
 import { NodeFileSystem } from './infrastructure/fs/NodeFileSystem';
 import { SqliteIndexFactory } from './infrastructure/index/SqliteIndexFactory';
@@ -24,7 +28,9 @@ import { JsonlRunLogger } from './infrastructure/logging/JsonlRunLogger';
 import { createOpenAiClient } from './infrastructure/openai/createOpenAiClient';
 import { OpenAiEmbeddingClient } from './infrastructure/openai/OpenAiEmbeddingClient';
 import { OpenAiModelClient } from './infrastructure/openai/OpenAiModelClient';
-import { resolveLineup } from './infrastructure/openai/resolveLineup';
+import { OpenAiTranscriber } from './infrastructure/openai/OpenAiTranscriber';
+import { OpenAiVoiceClient } from './infrastructure/openai/OpenAiVoiceClient';
+import { resolveModels } from './infrastructure/openai/resolveLineup';
 import { ExcelJsReader } from './infrastructure/readers/ExcelJsReader';
 import { MupdfPageRenderer } from './infrastructure/readers/MupdfPageRenderer';
 import { MupdfReader } from './infrastructure/readers/MupdfReader';
@@ -57,6 +63,9 @@ export interface Container {
   /** Chats by session id: turns, saved results and spend. */
   sessions: SessionStore;
   askQuestion: AskQuestion;
+  voiceCatalog: VoiceCatalog;
+  /** Voice calls still open; hang them up before exiting. */
+  voiceCalls: VoiceCalls;
   api: ApiDeps;
 }
 
@@ -68,10 +77,15 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
   const sessions = new SessionStore();
   const exporter = new XlsxExporter();
   const modelConfig = loadModelConfig();
+  const voiceCatalog = loadVoiceConfig();
   const openAi = settings.openAiApiKey === null ? null : createOpenAiClient(settings.openAiApiKey);
   const modelClient = openAi === null ? null : new OpenAiModelClient(openAi);
   const embeddings = openAi === null ? null : new OpenAiEmbeddingClient(openAi, modelConfig.embedding);
-  const lineup = await resolveLineup(modelClient, modelConfig);
+  const voiceClient = openAi === null ? null : new OpenAiVoiceClient(openAi, join(settings.dataDir, 'voices.json'));
+  const transcriber = openAi === null ? null : new OpenAiTranscriber(openAi, voiceCatalog.dictation.model);
+  const { lineup, visible } = await resolveModels(modelClient, modelConfig);
+  // When the list could not be read, trust the config, as the lineup does.
+  const canUse = (model: string) => visible === null || visible.includes(model);
   const workspace = new Workspace();
   const classifier = modelClient === null ? null : new ClassifyDocument(modelClient, lineup.small.id);
   const indexFolder = new IndexFolder({
@@ -102,6 +116,16 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     maxRounds: settings.maxRounds,
     exportsDir: settings.exportsDir,
   });
+  const callsAvailable = voiceClient !== null && canUse(voiceCatalog.call.model);
+  const dictationAvailable = transcriber !== null && canUse(voiceCatalog.dictation.model);
+  const voiceCalls = new VoiceCalls({ voiceClient, available: callsAvailable, catalog: voiceCatalog, workspace, sessions, logger });
+  const transcribeSpeech = new TranscribeSpeech({
+    transcriber: dictationAvailable ? transcriber : null,
+    workspace,
+    sessions,
+    logger,
+    pricePerMinute: voiceCatalog.dictation.pricePerMinute,
+  });
   const apiKeyPresent = settings.openAiApiKey !== null;
   return {
     settings,
@@ -117,6 +141,8 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
     watchFolder,
     sessions,
     askQuestion,
+    voiceCatalog,
+    voiceCalls,
     api: {
       health: { version: VERSION, apiKeyPresent },
       exports: { sessions, exportResult: new ExportResult(exporter, clock), exportsDir: settings.exportsDir },
@@ -126,6 +152,7 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
       chat: { askQuestion, sessions, workspace, apiKeyPresent },
       models: { lineup, answerTier: modelConfig.answerTier },
       usage: { sessions },
+      voice: { catalog: voiceCatalog, calls: voiceCalls, transcribe: transcribeSpeech, callsAvailable, dictationAvailable },
     },
   };
 }
@@ -135,6 +162,8 @@ async function start(): Promise<void> {
   const container = await compose(settings);
   const app = buildApp(container.api);
   app.addHook('onClose', () => container.watchFolder.stop());
+  // An open call bills by the second, so stopping the server hangs up every call it started.
+  app.addHook('onClose', () => container.voiceCalls.hangUpAll());
   for (const signal of ['SIGINT', 'SIGTERM'] as const) process.once(signal, () => void shutdown(app));
   await app.listen({ port: settings.port, host: settings.host });
   const { frontier, balanced, small } = container.lineup;

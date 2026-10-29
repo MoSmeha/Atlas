@@ -168,6 +168,6 @@ describe('DELETE /api/chat/:sessionId', () => {
     expect(response.body).toBe('');
     expect(sessions.find('s1')).toBeNull();
     const usage = (await app.inject({ method: 'GET', url: '/api/usage?sessionId=s1' })).json();
-    expect(usage).toEqual({ last: null, session: { questions: 0, costUsd: 0 } });
+    expect(usage).toEqual({ last: null, session: { questions: 0, costUsd: 0, voiceSeconds: 0 } });
   });
 });

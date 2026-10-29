@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Answer, ChatEvent, Source } from '../src/index';
+import { Answer, ChatEvent, ChatRequest, EndCallRequest, routes, Source, StartCallRequest, VoiceOption } from '../src/index';
 
 describe('shared schemas', () => {
   it('parses a PDF source and an Excel source', () => {
@@ -32,5 +32,31 @@ describe('shared schemas', () => {
     };
     const event = ChatEvent.parse({ type: 'answer', answer, usage });
     expect(event.type).toBe('answer');
+  });
+
+  it('marks a spoken question and parses the text a call reads aloud', () => {
+    expect(ChatRequest.parse({ sessionId: 's1', question: 'What is the contract value?', spoken: true }).spoken).toBe(true);
+    expect(ChatRequest.parse({ sessionId: 's1', question: 'What is the contract value?' }).spoken).toBeUndefined();
+    expect(ChatEvent.parse({ type: 'speech', text: 'The contract value is SAR 12,500,000.' })).toEqual({
+      type: 'speech',
+      text: 'The contract value is SAR 12,500,000.',
+    });
+  });
+
+  it('parses an Arabic dialect voice and rejects a dialect Atlas does not offer', () => {
+    const gulf = { id: 'gulf-female', label: 'Gulf Arabic', nativeLabel: 'خليجي', language: 'ar', dialect: 'gulf', gender: 'female' };
+    expect(VoiceOption.parse(gulf).dialect).toBe('gulf');
+    expect(VoiceOption.safeParse({ ...gulf, dialect: 'iraqi' }).success).toBe(false);
+  });
+
+  it('bounds a call start and a call end', () => {
+    expect(StartCallRequest.safeParse({ sessionId: 's1', voiceId: 'gulf-female', sdp: 'v=0' }).success).toBe(true);
+    expect(StartCallRequest.safeParse({ sessionId: 's1', voiceId: 'gulf-female', sdp: '' }).success).toBe(false);
+    expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 75.5, hangUp: false }).success).toBe(true);
+    expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: -1, hangUp: false }).success).toBe(false);
+  });
+
+  it('escapes a call id in the end route', () => {
+    expect(routes.voiceCallEnd('live_1/2')).toBe('/api/voice/calls/live_1%2F2/end');
   });
 });

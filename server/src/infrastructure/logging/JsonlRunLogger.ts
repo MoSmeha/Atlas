@@ -1,7 +1,13 @@
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Clock } from '../../application/ports/Clock';
-import type { IndexLogEntry, QuestionLogEntry, RunLogger, ToolLogEntry } from '../../application/ports/RunLogger';
+import type {
+  IndexLogEntry,
+  QuestionLogEntry,
+  RunLogger,
+  ToolLogEntry,
+  VoiceLogEntry,
+} from '../../application/ports/RunLogger';
 
 /** Appends one JSON line per event to `<logDir>/<date>.jsonl`. Logging never breaks a question. */
 export class JsonlRunLogger implements RunLogger {
@@ -23,6 +29,10 @@ export class JsonlRunLogger implements RunLogger {
 
   indexing(entry: IndexLogEntry): void {
     this.write('indexing', entry);
+  }
+
+  voice(entry: VoiceLogEntry): void {
+    this.write('voice', entry);
   }
 
   private write(type: string, entry: object): void {

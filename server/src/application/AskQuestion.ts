@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { Answer, ChatEvent, ErrorDetail, ModelTier, Usage } from '@atlas/shared';
 import { isArabic } from '../domain/language';
 import { zeroUsage, type TokenPrice } from '../domain/pricing';
+import { speechFor } from '../domain/speech';
 import { conversationInput } from './agent/conversationInput';
 import { buildInstructions } from './agent/instructions';
 import { noteEvidence } from './agent/noteEvidence';
@@ -55,9 +56,11 @@ export interface AskQuestionInput {
   question: string;
   /** Requested model ID; anything but one of the lineup's three gets the default answer model. */
   model?: string | null;
+  /** Spoken in a voice call: the instructions allow for transcription mistakes, and a `speech` event precedes the answer. */
+  spoken?: boolean;
   /** Stops the question, for example when the browser disconnects. */
   signal?: AbortSignal;
-  /** Receives started, the trace steps, the streamed answer, and then answer or error. */
+  /** Receives started, the trace steps, the streamed answer, then speech when spoken, and then answer or error. */
   onEvent: (event: ChatEvent) => void;
 }
 
@@ -106,6 +109,7 @@ export class AskQuestion {
     const resultIds = question.session.resultIds().slice(earlierResults);
     question.session.addTurn({ question: input.question, answer: run.value, resultIds }, usage);
     this.log(question, input, usage, { rounds: run.rounds, answerKind: run.value.kind, error: null });
+    if (input.spoken === true) input.onEvent({ type: 'speech', text: speechFor(run.value) });
     input.onEvent({ type: 'answer', answer: run.value, usage });
     return { ok: true, answer: run.value, usage };
   }
@@ -135,6 +139,7 @@ export class AskQuestion {
       today: deps.clock.now(),
       unreadable: unreadableFiles(index),
       tools: [...tools.map((tool) => tool.name), submitAnswer.name],
+      spoken: input.spoken === true,
     });
     const firstInput = conversationInput(session, input.question);
     session.evidence.noteText(input.question);

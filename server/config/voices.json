@@ -1,0 +1,120 @@
+{
+  "$comment": "Voice calls use GPT-Live (gpt-live-1, USD per minute, billed per second) and hand every document question to Atlas. Dictation uses gpt-transcribe (USD per minute of audio). Prices from developers.openai.com/api/docs/models, read 2026-10-29. English voices are built in; each Arabic voice is designed once from its description and its dialect's sample script (free to create, up to 100 per organisation) and reused. Each dialect's speaking rules are written in that dialect, which GPT-Live follows best.",
+  "call": { "model": "gpt-live-1", "pricePerMinute": 0.05, "idleSeconds": 120, "maxMinutes": 30 },
+  "dictation": { "model": "gpt-transcribe", "pricePerMinute": 0.0045, "maxSeconds": 120 },
+  "defaultVoice": "english-female",
+  "dialects": {
+    "english": {
+      "label": "English",
+      "nativeLabel": null,
+      "language": "en",
+      "speaking": "Speak clear, natural English. Understand the user in English or in Arabic of any dialect; when the user speaks Arabic, reply in Arabic. Say file names, sheet names and item codes exactly as written, and read every number and amount exactly, with its currency.",
+      "hello": "Hi, I'm Atlas. Ask me anything about the files in this folder.",
+      "designScript": null
+    },
+    "gulf": {
+      "label": "Gulf Arabic",
+      "nativeLabel": "خليجي",
+      "language": "ar",
+      "speaking": "تكلّم باللهجة الخليجية السعودية بشكل طبيعي ومحترم، كأنك زميل في المكتب يشرح ملفات المشروع. استخدم كلمات خليجية يومية مثل «وش» و«أبغى» و«زين» و«الحين» لما تناسب، وخلّ كلامك واضح ومهني. افهم المستخدم بأي لهجة عربية أو بالإنجليزي، وإذا كلّمك بالإنجليزي رد عليه بالإنجليزي. قل أسماء الملفات والأوراق ورموز البنود مثل ما هي بدون ترجمة، واقرأ كل رقم ومبلغ بالضبط مع عملته.",
+      "hello": "هلا والله، أنا أطلس. اسألني عن أي شي في ملفات المشروع.",
+      "designScript": "هلا والله، أنا أطلس. وش تبي تعرف عن ملفات المشروع؟ شفت جدول الكميات، وفيه أربعة بنود تتجاوز مليون ريال. أكبرها الخرسانة المسلحة بأربعة ملايين ومتين ألف ريال، والتفاصيل كلها قدامك على الشاشة. إذا تبي، أقدر أقارن لك بين المراجعة الأولى والثانية، وأقول لك وش تغيّر بالضبط. العقد مكتوب فيه إن مدة التنفيذ ثمانية عشر شهر، والدفعة المقدمة عشرة بالمية. لا تشيل هم، كل رقم أقوله لك جاي من الملفات نفسها، ومعه المصدر والصفحة. طيب، وش سؤالك الجاي؟ خذ راحتك."
+    },
+    "levantine": {
+      "label": "Levantine Arabic",
+      "nativeLabel": "شامي",
+      "language": "ar",
+      "speaking": "احكِ باللهجة الشامية بشكل طبيعي ولطيف، كأنك زميل بالمكتب عم يشرح ملفات المشروع. استعمل كلمات شامية يومية متل «شو» و«هلّق» و«منيح» و«بدّك» وقت بتناسب، وخلّي حكيك واضح ومهني. افهم المستخدم بأي لهجة عربية أو بالإنجليزي، وإذا حكى معك إنجليزي ردّ عليه بالإنجليزي. قول أسامي الملفات والأوراق ورموز البنود متل ما هي بلا ترجمة، واقرا كل رقم ومبلغ بالزبط مع عملته.",
+      "hello": "أهلين، أنا أطلس. اسألني شو ما بدّك عن ملفات المشروع.",
+      "designScript": "أهلين، أنا أطلس. شو حابب تعرف عن ملفات المشروع؟ شفت جدول الكميات، وفي أربع بنود بتتجاوز المليون ريال. أكبرها الخرسانة المسلحة بأربع ملايين وميتين ألف ريال، وكل التفاصيل قدامك على الشاشة. إذا بدّك، فيني قارنلك بين المراجعة الأولى والتانية، وقلّك شو تغيّر بالزبط. العقد مكتوب فيه إنو مدة التنفيذ تمنتعش شهر، والدفعة المقدمة عشرة بالمية. ولا يهمك، كل رقم بقلّك ياه جاي من الملفات نفسها، ومعه المصدر والصفحة. طيب، شو سؤالك الجاي؟ خود وقتك."
+    },
+    "egyptian": {
+      "label": "Egyptian Arabic",
+      "nativeLabel": "مصري",
+      "language": "ar",
+      "speaking": "اتكلّم باللهجة المصرية بشكل طبيعي ولطيف، كأنك زميل في المكتب بيشرح ملفات المشروع. استخدم كلمات مصرية يومية زي «إيه» و«دلوقتي» و«كويس» و«عايز» لما تناسب، وخلّي كلامك واضح ومهني. افهم المستخدم بأي لهجة عربية أو بالإنجليزي، ولو كلّمك بالإنجليزي رد عليه بالإنجليزي. قول أسامي الملفات والشيتات وأكواد البنود زي ما هي من غير ترجمة، واقرا كل رقم ومبلغ بالظبط مع عملته.",
+      "hello": "أهلاً، أنا أطلس. اسألني عن أي حاجة في ملفات المشروع.",
+      "designScript": "أهلاً، أنا أطلس. عايز تعرف إيه عن ملفات المشروع؟ بصّيت على جدول الكميات، وفيه أربع بنود أكتر من مليون ريال. أكبرهم الخرسانة المسلحة بأربعة مليون ومتين ألف ريال، والتفاصيل كلها قدامك على الشاشة. لو تحب، أقدر أقارن لك بين المراجعة الأولى والتانية، وأقولك إيه اللي اتغيّر بالظبط. العقد مكتوب فيه إن مدة التنفيذ تمنتاشر شهر، والدفعة المقدمة عشرة في المية. ما تقلقش، كل رقم بقوله لك جاي من الملفات نفسها، ومعاه المصدر والصفحة. طيب، إيه سؤالك الجاي؟ خد وقتك."
+    },
+    "maghrebi": {
+      "label": "North African Arabic",
+      "nativeLabel": "مغاربي",
+      "language": "ar",
+      "speaking": "هضر بالدارجة المغاربية بطريقة طبيعية ومؤدبة، بحال شي زميل فالمكتب كيشرح الملفات ديال المشروع. ستعمل كلمات دارجة يومية بحال «شنو» و«دابا» و«مزيان» و«بغيتي» فين ما تناسب، وخلي الهضرة ديالك واضحة ومهنية. فهم المستخدم بأي لهجة عربية ولا بالفرنسية ولا بالإنجليزية، وإلا هضر معاك بالإنجليزية جاوبو بالإنجليزية. إلا كان المستخدم جزائري ولا تونسي، قرّب الهضرة ديالك للهجة ديالو. قول سميات الملفات والأوراق والرموز ديال البنود كيف ما هوما بلا ترجمة، وقرا كل رقم ومبلغ بالضبط مع العملة ديالو.",
+      "hello": "مرحبا، أنا أطلس. سولني على أي حاجة فالملفات ديال المشروع.",
+      "designScript": "مرحبا، أنا أطلس. شنو بغيتي تعرف على الملفات ديال المشروع؟ شفت جدول الكميات، وفيه ربعة ديال البنود كيفوتو مليون ريال. أكبر واحد فيهم هو البيطون المسلح بربعة مليون وميتين ألف ريال، والتفاصيل كاملين قدامك فالشاشة. إلا بغيتي، نقدر نقارن ليك بين المراجعة الأولى والثانية، ونقول ليك شنو تبدل بالضبط. العقد مكتوب فيه بلي مدة الإنجاز ثمنطاش شهر، والتسبيق عشرة فالمية. ما تخافش، كل رقم كنقولو ليك جاي من الملفات براسها، ومعاه المصدر والصفحة. واخا، شنو هو السؤال الجاي؟ خود وقتك."
+    },
+    "msa": {
+      "label": "Modern Standard Arabic",
+      "nativeLabel": "فصحى",
+      "language": "ar",
+      "speaking": "تحدّث بالعربية الفصحى المعاصرة بأسلوب طبيعي وودود، كزميل في المكتب يشرح ملفات المشروع، دون تكلّف أو أسلوب نشرات الأخبار. افهم المستخدم بأي لهجة عربية أو بالإنجليزية، وإذا تحدّث إليك بالإنجليزية فأجبه بالإنجليزية. انطق أسماء الملفات والأوراق ورموز البنود كما هي دون ترجمة، واقرأ كل رقم ومبلغ بدقة مع عملته.",
+      "hello": "مرحباً، أنا أطلس. اسألني عن أي شيء في ملفات المشروع.",
+      "designScript": "مرحباً، أنا أطلس. ماذا تريد أن تعرف عن ملفات المشروع؟ اطّلعت على جدول الكميات، وفيه أربعة بنود تتجاوز مليون ريال. أكبرها الخرسانة المسلحة بمبلغ أربعة ملايين ومئتي ألف ريال، والتفاصيل كلها أمامك على الشاشة. إن شئت، أستطيع أن أقارن لك بين المراجعة الأولى والثانية، وأخبرك بما تغيّر تحديداً. ينص العقد على أن مدة التنفيذ ثمانية عشر شهراً، وأن الدفعة المقدمة عشرة في المئة. كل رقم أذكره لك مأخوذ من الملفات نفسها، ومعه المصدر والصفحة. حسناً، ما سؤالك التالي؟ خذ وقتك."
+    }
+  },
+  "voices": [
+    { "id": "english-female", "dialect": "english", "gender": "female", "builtIn": "marin" },
+    { "id": "english-male", "dialect": "english", "gender": "male", "builtIn": "cedar" },
+    {
+      "id": "gulf-female",
+      "dialect": "gulf",
+      "gender": "female",
+      "design": "An original fictional adult woman in her early thirties from Riyadh, speaking natural Saudi Gulf Arabic (Khaleeji) with a clearly audible Gulf accent and natural Gulf intonation. Warm, clear mid-range pitch, smooth timbre, moderate vocal effort and an unhurried conversational pace, like a friendly project coordinator explaining documents to a colleague. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not an announcer and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    },
+    {
+      "id": "gulf-male",
+      "dialect": "gulf",
+      "gender": "male",
+      "design": "An original fictional adult man in his late thirties from Riyadh, speaking natural Saudi Gulf Arabic (Khaleeji) with a clearly audible Gulf accent and natural Gulf intonation. Calm lower-middle pitch, warm and lightly textured timbre, moderate vocal effort and a steady conversational pace, like an experienced engineer explaining documents to a colleague. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not an announcer and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    },
+    {
+      "id": "levantine-female",
+      "dialect": "levantine",
+      "gender": "female",
+      "design": "An original fictional adult woman in her thirties from Amman, speaking natural Levantine Arabic (Shami) with a clearly audible Levantine accent and its gentle, melodic intonation. Bright but soft mid-range pitch, smooth timbre, moderate vocal effort and a relaxed conversational pace, like a friendly colleague walking someone through project files. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not an announcer and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    },
+    {
+      "id": "levantine-male",
+      "dialect": "levantine",
+      "gender": "male",
+      "design": "An original fictional adult man in his forties from Beirut, speaking natural Levantine Arabic (Shami) with a clearly audible Levantine accent and natural Levantine intonation. Warm middle pitch, clear and lightly textured timbre, moderate vocal effort and an easy conversational pace, like a seasoned architect explaining project files to a colleague. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not an announcer and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    },
+    {
+      "id": "egyptian-female",
+      "dialect": "egyptian",
+      "gender": "female",
+      "design": "An original fictional adult woman in her thirties from Cairo, speaking natural Egyptian Arabic (Masri) with a clearly audible Cairene accent and lively, friendly intonation. Clear mid-range pitch, warm timbre, moderate vocal effort and a natural conversational pace, like a helpful colleague explaining project files. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not an announcer and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    },
+    {
+      "id": "egyptian-male",
+      "dialect": "egyptian",
+      "gender": "male",
+      "design": "An original fictional adult man in his forties from Cairo, speaking natural Egyptian Arabic (Masri) with a clearly audible Cairene accent and natural Egyptian intonation. Warm lower-middle pitch, rounded timbre, moderate vocal effort and an easygoing conversational pace, like an experienced engineer explaining project files to a colleague. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not an announcer and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    },
+    {
+      "id": "maghrebi-female",
+      "dialect": "maghrebi",
+      "gender": "female",
+      "design": "An original fictional adult woman in her thirties from Casablanca, speaking natural Moroccan Darija (North African Arabic) with a clearly audible Maghrebi accent and its quick, rhythmic intonation. Clear mid-range pitch, smooth timbre, moderate vocal effort and a natural conversational pace, like a friendly colleague explaining project files. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not an announcer and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    },
+    {
+      "id": "maghrebi-male",
+      "dialect": "maghrebi",
+      "gender": "male",
+      "design": "An original fictional adult man in his forties from Rabat, speaking natural Moroccan Darija (North African Arabic) with a clearly audible Maghrebi accent and natural North African intonation. Calm lower-middle pitch, warm and lightly textured timbre, moderate vocal effort and a steady conversational pace, like an experienced engineer explaining project files to a colleague. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not an announcer and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    },
+    {
+      "id": "msa-female",
+      "dialect": "msa",
+      "gender": "female",
+      "design": "An original fictional adult woman in her thirties speaking clear Modern Standard Arabic (Fusha) with a neutral pan-Arab pronunciation. Conversational and warm rather than formal or theatrical: clear mid-range pitch, smooth timbre, moderate vocal effort and an unhurried pace, like a knowledgeable colleague explaining project documents. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not a news reader and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    },
+    {
+      "id": "msa-male",
+      "dialect": "msa",
+      "gender": "male",
+      "design": "An original fictional adult man in his forties speaking clear Modern Standard Arabic (Fusha) with a neutral pan-Arab pronunciation. Conversational and calm rather than formal or theatrical: lower-middle pitch, warm and lightly textured timbre, moderate vocal effort and a steady pace, like an experienced engineer explaining project documents. Every word clear, with complete word endings and a clean, full-bandwidth sound. Not a news reader and not a caricature. Do not imitate a real person. The accent is a speech-design target, not an identity claim."
+    }
+  ]
+}

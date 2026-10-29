@@ -103,6 +103,41 @@ describe('AskQuestion', () => {
     ]);
   });
 
+  it('reads a spoken question with transcription mistakes in mind and sends what to say before the answer', async () => {
+    const { ask, model, events } = setup([
+      queryItems,
+      submits({ markdown: 'One item costs over 1,000,000: A1 at SAR 2,000,000.', result_id: 'r1' }),
+    ]);
+
+    const outcome = await ask.execute({
+      sessionId: 's1',
+      question: 'which items cost over one million',
+      spoken: true,
+      onEvent: (event) => events.push(event),
+    });
+
+    expect(outcome.ok).toBe(true);
+    expect(model.requests[0]?.instructions).toContain('This question was spoken in a voice call and transcribed automatically.');
+    expect(events.map((event) => event.type)).toEqual(['started', 'step', 'step', 'answer_delta', 'speech', 'answer']);
+    expect(events.at(-2)).toEqual({
+      type: 'speech',
+      text: [
+        'One item costs over 1,000,000: A1 at SAR 2,000,000.',
+        'The table on the screen, "Items over 1,000,000", has 1 row.',
+        'Columns: Item code, Amount.',
+        'It reads: A1, 2,000,000.',
+        'Source: BOQ.xlsx, sheet Bill 1, row 5.',
+      ].join('\n'),
+    });
+  });
+
+  it('leaves the voice note out of a typed question and sends no speech', async () => {
+    const { model, events, question } = setup([submits({ kind: 'not_found', markdown: 'Not in the documents.' })]);
+    await question('What is the fee?');
+    expect(model.requests[0]?.instructions).not.toContain('voice call');
+    expect(events.some((event) => event.type === 'speech')).toBe(false);
+  });
+
   it('gives the second question the first turn, and lets it attach the saved result', async () => {
     const { model, question } = setup([
       queryItems,

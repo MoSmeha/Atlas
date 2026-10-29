@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { CatalogModel } from '../../../src/application/models/pickLineup';
 import type { ModelConfig } from '../../../src/infrastructure/config/modelConfig';
-import { resolveLineup } from '../../../src/infrastructure/openai/resolveLineup';
+import { resolveLineup, resolveModels } from '../../../src/infrastructure/openai/resolveLineup';
 import { FakeModelClient } from '../../fakes/FakeModelClient';
 
 function model(id: string, tier: CatalogModel['tier']): CatalogModel {
@@ -29,6 +29,13 @@ describe('resolveLineup', () => {
     const client = new FakeModelClient();
     client.models = ['old-frontier', 'new-balanced', 'old-small'];
     expect(ids(await resolveLineup(client, config))).toEqual(['old-frontier', 'new-balanced', 'old-small']);
+  });
+
+  it('also returns the models the account can see, or null without a client', async () => {
+    const client = new FakeModelClient();
+    client.models = ['old-frontier', 'gpt-live-1'];
+    expect((await resolveModels(client, config)).visible).toEqual(['old-frontier', 'gpt-live-1']);
+    expect((await resolveModels(null, config)).visible).toBeNull();
   });
 
   it('trusts the catalog order without a client', async () => {

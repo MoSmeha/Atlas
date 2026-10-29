@@ -11,6 +11,8 @@ export interface AskHandlers {
   onAnswerDelta?(delta: string): void;
   /** Discard the text streamed so far; a corrected answer follows. */
   onAnswerReset?(): void;
+  /** What a voice call says aloud for the answer that follows; only for spoken questions. */
+  onSpeech?(text: string): void;
   onAnswer?(answer: Answer, usage: Usage): void;
   /** A server, model or connection failure; Stop arrives here too, with code "stopped". */
   onError?(error: ApiError): void;
@@ -54,6 +56,9 @@ function deliver(event: ChatEvent, handlers: AskHandlers): AskOutcome | null {
       return null;
     case 'answer_reset':
       handlers.onAnswerReset?.();
+      return null;
+    case 'speech':
+      handlers.onSpeech?.(event.text);
       return null;
     case 'answer':
       handlers.onAnswer?.(event.answer, event.usage);

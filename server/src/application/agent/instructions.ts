@@ -10,6 +10,8 @@ export interface InstructionsInput {
   unreadable: readonly string[];
   /** Names of the tools offered with the question; advice about other tools is left out. Omitted, all advice stays. */
   tools?: readonly string[];
+  /** The question was spoken in a voice call and transcribed. */
+  spoken?: boolean;
 }
 
 /** Files listed one per line in the folder context; any more are counted and left to list_documents. */
@@ -111,6 +113,16 @@ const STRATEGY: Advice[] = [
   },
 ];
 
+/** For a question spoken in a voice call: how to read the transcript, and an answer short enough to say aloud. */
+const SPOKEN = [
+  'This question was spoken in a voice call and transcribed automatically. The transcript can have recognition',
+  'mistakes, above all in file names, item codes and numbers, and an Arabic question may be in a spoken dialect',
+  '(Gulf, Levantine, Egyptian or North African): read it for its meaning, match a name to the closest file, sheet or',
+  'item, and say which one you used when the match is not exact. A voice reads the answer aloud and the details stay on',
+  'screen, so lead with the direct answer in one or two short sentences. The language rule still holds: an Arabic',
+  'question, in any dialect, gets an answer in Arabic.',
+].join(' ');
+
 const LANGUAGES: Record<Language, string> = { en: 'English', ar: 'Arabic', mixed: 'Arabic and English' };
 
 /** The system instructions for one question: Atlas's role, the answer rules, how to use the tools, and the folder. */
@@ -122,6 +134,7 @@ export function buildInstructions(input: InstructionsInput): string {
     ['Rules. Every answer is checked against them.', ...RULES].join('\n'),
     STYLE,
     ['How to work:', ...advice.map((item) => `- ${item.text}`)].join('\n'),
+    ...(input.spoken === true ? [SPOKEN] : []),
     `Today is ${describeDay(input.today)}.`,
     folderContext(input.documents, input.unreadable),
   ].join('\n\n');

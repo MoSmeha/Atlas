@@ -14,7 +14,11 @@ export const usageRoutes: RoutePlugin<{ deps: UsageDeps }> = async (app, { deps 
     const session = deps.sessions.find(request.query.sessionId);
     return {
       last: session?.lastUsage ?? null,
-      session: { questions: session?.turns.length ?? 0, costUsd: session?.totalCostUsd ?? 0 },
+      session: {
+        questions: session?.turns.length ?? 0,
+        costUsd: session?.totalCostUsd ?? 0,
+        voiceSeconds: session?.voiceSeconds ?? 0,
+      },
     };
   });
 };

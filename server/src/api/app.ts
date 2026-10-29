@@ -9,6 +9,7 @@ import { healthRoutes, type HealthDeps } from './routes/health';
 import { modelsRoutes, type ModelsDeps } from './routes/models';
 import { MAX_UPLOAD_FILES, uploadsRoutes, type UploadsDeps } from './routes/uploads';
 import { usageRoutes, type UsageDeps } from './routes/usage';
+import { voiceRoutes, type VoiceDeps } from './routes/voice';
 import { serializerCompiler, validatorCompiler, type ZodTypeProvider } from './zod';
 
 export interface ApiDeps {
@@ -20,6 +21,7 @@ export interface ApiDeps {
   chat: ChatDeps;
   models: ModelsDeps;
   usage: UsageDeps;
+  voice: VoiceDeps;
 }
 
 /** Builds the Fastify app with every feature's routes. Tests call this and use `inject`. */
@@ -38,6 +40,7 @@ export function buildApp(deps: ApiDeps) {
   app.register(chatRoutes, { deps: deps.chat });
   app.register(modelsRoutes, { deps: deps.models });
   app.register(usageRoutes, { deps: deps.usage });
+  app.register(voiceRoutes, { deps: deps.voice });
 
   return app;
 }
