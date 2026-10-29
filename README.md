@@ -1,6 +1,6 @@
 # Atlas
 
-Ask questions about a folder of project documents, PDF and Excel, in English or Arabic. Every answer shows its sources. Totals and lists are worked out by code over every row, not typed by the AI.
+Ask questions about a folder of project documents, PDF and Excel, in English or Arabic. Every answer shows its sources. Totals and lists are worked out by code over every row, not typed by the AI. The interface itself switches between English and Arabic (right to left) and between light and dark from the top bar.
 
 ![Atlas answering "What is the total of each BOQ?"](docs/images/answer.png)
 
