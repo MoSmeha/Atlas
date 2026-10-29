@@ -28,5 +28,6 @@ describe('chooseVoice', () => {
 describe('voiceName', () => {
   it('names the dialect and the voice', () => {
     expect(voiceName(voices[1] as VoiceOption)).toBe('Gulf Arabic, female voice');
+    expect(voiceName(voices[2] as VoiceOption, 'ar')).toBe('شامي، صوت ذكر');
   });
 });

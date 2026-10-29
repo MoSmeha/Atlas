@@ -341,6 +341,18 @@ const roleTokens = {
 };
 
 /**
+ * Atlas's bust in a call is marble in both schemes: white stone, graphite lines, dark pupils. These hold the light
+ * gray values the drawing uses, which the dark scheme's roles would otherwise turn dark.
+ */
+const marbleTokens = {
+  '--atlas-marble-stone': '#ffffff',
+  '--atlas-marble-shade': gray[2],
+  '--atlas-marble-line': gray[8],
+  '--atlas-marble-soft-line': gray[5],
+  '--atlas-marble-pupil': gray[9],
+};
+
+/**
  * Surface tokens on top of Mantine's defaults, per scheme: the page ground, the raised surface that
  * holds content you read (`--atlas-surface`: white in light, a lifted slate in dark), readable dimmed
  * and placeholder text (at least 4.5:1), the focus ring, tooltips, and the role shades above.
@@ -357,6 +369,7 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--atlas-focus': 'var(--mantine-color-ink-7)',
     '--atlas-tooltip-bg': 'var(--mantine-color-gray-9)',
     '--atlas-tooltip-color': '#ffffff',
+    ...marbleTokens,
   },
   dark: {
     ...darkRoleVariables(),
@@ -373,5 +386,6 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--atlas-focus': 'var(--mantine-color-ink-4)',
     '--atlas-tooltip-bg': dark[0],
     '--atlas-tooltip-color': dark[7],
+    ...marbleTokens,
   },
 });

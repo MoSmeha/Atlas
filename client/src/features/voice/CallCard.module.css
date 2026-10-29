@@ -1,4 +1,7 @@
-/* The call card sits where the composer was: the same white 8px frame and hairline, settling in like an answer. */
+/*
+ * The call card sits where the composer was: the same raised surface (white in light, a lifted slate in dark), 8px
+ * frame and border, settling in like an answer.
+ */
 
 .card {
   display: grid;
@@ -6,7 +9,7 @@
   padding: var(--mantine-spacing-sm);
   border: 1px solid var(--mantine-color-gray-4);
   border-radius: var(--mantine-radius-lg);
-  background-color: var(--mantine-color-white);
+  background-color: var(--atlas-surface);
   animation-name: settle;
   animation-fill-mode: both;
 }

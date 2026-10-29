@@ -1,6 +1,16 @@
-/* Atlas's face: graphite line work on white, like a marble bust. Ink appears only on the ring while Atlas speaks. */
+/*
+ * Atlas's face: graphite line work on white, like a marble bust. The drawing is marble in both schemes, so its colours
+ * come from the --atlas-marble tokens, which keep the light grays that the dark scheme's roles would turn dark. Only
+ * the disc behind it and the ring follow the theme. Ink appears only on the ring while Atlas speaks.
+ */
 
 .face {
+  --face-skin: var(--atlas-marble-stone);
+  --face-shade: var(--atlas-marble-shade);
+  --face-line: var(--atlas-marble-line);
+  --face-soft-line: var(--atlas-marble-soft-line);
+  --face-pupil: var(--atlas-marble-pupil);
+
   display: block;
   inline-size: 72px;
   block-size: 72px;
@@ -15,10 +25,12 @@
   }
 }
 
+/* The disc takes the hover tone, a step off the card's surface in either scheme. */
 .ground {
   fill: var(--mantine-color-gray-0);
 }
 
+/* Listening and resting: a hairline. */
 .ring {
   fill: none;
   stroke: var(--mantine-color-gray-3);
@@ -48,12 +60,16 @@
   animation: turn 7s linear infinite;
 }
 
-/* Speaking: the ring takes the ink of the streaming caret, the one place the brand hue marks Atlas answering. */
+/*
+ * Speaking: the ring takes the brand ink, the one place the hue marks Atlas answering. The link colour is that ink in
+ * light and a lighter one in dark, so the thin line still reads on the dark card.
+ */
 .face[data-mood='speaking'] .ring {
-  stroke: var(--mantine-primary-color-filled);
+  stroke: var(--mantine-color-anchor);
   stroke-width: 1.5px;
 }
 
+/* Until Atlas can hear, the whole face steps back a little. */
 .face[data-mood='resting'],
 .face[data-mood='connecting'] {
   opacity: 0.85;
@@ -74,15 +90,15 @@
 
 .skin,
 .cloth {
-  fill: var(--mantine-color-white);
-  stroke: var(--mantine-color-gray-8);
+  fill: var(--face-skin);
+  stroke: var(--face-line);
   stroke-width: 1.4;
   stroke-linejoin: round;
 }
 
 .hair {
-  fill: var(--mantine-color-gray-2);
-  stroke: var(--mantine-color-gray-8);
+  fill: var(--face-shade);
+  stroke: var(--face-line);
   stroke-width: 1.4;
   stroke-linejoin: round;
 }
@@ -90,7 +106,7 @@
 .line,
 .thin {
   fill: none;
-  stroke: var(--mantine-color-gray-8);
+  stroke: var(--face-line);
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -105,27 +121,27 @@
 
 /* Bare skin round the lips, so the mouth always reads against the beard. */
 .lips {
-  fill: var(--mantine-color-white);
+  fill: var(--face-skin);
 }
 
 .curl {
   fill: none;
-  stroke: var(--mantine-color-gray-5);
+  stroke: var(--face-soft-line);
   stroke-width: 1.1;
   stroke-linecap: round;
 }
 
 .eye {
-  fill: var(--mantine-color-gray-9);
+  fill: var(--face-pupil);
 }
 
 .glint {
-  fill: var(--mantine-color-white);
+  fill: var(--face-skin);
 }
 
 .mouth {
-  fill: var(--mantine-color-gray-9);
-  stroke: var(--mantine-color-gray-8);
+  fill: var(--face-pupil);
+  stroke: var(--face-line);
   stroke-width: 0.8;
   stroke-linejoin: round;
 }
