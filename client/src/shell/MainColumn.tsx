@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Box, Stack } from '@mantine/core';
 import { shellLayout } from './layout';
+import classes from './MainColumn.module.css';
 
 interface MainColumnProps {
   /** The conversation: the empty state first, then one turn per question. */
@@ -23,11 +24,7 @@ export function MainColumn({ children, composer }: MainColumnProps) {
       <Stack flex={1} gap="lg" pt="xl" pb="lg">
         {children}
       </Stack>
-      {composer !== null && (
-        <Box pos="sticky" bottom={0} pb="md" bg="var(--mantine-color-body)">
-          {composer}
-        </Box>
-      )}
+      {composer !== null && <Box className={classes.dock}>{composer}</Box>}
     </Stack>
   );
 }

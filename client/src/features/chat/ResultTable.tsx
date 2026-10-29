@@ -59,7 +59,7 @@ export function ResultTable({ table }: { table: ResultTableData }) {
                 <Table.Tr>
                   {columns.map((column) => (
                     <Table.Th key={column.index} dir="auto" className={column.numeric ? classes.number : undefined}>
-                      {column.label}
+                      {keepUnitWithLabel(column.label)}
                     </Table.Th>
                   ))}
                 </Table.Tr>
@@ -111,4 +111,9 @@ function Cell({ value, column, noValue }: { value: CellValue; column: ResultColu
       {value}
     </Table.Td>
   );
+}
+
+/** "Amount (SAR)" keeps its unit with it: a header may wrap between words, never before its bracket. */
+function keepUnitWithLabel(label: string): string {
+  return label.replace(/ +\(/g, '\u00a0(');
 }

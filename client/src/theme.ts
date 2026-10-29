@@ -314,7 +314,11 @@ export const theme = createTheme({
       styles: { dropdown: { backgroundColor: 'var(--atlas-surface)' } },
     }),
     Notification: Notification.extend({ defaultProps: { radius: 'md', withBorder: true } }),
-    ScrollArea: ScrollArea.extend({ defaultProps: { scrollbarSize: 8, type: 'hover' } }),
+    // The thumb takes the border role, like the browser scrollbars in global.css, so it reads in both schemes.
+    ScrollArea: ScrollArea.extend({
+      defaultProps: { scrollbarSize: 8, type: 'hover' },
+      styles: { thumb: { backgroundColor: 'var(--mantine-color-gray-4)' } },
+    }),
     Code: Code.extend({ defaultProps: { color: 'gray.1' } }),
     Title: Title.extend({ styles: { root: { letterSpacing: '-0.01em' } } }),
   },

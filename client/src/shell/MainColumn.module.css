@@ -1,0 +1,21 @@
+/*
+ * The question box docked at the foot of the sheet. Turns scrolling under it fade out over a short band
+ * of the page ground instead of being cut at its edge, and a small gap keeps them clear of its border.
+ */
+.dock {
+  position: sticky;
+  bottom: 0;
+  padding-top: var(--mantine-spacing-xs);
+  padding-bottom: var(--mantine-spacing-md);
+  background-color: var(--mantine-color-body);
+}
+
+.dock::before {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 100%;
+  height: var(--mantine-spacing-lg);
+  background: linear-gradient(to bottom, transparent, var(--mantine-color-body));
+  pointer-events: none;
+  content: '';
+}

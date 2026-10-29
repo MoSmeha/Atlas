@@ -34,7 +34,7 @@ describe('suggestionsStep', () => {
     expect(suggestions).toEqual(suggest(index.documents()));
     const english = suggestions.map((question) => question.en);
     expect(suggestions).toHaveLength(5);
-    expect(english.slice(0, 2)).toEqual(['What is the total of BOQ.xlsx?', 'List all cost items above SAR 1 million']);
+    expect(english.slice(0, 2)).toEqual(['What is the total of BOQ.xlsx?', 'List all cost items above SAR\u00a01\u00a0million']);
   });
 
   it('follows the documents on the next run, classifications included', async () => {

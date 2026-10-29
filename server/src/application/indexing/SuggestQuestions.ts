@@ -192,13 +192,14 @@ function aboutArabic(doc: DocumentSummary, name: string): SuggestedQuestion {
   return { en: `What are the main points of ${name}?`, ar: `ما النقاط الرئيسية في ${name}؟` };
 }
 
+/** No-break spaces join the amount and its currency, so a wrapping line never strands "SAR" on its own. */
 function million(currency: string | null): string {
-  return currency === null ? '1 million' : `${currency} 1 million`;
+  return currency === null ? '1\u00a0million' : `${currency}\u00a01\u00a0million`;
 }
 
 /** The threshold in figures, so the Arabic question carries the exact number; the currency code stays as written. */
 function millionAr(currency: string | null): string {
-  return currency === null ? '1,000,000' : `1,000,000 ${currency}`;
+  return currency === null ? '1,000,000' : `1,000,000\u00a0${currency}`;
 }
 
 /** The file name, or the path when another file in the folder has the same name. */
