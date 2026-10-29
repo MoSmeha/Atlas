@@ -44,7 +44,49 @@ From the command line: `pnpm cli samples/riyadh-tower "What is the total of each
   </tr>
 </table>
 
+## Talk to it
+
+Press the phone in the question box to start a voice call, as in ChatGPT's voice mode. Ask out loud in English or Arabic, in your own dialect. Atlas answers aloud in the voice you picked, and every answer is also written in the chat with its table and sources. You can interrupt it, mute the microphone, stop an answer, or switch the voice mid-call. The microphone beside the phone dictates a question into the box instead, so you can read it over before sending.
+
+During a call Atlas has a face: a philosopher's bust drawn in the app's line style. It blinks, raises its brows while you speak, looks up while it checks the documents, and moves its mouth with its own voice.
+
+| Voice | Dialect | Voices |
+| --- | --- | --- |
+| English | | Marin (female), Cedar (male), built in |
+| Gulf Arabic | خليجي, as spoken in Saudi Arabia | female, male |
+| Levantine Arabic | شامي | female, male |
+| Egyptian Arabic | مصري | female, male |
+| North African Arabic | مغاربي, Moroccan Darija | female, male |
+| Modern Standard Arabic | فصحى | female, male |
+
+A browser set to Arabic starts in Gulf Arabic; any other starts in English. The picker remembers your last choice.
+
 ## How it works
+
+### A voice call
+
+```mermaid
+sequenceDiagram
+  actor You
+  participant App as Web app
+  participant Atlas as Atlas server
+  participant Live as GPT-Live (voice)
+  You->>App: Press the phone
+  App->>Atlas: Call offer (WebRTC)
+  Atlas->>Live: Start the call with the key, the voice, the dialect and the file names
+  Live-->>App: Voice and events, directly
+  You->>Live: Ask a question out loud
+  Live-->>App: Hand-off: this needs the documents
+  App->>Atlas: The question, as a normal chat question
+  Atlas-->>App: The checked answer, its sources, and a short text to say
+  App->>Live: The text to say
+  Live-->>You: The answer, aloud
+```
+
+- **The voice never answers about the documents itself.** GPT-Live (`gpt-live-1`) listens, takes turns and speaks; every question about the documents goes to the same agent and checks as a typed one, so totals still come from SQL. The voice gets a short text built from the checked answer (its first sentences, the table's first rows and the sources, with every number exactly as computed) and is told to say numbers as given. What it actually said is kept under the answer as "Said aloud", so the two can be compared.
+- **Arabic voices are designed.** GPT-Live has no Arabic voices built in, so Atlas designs one per dialect and gender from a description and a sample script in that dialect, the first time a call needs it (creating a voice is free; its id is kept in `.atlas/voices.json`). Each dialect's speaking rules are written in the dialect itself. How close each voice sounds to its dialect is up to the voice model: listen, then tune the descriptions in `server/config/voices.json`.
+- **Cost.** A call costs $0.05 a minute, billed by the second, plus the usual cost of each answer. It hangs up after 2 minutes with nothing said and at 30 minutes, and closing the page or stopping the server hangs it up too. The call's cost is added to the chat's total. Dictation uses `gpt-transcribe` at $0.0045 a minute, with the folder's file and sheet names as hints.
+- **Your key stays on the server.** The browser sends its call offer to the Atlas server, which starts the call with the key; only audio and events go between the browser and OpenAI.
 
 ### A question becomes an answer
 
@@ -201,6 +243,8 @@ Settings live in `.env`. Only the key is required.
 
 Atlas keeps only the models your key can see; `pnpm models` lists them. Change `answerTier` to change the default.
 
+**Voices** are set in `server/config/voices.json`: the call model and its price, the silence and length limits, the dictation model, each dialect's speaking rules and sample script, and each voice, built in or designed from a description. Change a description and the next call designs a new voice and deletes the old one. Calls and dictation switch off by themselves when your key cannot see their models.
+
 ## Project layout
 
 ```text
@@ -209,7 +253,7 @@ server/    src/domain        pure rules
            src/application   agent, tools, checks, ports
            src/infrastructure mupdf, exceljs, SQLite, OpenAI
            src/api           web routes
-           config/           models.json
+           config/           models.json, voices.json
            scripts/          samples, eval, models
            test/             tests, with fakes for every port
 client/    web app (React, Vite, Mantine), DESIGN.md
@@ -221,7 +265,7 @@ docs/      images, eval report, note, time log
 
 | Command | What it does |
 | --- | --- |
-| `pnpm test` | About 1,650 unit tests. No key, no network |
+| `pnpm test` | About 1,760 unit tests. No key, no network |
 | `pnpm typecheck` | Types in all three packages |
 | `pnpm eval` | 21 real questions checked against `samples/expected.json`; writes [docs/EVAL.md](docs/EVAL.md). Costs a few cents on Luna |
 | `pnpm samples` | Rebuilds the sample documents (needs Microsoft Edge) |

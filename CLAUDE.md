@@ -9,7 +9,7 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 - `infrastructure/`: adapters that implement the ports (mupdf, exceljs, better-sqlite3, openai, chokidar), plus settings.
 - `api/`: Fastify routes by feature, Zod schemas from `@atlas/shared` for every request and response, one error hook.
 - Dependencies point one way: api -> application -> domain. Infrastructure implements application ports. `server/src/main.ts` is the only place that wires adapters; `server/src/cli.ts` reuses `compose()` from it.
-- Tests mirror the layers under `server/test/`. Fakes for every port live in `server/test/fakes/`. The unit suite runs with no API key and no network.
+- Tests mirror the layers under `server/test/`. Fakes for every port live in `server/test/fakes/`. The unit suite runs with no API key and no network. `client/test/` covers the client's pure logic (the voice call's director, transcript and face motion) with vitest.
 
 ## Conventions
 
@@ -51,6 +51,7 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 ## Current state
 
 - All six steps are built: ingestion, the agent with all eleven tools, guards, memory, the CLI, the web client, samples with `samples/expected.json`, the eval, README, `docs/NOTE.md` and `docs/TIMELOG.md`.
+- Voice (2026-10-29): calls on GPT-Live (`gpt-live-1`, WebRTC, client delegation) and dictation on `gpt-transcribe`, configured in `server/config/voices.json`. Server: `application/voice/` (VoiceCalls, TranscribeSpeech, call instructions), `domain/speech.ts` (the text a call says, built from the checked answer), ports `VoiceClient` and `Transcriber`. Client: `features/voice/` (CallSession directs the call; AtlasFace is the animated bust). Arabic voices are designed on first use and their ids kept in `.atlas/voices.json`. No live call has been tested yet: the owner should listen to each dialect voice once and tune the descriptions.
 - Models (confirmed with `pnpm models`, 2026-10-28): frontier `gpt-6-astra`, balanced `gpt-6.1-sol`, small `gpt-6-luna` (the default answer model since 2026-10-29: the owner wants the demo cheap; `answerTier` in `server/config/models.json`), embeddings `text-embedding-3-small`.
 - Eval (`docs/EVAL.md`, 2026-10-29): 21 of 21 on gpt-6-luna for $0.02, median 6.9 s. An earlier Astra run was 20 of 21 for $1.48.
 - Design: `client/PRODUCT.md`, direction contract in `client/.impeccable/surfaces/client.md`, design system in `client/DESIGN.md` (+ `.impeccable/design.json`). The finish review asked for one batch of fixes, which is applied; its verdict pass and fresh screenshots are still to do.

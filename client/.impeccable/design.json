@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-28T21:37:06.211Z",
+  "generatedAt": "2026-10-29T08:10:03.104Z",
   "title": "Design System: Atlas",
   "extensions": {
     "colorMeta": {
@@ -520,13 +520,33 @@
         "name": "caret-pulse",
         "value": "900ms ease-in-out infinite alternate, opacity 1 to 0.3",
         "purpose": "The streaming ink caret; static under reduced motion."
+      },
+      {
+        "name": "avatar-loop",
+        "value": "requestAnimationFrame; pose eases with a 110ms half-life, the mouth with 45ms",
+        "purpose": "The call avatar only, while a call is open (The Living Face Rule). Paused in a hidden tab; a still pose per state under reduced motion."
+      },
+      {
+        "name": "avatar-blink",
+        "value": "180ms (70ms close, 110ms open), every 2.8 to 6.5s, sometimes a quick second blink",
+        "purpose": "Call avatar blinks while its eyes are open."
+      },
+      {
+        "name": "avatar-breath",
+        "value": "4.2s sine, 0.7 units of rise in a 120-unit drawing",
+        "purpose": "Call avatar breath for the whole open call."
+      },
+      {
+        "name": "avatar-ring-turn",
+        "value": "7s linear infinite rotate, ring dashed 4 5",
+        "purpose": "The dashed checking ring while a spoken question runs; no animation under reduced motion."
       }
     ],
     "breakpoints": [
       {
         "name": "xs",
         "value": "36em",
-        "purpose": "Below it a source place always drops under its name."
+        "purpose": "Below it a source place always drops under its name; the call avatar drops to 56px with heavier lines, call controls grow to 40px with End call icon-only, and only the latest caption shows."
       },
       {
         "name": "sm",
@@ -556,9 +576,9 @@
       "name": "Composer",
       "kind": "input",
       "refersTo": "composer",
-      "description": "The docked question box: white 8px box, hairline border that turns ink on focus, ink send square.",
-      "html": "<form class=\"ds-composer\"><textarea rows=\"1\" placeholder=\"Ask a question about these documents\" aria-label=\"Question\"></textarea><button type=\"submit\" aria-label=\"Send the question\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5l0 14\"/><path d=\"M18 11l-6 -6\"/><path d=\"M6 11l6 -6\"/></svg></button></form>",
-      "css": ".ds-composer{display:flex;align-items:flex-end;gap:8px;max-width:760px;padding:4px 4px 4px 12px;border:1px solid #c3c8ce;border-radius:8px;background:#fff;transition:border-color 150ms ease-out}.ds-composer:focus-within{border-color:#2a488b}.ds-composer textarea{flex:1;align-self:center;resize:none;border:0;outline:none;background:transparent;padding:4px 0;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", Tahoma, Arial, sans-serif;font-size:15px;line-height:1.55;color:#151a21;caret-color:#2a488b}.ds-composer textarea::placeholder{color:#626871}.ds-composer button{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:0;border-radius:6px;background:#2a488b;color:#fff;cursor:pointer}.ds-composer button:focus-visible{outline:2px solid #2a488b;outline-offset:2px}"
+      "description": "The docked question box: white 8px box, hairline border that turns ink on focus, a subtle dictation microphone and the ink send square (a filled ink phone while the box is empty).",
+      "html": "<form class=\"ds-composer\"><textarea rows=\"1\" placeholder=\"Ask a question about these documents\" aria-label=\"Question\"></textarea><button type=\"button\" class=\"mic\" aria-label=\"Dictate a question\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 2m0 3a3 3 0 0 1 3 -3h0a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h0a3 3 0 0 1 -3 -3z\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M8 21l8 0\"/><path d=\"M12 17l0 4\"/></svg></button><button type=\"submit\" aria-label=\"Send the question\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5l0 14\"/><path d=\"M18 11l-6 -6\"/><path d=\"M6 11l6 -6\"/></svg></button></form>",
+      "css": ".ds-composer{display:flex;align-items:flex-end;gap:8px;max-width:760px;padding:4px 4px 4px 12px;border:1px solid #c3c8ce;border-radius:8px;background:#fff;transition:border-color 150ms ease-out}.ds-composer:focus-within{border-color:#2a488b}.ds-composer textarea{flex:1;align-self:center;resize:none;border:0;outline:none;background:transparent;padding:4px 0;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", Tahoma, Arial, sans-serif;font-size:15px;line-height:1.55;color:#151a21;caret-color:#2a488b}.ds-composer textarea::placeholder{color:#626871}.ds-composer button{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:0;border-radius:6px;background:#2a488b;color:#fff;cursor:pointer}.ds-composer button:focus-visible{outline:2px solid #2a488b;outline-offset:2px}.ds-composer button.mic{background:transparent;color:#4a505a;transition:background-color 150ms ease-out}.ds-composer button.mic:hover{background:#f6f8fb}"
     },
     {
       "name": "Badges",
@@ -607,23 +627,32 @@
       "description": "52px chrome bar: neutral wordmark left, model picker, cost pair and Clear chat right.",
       "html": "<header class=\"ds-topbar\"><span class=\"ds-wordmark\">Atlas</span><span class=\"ds-topbar-right\"><span class=\"ds-usage\">$0.042 &#183; 14.2 s</span><button class=\"ds-topbar-btn\">Clear chat</button></span></header>",
       "css": ".ds-topbar{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 16px;background:#f1f4f9;border-bottom:1px solid #c3c8ce;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", Tahoma, Arial, sans-serif}.ds-wordmark{font-size:17px;font-weight:700;letter-spacing:-0.015em;line-height:1;color:#151a21}.ds-topbar-right{display:flex;align-items:center;gap:12px}.ds-usage{font-size:13px;color:#626871;font-variant-numeric:tabular-nums}.ds-topbar-btn{height:30px;padding:0 14px;border:1px solid #c3c8ce;border-radius:6px;background:#fff;color:#151a21;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:background-color 150ms ease-out}.ds-topbar-btn:hover{background:#f6f8fb}.ds-topbar-btn:focus-visible{outline:2px solid #2a488b;outline-offset:2px}"
+    },
+    {
+      "name": "Call Card",
+      "kind": "custom",
+      "refersTo": "call-card",
+      "description": "The voice call in the composer's frame: the graphite bust with its state ring (ink while Atlas speaks), status, tabular clock and cost, the newest captions, and the controls.",
+      "html": "<section class=\"ds-call\" aria-label=\"Voice call with Atlas\"><div class=\"ds-call-top\"><svg class=\"ds-call-face\" viewBox=\"0 0 120 120\" role=\"img\" aria-label=\"Atlas\"><circle cx=\"60\" cy=\"60\" r=\"58\" fill=\"#f6f8fb\"/><path d=\"M10 124 C12 106 28 97 45 94 C52 98 68 98 75 94 C92 97 108 106 110 124 Z\" fill=\"#fff\" stroke=\"#30363f\" stroke-width=\"1.4\"/><path d=\"M38.5 52 C38.5 35 48 26.5 60 26.5 C72 26.5 81.5 35 81.5 52 L81.5 64 C81.5 79 72 89 60 89 C48 89 38.5 79 38.5 64 Z\" fill=\"#fff\" stroke=\"#30363f\" stroke-width=\"1.4\"/><path d=\"M45.5 47.2 Q50.5 45 55 46.6 M65 46.6 Q69.5 45 74.5 47.2\" fill=\"none\" stroke=\"#30363f\" stroke-width=\"1.7\" stroke-linecap=\"round\"/><ellipse cx=\"50.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#151a21\"/><ellipse cx=\"69.5\" cy=\"54\" rx=\"2.7\" ry=\"3.3\" fill=\"#151a21\"/><path d=\"M60.6 53 Q58.4 58.2 59.1 61.3 Q60.2 62.4 61.8 61.7\" fill=\"none\" stroke=\"#30363f\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><path d=\"M51.5 73.2 Q55.8 71.2 60 72.8 Q64.2 71.2 68.5 73.2\" fill=\"none\" stroke=\"#30363f\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><circle class=\"ring\" cx=\"60\" cy=\"60\" r=\"58\"/></svg><div class=\"ds-call-body\"><div class=\"ds-call-status\"><span class=\"s\">Atlas is speaking</span><span class=\"t\">1:24 &#183; $0.11</span></div><div class=\"ds-call-cap\"><span class=\"who\">You</span><span class=\"w\">Which cost items are above one million riyals?</span></div><div class=\"ds-call-cap\" data-latest><span class=\"who\">Atlas</span><span class=\"w\">Three items are above one million riyals. The largest is structural steel.</span></div></div></div><div class=\"ds-call-controls\"><span class=\"ds-call-picker\">Gulf &#183; female</span><span class=\"ds-call-actions\"><button class=\"ds-call-mute\" aria-label=\"Mute the microphone\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 2m0 3a3 3 0 0 1 3 -3h0a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h0a3 3 0 0 1 -3 -3z\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M8 21l8 0\"/><path d=\"M12 17l0 4\"/></svg></button><button class=\"ds-call-end\">End call</button></span></div></section>",
+      "css": ".ds-call{display:grid;gap:12px;max-width:760px;padding:12px;border:1px solid #c3c8ce;border-radius:8px;background:#fff;font-family:\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", \"Noto Sans\", \"Noto Sans Arabic\", Tahoma, Arial, sans-serif}.ds-call-top{display:flex;gap:12px;align-items:flex-start}.ds-call-face{display:block;width:72px;height:72px;flex:none}.ds-call-face .ring{fill:none;stroke:#2a488b;stroke-width:1.5px;vector-effect:non-scaling-stroke}.ds-call-body{display:grid;gap:6px;flex:1;min-width:0;padding-top:4px}.ds-call-status{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.ds-call-status .s{font-size:13px;font-weight:600;color:#151a21}.ds-call-status .t{font-size:12px;color:#626871;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-call-cap{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;align-items:baseline}.ds-call-cap .who{font-size:12px;font-weight:600;color:#626871}.ds-call-cap .w{font-size:13px;line-height:1.45;max-height:calc(2em * 1.45);overflow:hidden;color:#626871}.ds-call-cap[data-latest] .w{color:#151a21}.ds-call-controls{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:8px;border-top:1px solid #e6eaef}.ds-call-picker{display:inline-flex;align-items:center;width:208px;height:36px;padding:0 12px;border:1px solid #c3c8ce;border-radius:6px;font-size:13px;color:#151a21;box-sizing:border-box}.ds-call-actions{display:flex;gap:8px}.ds-call-mute{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #c3c8ce;border-radius:6px;background:#fff;color:#151a21;cursor:pointer;transition:background-color 150ms ease-out}.ds-call-mute:hover{background:#f6f8fb}.ds-call-end{height:36px;padding:0 18px;border:0;border-radius:6px;background:#2a488b;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background-color 150ms ease-out}.ds-call-end:hover{background:#213870}.ds-call-mute:focus-visible,.ds-call-end:focus-visible{outline:2px solid #2a488b;outline-offset:2px}"
     }
   ],
   "narrative": {
     "northStar": "The Quiet Register",
-    "overview": "Atlas is the category standard for chat-with-your-documents tools, built to the craft of Claude.ai's calm reading column, Perplexity's numbered sources and Linear's dense, quiet chrome. The owner chose the conventions on purpose and the build doesn't dress them up. A near-white page holds one 760px conversation column. A slightly cooler neutral frames it: a 52px top bar and a 300px document register on the left. Everything is drawn with 1px hairlines on flat grounds. The one ink blue appears only where the reader acts or where the system points at evidence.\n\nDensity follows Linear more than a marketing page. Sidebar rows are 13px names over 12px meta. Tables run at 13px with tabular figures. The answer reads at 15px with a 75ch measure. Every number lines up digit under digit (register meta, result tables, source places, usage line, sheet row numbers). Motion only marks state changes: a hover tint, a chevron turning, and the finished answer's table and sources settling in once with a short fade-and-rise.\n\nThe system refuses the demo look named in the direction contract: gradients, glowing AI sparkles, bubble chat and cards inside cards. The question is a heading-weight line, not a bubble. The answer is plain prose on the page ground, not a card.",
+    "overview": "Atlas is the category standard for chat-with-your-documents tools, built to the craft of Claude.ai's calm reading column, Perplexity's numbered sources and Linear's dense, quiet chrome. The owner chose the conventions on purpose and the build doesn't dress them up. A near-white page holds one 760px conversation column. A slightly cooler neutral frames it: a 52px top bar and a 300px document register on the left. Everything is drawn with 1px hairlines on flat grounds. The one ink blue appears only where the reader acts or where the system points at evidence.\n\nDensity follows Linear more than a marketing page. Sidebar rows are 13px names over 12px meta. Tables run at 13px with tabular figures. The answer reads at 15px with a 75ch measure. Every number lines up digit under digit (register meta, result tables, source places, usage line, sheet row numbers). Motion only marks state changes: a hover tint, a chevron turning, and the finished answer's table and sources settling in once with a short fade-and-rise. One exception, approved by the owner on 2026-10-29: during a voice call, Atlas's face (a philosopher's bust in graphite line work) moves continuously, and nothing else does.\n\nThe system refuses the demo look named in the direction contract: gradients, glowing AI sparkles, bubble chat and cards inside cards. The question is a heading-weight line, not a bubble. The answer is plain prose on the page ground, not a card.",
     "keyCharacteristics": [
-      "One brand hue (deep ink blue, shade 7 of a 10-step ramp) for actions, focus, selection, links, citations and the streaming caret",
+      "One brand hue (deep ink blue, shade 7 of a 10-step ramp) for actions, focus, selection, links, citations, the streaming caret and the call avatar's ring while Atlas speaks",
       "Two neutral grounds: near-white page and cooler chrome",
       "1px hairline borders instead of shadows on every resting surface",
       "One system UI family for everything (Segoe UI carries Arabic on Windows); monospace only for SQL and tool input",
       "Tabular numerals wherever figures appear",
-      "Logical properties throughout, so Arabic answers, quotes and arrows mirror correctly"
+      "Logical properties throughout, so Arabic answers, quotes and arrows mirror correctly",
+      "Continuous motion lives only in the call avatar, and only while a call is open"
     ],
     "rules": [
       {
         "name": "The Ink Is Evidence Rule",
-        "body": "Ink blue marks only what you can act on and where an answer points (primary action, focus, link, selection, active citation, cited text, streaming caret). The wordmark, headings and icons stay neutral.",
+        "body": "Ink blue marks only what you can act on and where an answer points (primary action, focus, link, selection, active citation, cited text, streaming caret, and the call avatar's ring while Atlas speaks). The wordmark, headings, icons and the drawing of the bust stay neutral.",
         "section": "colors"
       },
       {
@@ -645,16 +674,22 @@
         "name": "The Hairline Not Shadow Rule",
         "body": "A surface that sits in the page gets a 1px border and no shadow. A shadow means the surface floats above the page.",
         "section": "elevation"
+      },
+      {
+        "name": "The Living Face Rule",
+        "body": "Continuous motion is allowed inside the call avatar only, and only while a call is open: blinks every 2.8 to 6.5s, a slow 4.2s breath, brows up while the user speaks, eyes up while a question runs, the mouth following Atlas's measured voice, and the ring dashed and turning while it checks. Under reduced motion it holds one still pose per state, and it does not move in a hidden tab. Every other surface keeps motion for state changes only.",
+        "section": "components"
       }
     ],
     "dos": [
       "Do take every colour, size, radius and shadow from the Mantine theme (`theme.ts`). Components carry no hex values.",
-      "Do keep ink blue to actions, focus, selection, links, citations and the streaming caret (The Ink Is Evidence Rule).",
+      "Do keep ink blue to actions, focus, selection, links, citations, the streaming caret and the call avatar's speaking ring (The Ink Is Evidence Rule).",
       "Do separate resting surfaces with 1px hairlines on page, chrome or white grounds, and keep shadows for modals, menus and the PDF page.",
       "Do set every figure in tabular numerals and right-align numeric columns.",
       "Do use logical properties (`inline-start`, `dir=\"auto\"`, mirrored arrows) so Arabic content reads right to left.",
       "Do use 150ms ease-out for hover and colour changes and 180ms `cubic-bezier(0.16, 1, 0.3, 1)` for content settling in or collapsing, and disable both under reduced motion.",
-      "Do use Tabler outline icons at 1.5 to 2 stroke, sized 12 to 18px."
+      "Do use Tabler outline icons at 1.5 to 2 stroke, sized 12 to 18px.",
+      "Do give the call avatar a still pose per state under reduced motion, and stop its motion in a hidden tab (The Living Face Rule)."
     ],
     "donts": [
       "Don't use gradients, glowing AI sparkles, chat bubbles or cards inside cards.",
@@ -662,7 +697,8 @@
       "Don't put a shadow on a surface that sits in the page.",
       "Don't set uppercase or letterspaced labels. Labels are sentence case at 12px/600.",
       "Don't add a second typeface or a display face. Monospace is for SQL and tool input only.",
-      "Don't choreograph page loads. Motion marks state changes only."
+      "Don't choreograph page loads. Motion marks state changes only, except inside the call avatar while a call is open.",
+      "Don't colour the bust. Its drawing stays graphite on white, and ink touches only its ring while Atlas speaks."
     ]
   }
 }
