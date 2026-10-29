@@ -40,6 +40,12 @@
   transition-property: transform;
 }
 
+/* Closed, the chevron points along the reading direction; in Arabic it is turned round rather than mirrored, so
+   opening turns it a quarter the other way and it still ends pointing down. */
+:where([dir='rtl']) .chevron {
+  transform: rotate(180deg);
+}
+
 .toggle[aria-expanded='true'] .chevron {
   transform: rotate(90deg);
 }

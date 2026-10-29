@@ -3,15 +3,12 @@ import { notifications } from '@mantine/notifications';
 import { IconChevronDown, IconDownload, IconFileSpreadsheet, IconFileTypeCsv } from '@tabler/icons-react';
 import type { ExportFormat, ExportResponse } from '@atlas/shared';
 import { useExport } from '../../api/useExport';
+import { useCopy } from '../../i18n/useCopy';
 import { useLanguage } from '../../i18n/useLanguage';
 import { useSession } from '../../state/useSession';
 import { notifyError } from '../errors/notifyError';
+import { type ChatCopy, chatCopy } from './chatCopy';
 import { downloadFile } from './downloadFile';
-
-const savedTitle: Record<ExportFormat, string> = {
-  xlsx: 'Excel file saved',
-  csv: 'CSV file saved',
-};
 
 /**
  * "Export" with Excel and CSV: the server saves every row of the result, the browser downloads
@@ -20,6 +17,7 @@ const savedTitle: Record<ExportFormat, string> = {
 export function ExportMenu({ resultId }: { resultId: string }) {
   const { sessionId } = useSession();
   const { language } = useLanguage();
+  const copy = useCopy(chatCopy).export;
   const { mutate, isPending } = useExport();
 
   const exportAs = (format: ExportFormat) =>
@@ -28,9 +26,9 @@ export function ExportMenu({ resultId }: { resultId: string }) {
       {
         onSuccess: (saved) => {
           downloadFile(saved.url, saved.fileName);
-          notifySaved(saved, format);
+          notifySaved(saved, format, copy);
         },
-        onError: (error) => notifyError(error, 'Atlas could not export the table', language),
+        onError: (error) => notifyError(error, copy.failed, language),
       },
     );
 
@@ -44,7 +42,7 @@ export function ExportMenu({ resultId }: { resultId: string }) {
           leftSection={<IconDownload size={14} stroke={1.75} aria-hidden />}
           rightSection={<IconChevronDown size={14} stroke={1.75} aria-hidden />}
         >
-          Export
+          {copy.button}
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
@@ -52,22 +50,22 @@ export function ExportMenu({ resultId }: { resultId: string }) {
           leftSection={<IconFileSpreadsheet size={16} stroke={1.5} aria-hidden />}
           onClick={() => exportAs('xlsx')}
         >
-          Excel (.xlsx)
+          {copy.formats.xlsx}
         </Menu.Item>
         <Menu.Item leftSection={<IconFileTypeCsv size={16} stroke={1.5} aria-hidden />} onClick={() => exportAs('csv')}>
-          CSV
+          {copy.formats.csv}
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>
   );
 }
 
-function notifySaved(saved: ExportResponse, format: ExportFormat): void {
+function notifySaved(saved: ExportResponse, format: ExportFormat, copy: ChatCopy['export']): void {
   notifications.show({
-    title: savedTitle[format],
+    title: copy.saved[format],
     message: (
       <Text component="span" fz="sm" c="gray.8" style={{ overflowWrap: 'anywhere' }}>
-        Saved to {saved.path}
+        {copy.savedTo(saved.path)}
       </Text>
     ),
     autoClose: 8000,

@@ -3,12 +3,15 @@
   padding-inline-start: var(--mantine-spacing-sm);
   border: 1px solid var(--mantine-color-gray-4);
   border-radius: var(--mantine-radius-lg);
-  background-color: var(--mantine-color-white);
+  background-color: var(--atlas-surface);
   transition: border-color 150ms ease-out;
+  /* A disabled Send or call button keeps a chip on the raised surface; Mantine's dark default is the surface itself. */
+  --mantine-color-disabled: var(--mantine-color-gray-2);
 }
 
+/* The box's border is its focus ring, so it takes the focus colour, which stays readable on the dark surface. */
 .box:focus-within {
-  border-color: var(--mantine-primary-color-filled);
+  border-color: var(--atlas-focus);
 }
 
 .box[data-disabled] {
