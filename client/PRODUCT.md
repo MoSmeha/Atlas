@@ -32,7 +32,8 @@ Numbers are never typed by the model: totals, thresholds and comparisons are com
 
 - Stack is fixed: React with Vite, Mantine 9.7 (core, hooks, notifications, dropzone), @tabler/icons-react, react-pdf for the viewer, TanStack Query for server state.
 - All colours, spacing and radii come from the Mantine theme object. One brand hue plus neutrals; colour is used only for warnings and errors. No hex values in components.
-- UI language is English.
+- The interface is in English or Arabic, switched from the top bar and remembered (2026-10-29). Arabic mirrors the whole layout right to left. Suggested questions come in both languages and follow the interface; answers still follow the question's language. Figures stay in Western digits in both, matching the documents.
+- Light and dark themes, switched from the top bar and remembered; light is the default for the daytime meeting room.
 - File statuses: ok, empty, corrupt, encrypted, scanned, too_large, skipped. Document types: Contract, BOQ, Specification, Schedule, Drawing, Minutes, Correspondence, Other.
 - The model picker shows the cost and time of the last answer.
 
@@ -56,4 +57,4 @@ Generated sample documents for an invented project (a mixed-use building in Riya
 
 ## Accessibility & Inclusion
 
-Right-to-left rendering for Arabic answers and Arabic text inside tables and sources. Readable at laptop sizes in a meeting room, where reviewers watch a shared screen.
+Right-to-left rendering for the Arabic interface, Arabic answers and Arabic text inside tables and sources; file names, paths and codes keep their own direction inside Arabic sentences. Both themes hold body text at 4.5:1 or better. Readable at laptop sizes in a meeting room, where reviewers watch a shared screen.
