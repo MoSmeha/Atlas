@@ -17,6 +17,11 @@ export function firstWindow(rowFrom: number, rowTo: number): RowRange {
   return { from, to: Math.min(to, from + MAX_FIRST_ROWS - 1) };
 }
 
+/** The rows fetched when a sheet opens with nothing cited: its top. */
+export function topWindow(): RowRange {
+  return { from: 1, to: MORE_ROWS };
+}
+
 /** The next rows after a window. */
 export function rowsAfter(range: RowRange): RowRange {
   return { from: range.to + 1, to: range.to + MORE_ROWS };

@@ -12,8 +12,8 @@ interface SheetBlockProps {
   sheet: string;
   range: RowRange;
   columnCount: number;
-  /** The rows the source cites, tinted. */
-  cited: RowRange;
+  /** The rows the source cites, tinted; null when nothing is cited. */
+  cited: RowRange | null;
 }
 
 /** One stretch of sheet rows, fetched on its own so the sheet can grow up and down. */
@@ -54,12 +54,12 @@ export function SheetBlock({ documentId, sheet, range, columnCount, cited }: She
   return (
     <Table.Tbody>
       {rows.data.rows.map(({ rowNumber, cells }) => {
-        const isCited = rowNumber >= cited.from && rowNumber <= cited.to;
+        const isCited = cited !== null && rowNumber >= cited.from && rowNumber <= cited.to;
         return (
           <Table.Tr
             key={rowNumber}
             data-cited={isCited || undefined}
-            data-first-cited={rowNumber === cited.from || undefined}
+            data-first-cited={rowNumber === cited?.from || undefined}
           >
             <Table.Th scope="row" className={classes.rowNumber}>
               {rowNumber}

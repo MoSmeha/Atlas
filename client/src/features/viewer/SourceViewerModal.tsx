@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Modal } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
 import type { Source } from '@atlas/shared';
+import { formatNumber } from '../chat/formatNumber';
+import { rowsText } from '../chat/sourcePlace';
 import { SourceViewer } from './SourceViewer';
+import { ViewerModal } from './ViewerModal';
 import { ViewerTitle } from './ViewerTitle';
-import classes from './SourceViewer.module.css';
 
 interface SourceViewerModalProps {
   /** The source to show; null closes the viewer. */
@@ -12,34 +12,34 @@ interface SourceViewerModalProps {
   onClose: () => void;
 }
 
-/** Wide enough for a page at reading size or a sheet's first columns, and never wider than the screen. */
-const VIEWER_WIDTH = 1040;
-
-const modalClasses = { content: classes.content, header: classes.header, title: classes.title, body: classes.body };
-
 /**
- * The source viewer: a large modal that opens when a source row is clicked, at the cited PDF
- * page with the quote highlighted, or at the cited sheet rows. Full screen on a phone.
+ * The source viewer: opens when a source row is clicked, at the cited PDF page with the quote
+ * highlighted, or at the cited sheet rows.
  */
 export function SourceViewerModal({ source, onClose }: SourceViewerModalProps) {
-  const phone = useMediaQuery('(max-width: 48em)');
   // The last source stays on screen while the modal fades out.
   const [shown, setShown] = useState<Source | null>(source);
   if (source !== null && source !== shown) setShown(source);
 
   return (
-    <Modal
+    <ViewerModal
       opened={source !== null}
       onClose={onClose}
-      size={VIEWER_WIDTH}
-      fullScreen={phone}
-      yOffset="3dvh"
-      classNames={modalClasses}
-      title={shown && <ViewerTitle source={shown} />}
-      closeButtonProps={{ 'aria-label': 'Close the source' }}
+      title={shown && <ViewerTitle kind={shown.kind} path={shown.document} place={<SourcePlace source={shown} />} />}
+      closeLabel="Close the source"
     >
       {shown && <SourceViewer key={sourceKey(shown)} source={shown} />}
-    </Modal>
+    </ViewerModal>
+  );
+}
+
+/** "page 37", or "sheet Summary, rows 4–12". */
+function SourcePlace({ source }: { source: Source }) {
+  if (source.kind === 'pdf') return `page ${formatNumber(source.page)}`;
+  return (
+    <>
+      sheet <bdi>{source.sheet}</bdi>, {rowsText(source)}
+    </>
   );
 }
 
