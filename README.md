@@ -183,7 +183,7 @@ Atlas/
 | `pnpm eval` | Asks the real AI a set of questions about the sample folder and compares the answers with `samples/expected.json`. **Costs money** (it uses your API key). Writes the results to `docs/EVAL.md`. |
 | `pnpm samples` | Makes the sample documents again. Needs Microsoft Edge, which renders the Arabic minutes. |
 
-**Latest eval:** 20 of 21 questions passed on GPT-6 Astra, with a median answer time of 9.6 seconds and $1.48 for the whole run. The one miss and every answer's time and cost are in [docs/EVAL.md](docs/EVAL.md).
+**Latest eval:** 20 of 21 questions passed on GPT-6 Astra (the default at the time), with a median answer time of 9.6 seconds and $1.48 for the whole run. The one miss and every answer's time and cost are in [docs/EVAL.md](docs/EVAL.md). To run it on another model: `pnpm eval --model gpt-6-luna`.
 
 ## How to add a tool
 
@@ -234,7 +234,7 @@ Atlas reads PDFs with mupdf, which is AGPL-3.0, so this repository carries no pe
 
 ## Assumptions and defaults
 
-- **Models.** Answers use OpenAI's frontier model by default (GPT-6 Astra on the key used here), because answer quality matters more than cost for a demo. The rule was to switch the default to the balanced model (GPT-6.1 Sol) if the median answer took longer than 20 seconds; the eval measured 9.6 seconds, so Astra stays. The picker offers all three. A small, cheap model (GPT-6 Luna) does bulk work such as sorting documents into types. Search by meaning uses `text-embedding-3-small`. The model IDs and prices live in `server/config/models.json`; at start Atlas keeps only the models your key can see.
+- **Models.** Answers use OpenAI's small model by default (GPT-6 Luna), to keep a demo cheap: a typical answer costs a fraction of a cent. The model picker in the top bar switches to the balanced model (GPT-6.1 Sol) or the frontier model (GPT-6 Astra) for a harder question; Astra costs about 100 times more per token. To change the default, set `answerTier` in `server/config/models.json` to `small`, `balanced` or `frontier`. Luna also does bulk work such as sorting documents into types. Search by meaning uses `text-embedding-3-small`. The model IDs and prices live in `server/config/models.json`; at start Atlas keeps only the models your key can see.
 - **Local only.** Atlas, its index and your files stay on your computer. The AI runs at OpenAI, so document text is sent there: passages for search by meaning, the start of each file to sort it into a type, the pages a question needs, and page images for scanned pages.
 - **One folder at a time.** Loading a new folder replaces the current one.
 - **PDF and Excel only** (`.pdf`, `.xlsx`, `.xlsm`). Old `.xls`, CSV, Word and images are listed as skipped, with the reason.

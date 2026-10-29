@@ -51,7 +51,7 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 ## Current state
 
 - All six steps are built: ingestion, the agent with all eleven tools, guards, memory, the CLI, the web client, samples with `samples/expected.json`, the eval, README, `docs/NOTE.md` and `docs/TIMELOG.md`.
-- Models (confirmed with `pnpm models`, 2026-10-28): frontier `gpt-6-astra` (default), balanced `gpt-6.1-sol`, small `gpt-6-luna`, embeddings `text-embedding-3-small`. The default stays frontier because the eval's median answer time was 9.6 s (the rule was to switch above 20 s).
+- Models (confirmed with `pnpm models`, 2026-10-28): frontier `gpt-6-astra`, balanced `gpt-6.1-sol`, small `gpt-6-luna` (the default answer model since 2026-10-29: the owner wants the demo cheap; `answerTier` in `server/config/models.json`), embeddings `text-embedding-3-small`.
 - Eval (`docs/EVAL.md`): 20 of 21 on gpt-6-astra. The miss is "items above SAR 1M", which also listed three provisional sums.
 - Design: `client/PRODUCT.md`, direction contract in `client/.impeccable/surfaces/client.md`, design system in `client/DESIGN.md` (+ `.impeccable/design.json`). The finish review asked for one batch of fixes, which is applied; its verdict pass and fresh screenshots are still to do.
 - Open: the OpenAI credit ran out on 2026-10-28. Once it is topped up, re-run `pnpm eval`, take an answered screenshot for `docs/screenshot.png`, and run the design verdict pass.
