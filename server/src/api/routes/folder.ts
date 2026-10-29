@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import { IndexEvent, IndexStatus, LoadFolderRequest, routes } from '@atlas/shared';
+import { FolderItemRequest, IndexEvent, IndexStatus, LoadFolderRequest, routes } from '@atlas/shared';
 import { errors } from '../../application/errors';
 import type { IndexFolder } from '../../application/indexing/IndexFolder';
 import type { Workspace } from '../../application/workspace/Workspace';
@@ -16,6 +16,18 @@ export interface FolderDeps {
 export const folderRoutes: RoutePlugin<{ deps: FolderDeps }> = async (app, { deps }) => {
   app.post(routes.folder, { schema: { body: LoadFolderRequest, response: { 202: IndexStatus } } }, async (request, reply) => {
     const status = await deps.indexFolder.load(folderPath(deps.repoRoot, request.body.path));
+    return reply.status(202).send(status);
+  });
+
+  // Removes the loaded folder from Atlas and deletes its index; uploaded files are deleted too.
+  app.delete(routes.folder, { schema: { response: { 200: IndexStatus } } }, async () => deps.indexFolder.unload());
+
+  app.post(routes.folderRemove, { schema: { body: FolderItemRequest, response: { 200: IndexStatus } } }, async (request) =>
+    deps.indexFolder.remove(request.body.path),
+  );
+
+  app.post(routes.folderRestore, { schema: { body: FolderItemRequest, response: { 202: IndexStatus } } }, async (request, reply) => {
+    const status = await deps.indexFolder.restore(request.body.path);
     return reply.status(202).send(status);
   });
 

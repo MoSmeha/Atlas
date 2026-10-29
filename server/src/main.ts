@@ -114,6 +114,7 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
   // When the list could not be read, trust the config, as the lineup does.
   const canUse = (model: string) => openAiVisible === null || openAiVisible.includes(model);
   const workspace = new Workspace();
+  const uploadsDir = join(settings.dataDir, 'uploads');
   const classifier = modelClient === null ? null : new ClassifyDocument(modelClient, lineup.small.id);
   const indexFolder = new IndexFolder({
     fs,
@@ -126,6 +127,8 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
     maxFileBytes: settings.maxFileBytes,
     steps: [classificationStep({ classifier, logger, clock }), suggestionsStep(workspace)],
     onFolderActivated: (folder) => watchFolder.start(folder),
+    onFolderUnloaded: () => watchFolder.stop(),
+    uploadsDir,
   });
   const watchFolder = new WatchFolder({ watcher: new ChokidarWatcher(), updates: indexFolder, logger });
   const askQuestion = new AskQuestion({
@@ -178,7 +181,7 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
       exports: { sessions, exportResult: new ExportResult(exporter, clock), exportsDir: settings.exportsDir },
       folder: { indexFolder, workspace, repoRoot },
       documents: { workspace },
-      uploads: { indexFolder, uploadsDir: join(settings.dataDir, 'uploads'), maxFileBytes: settings.maxFileBytes },
+      uploads: { indexFolder, uploadsDir, maxFileBytes: settings.maxFileBytes },
       chat: { askQuestion, sessions, workspace, apiKeyPresent },
       models: { lineup, answerTier: modelConfig.answerTier },
       usage: { sessions },

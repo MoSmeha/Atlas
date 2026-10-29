@@ -4,6 +4,8 @@ export const routes = {
   folder: '/api/folder',
   folderStatus: '/api/folder/status',
   folderEvents: '/api/folder/events',
+  folderRemove: '/api/folder/remove',
+  folderRestore: '/api/folder/restore',
   uploads: '/api/uploads',
   documentFile: (id: string) => `/api/documents/${encodeURIComponent(id)}/file`,
   sheetRows: (id: string, sheet: string) =>

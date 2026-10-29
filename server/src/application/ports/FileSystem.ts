@@ -18,4 +18,9 @@ export interface FileSystem {
   readFile(path: string): Promise<Uint8Array>;
   writeFile(path: string, data: Uint8Array | string): Promise<void>;
   ensureDir(path: string): Promise<void>;
+  /**
+   * Deletes a file or folder under root, given relative to it with forward slashes, or root itself for ''. A folder
+   * goes with everything in it; a path that does not exist is fine.
+   */
+  remove(root: string, relativePath: string): Promise<void>;
 }

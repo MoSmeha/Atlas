@@ -70,7 +70,7 @@ export function makeApiDeps(overrides: Partial<ApiDeps> = {}): ApiDeps {
   const indexFolder = new IndexFolder({
     fs: new FakeFileSystem(),
     readers: [],
-    indexes: { open: () => new FakeIndex() },
+    indexes: { open: () => new FakeIndex(), discard: async () => undefined },
     embeddings: null,
     workspace,
     logger: new MemoryRunLogger(),

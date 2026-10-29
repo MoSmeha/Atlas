@@ -19,9 +19,22 @@
 }
 
 @media (max-width: 36em) {
-  .face {
+  .face[data-size='call'] {
     inline-size: 56px;
     block-size: 56px;
+  }
+}
+
+/* In the empty conversation the face is the whole picture, with every curl, at any width. */
+.face[data-size='opening'] {
+  inline-size: 156px;
+  block-size: 156px;
+}
+
+@media (max-width: 36em) {
+  .face[data-size='opening'] {
+    inline-size: 120px;
+    block-size: 120px;
   }
 }
 
@@ -61,8 +74,8 @@
 }
 
 /*
- * Speaking: the ring takes the brand ink, the one place the hue marks Atlas answering. The link colour is that ink in
- * light and a lighter one in dark, so the thin line still reads on the dark card.
+ * Speaking: the ring takes the brand graphite, the one place the brand tone marks Atlas answering. The link colour is
+ * graphite in light and chalk in dark, so the thin line still reads on the dark card.
  */
 .face[data-mood='speaking'] .ring {
   stroke: var(--mantine-color-anchor);
@@ -147,29 +160,27 @@
 }
 
 /*
- * At 56px the curls and cloak folds turn into grey texture, so the small face leaves them out, draws its lines
+ * At 56px the curls and cloak folds turn into grey texture, so the small call face leaves them out, draws its lines
  * heavier and its eyes larger: it reads as a face first.
  */
 @media (max-width: 36em) {
-  .curl {
+  .face[data-size='call'] .curl {
     display: none;
   }
 
-  .skin,
-  .cloth,
-  .hair {
+  .face[data-size='call'] :is(.skin, .cloth, .hair) {
     stroke-width: 1.9;
   }
 
-  .line {
+  .face[data-size='call'] .line {
     stroke-width: 2.2;
   }
 
-  .thin {
+  .face[data-size='call'] .thin {
     stroke-width: 1.7;
   }
 
-  .eye {
+  .face[data-size='call'] .eye {
     rx: 3.3px;
     ry: 4px;
   }

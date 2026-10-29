@@ -55,7 +55,6 @@ export interface CallCopy {
     calling: (voice: CallVoice) => string;
     /** The call waits for its voice to be made, the first time that voice is used. */
     preparing: (voice: CallVoice) => string;
-    switching: string;
     ending: string;
     ended: string;
     speaking: string;
@@ -82,10 +81,17 @@ export interface CallCopy {
   ended: { idle: (idleSeconds: number) => string; limit: (maxMinutes: number) => string; dropped: string; content: string };
   /** A call that could not start, then why. */
   couldNotStart: (reason: string) => string;
+  /** The call button and the voice list beside it. */
   picker: {
     label: string;
     /** "Voice: Gulf Arabic, female voice". */
     current: (name: string) => string;
+    /** The phone's name: "Call Atlas in Gulf Arabic, female voice". */
+    call: (name: string) => string;
+    /** The phone's name while the voices load. */
+    callAnyVoice: string;
+    /** The arrow beside the phone. */
+    choose: string;
     /** Each group's heading. */
     languages: Record<VoiceOption['language'], string>;
     /** A group heading with how many of its voices are not ready yet. */
@@ -97,14 +103,13 @@ export interface CallCopy {
   };
 }
 
-/** Interface text for the voice call: its card, its voice picker, and why a call could not start or ended. */
+/** Interface text for the voice call: its button and voice list, its card, and why a call could not start or ended. */
 export const callCopy: Bilingual<CallCopy> = {
   en: {
     card: 'Voice call with Atlas',
     status: {
       calling: (voice) => `Calling Atlas in ${voice?.label ?? 'English'}…`,
       preparing: (voice) => `Preparing the ${voice?.label ?? 'English'} voice…`,
-      switching: 'Changing the voice…',
       ending: 'Ending the call…',
       ended: 'Call ended',
       speaking: 'Atlas is speaking',
@@ -140,6 +145,9 @@ export const callCopy: Bilingual<CallCopy> = {
     picker: {
       label: 'Voice',
       current: (name) => `Voice: ${name}`,
+      call: (name) => `Call Atlas in ${name}`,
+      callAnyVoice: 'Start a voice call',
+      choose: 'Choose the voice',
       languages: { en: 'English', ar: 'Arabic' },
       stillPreparing: (heading, waiting) => `${heading} · ${figure(waiting)} still preparing`,
       option: (voice) => `${voice.language === 'ar' ? voice.label.replace(/ Arabic$/, '') : voice.label} · ${voice.gender}`,
@@ -151,7 +159,6 @@ export const callCopy: Bilingual<CallCopy> = {
     status: {
       calling: (voice) => `جارٍ الاتصال بـ Atlas ${arabicSpeech[voice?.dialect ?? 'english']}…`,
       preparing: (voice) => `جارٍ تجهيز صوت ${arabicDialects[voice?.dialect ?? 'english']}…`,
-      switching: 'جارٍ تغيير الصوت…',
       ending: 'جارٍ إنهاء المكالمة…',
       ended: 'انتهت المكالمة',
       speaking: 'Atlas يتحدث',
@@ -187,6 +194,9 @@ export const callCopy: Bilingual<CallCopy> = {
     picker: {
       label: 'الصوت',
       current: (name) => `الصوت: ${name}`,
+      call: (name) => `اتصل بـ Atlas: ${name}`,
+      callAnyVoice: 'ابدأ مكالمة صوتية',
+      choose: 'اختر الصوت',
       languages: { en: 'الإنجليزية', ar: 'العربية' },
       stillPreparing: (heading, waiting) => `${heading} · ${countAr(waiting, voicesAr)} قيد التجهيز`,
       option: (voice) => `${arabicDialects[voice.dialect]} · ${arabicGenders[voice.gender]}`,

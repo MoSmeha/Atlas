@@ -79,6 +79,7 @@ export async function openLiveCall(options: OpenCallOptions): Promise<LiveConnec
 
   try {
     microphone = await openMicrophone();
+    diagnostics.noteStep('microphone');
     meter.listenToMic(microphone);
     peer = new RTCPeerConnection();
     peer.addEventListener('track', (event) => {
@@ -106,7 +107,9 @@ export async function openLiveCall(options: OpenCallOptions): Promise<LiveConnec
     await iceGathered(peer, ICE_WAIT_MS);
     const offer = peer.localDescription?.sdp;
     if (offer === undefined || offer === '') throw new Error('The browser could not prepare the call.');
+    diagnostics.noteStep('offer');
     const started = await api.startCall({ sessionId: options.sessionId, voiceId: options.voiceId, sdp: offer });
+    diagnostics.noteStep('answer');
     const answer = turnOffDtx(started.sdp);
     diagnostics.noteAnswer(answer.dtx);
     await peer.setRemoteDescription({ type: 'answer', sdp: answer.sdp });
@@ -155,6 +158,29 @@ export async function openLiveCall(options: OpenCallOptions): Promise<LiveConnec
   } catch (error) {
     dispose();
     throw error;
+  }
+}
+
+let warmed = false;
+
+/**
+ * Starts the browser's WebRTC machinery ahead of the first call, with a throwaway offer that opens no microphone and
+ * sends nothing. Its first offer on a page costs most of a second (about 0.8 s in Edge); after this, a call's offer
+ * takes milliseconds. Runs once per page; does nothing where WebRTC is missing.
+ */
+export function warmUpCalls(): void {
+  if (warmed || typeof RTCPeerConnection === 'undefined') return;
+  warmed = true;
+  try {
+    const peer = new RTCPeerConnection();
+    peer.addTransceiver('audio', { direction: 'sendrecv' });
+    peer.createDataChannel(CHANNEL);
+    void peer
+      .createOffer()
+      .catch(() => undefined)
+      .finally(() => peer.close());
+  } catch {
+    // Only a head start; the call itself reports any real problem.
   }
 }
 

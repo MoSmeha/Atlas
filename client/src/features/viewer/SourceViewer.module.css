@@ -90,13 +90,13 @@
 }
 
 /*
- * Over the drawn page a translucent wash of the brand's light tone, so the printed words show through.
- * Ink 3 is not a dark-scheme role and the page stays white, so the mark looks the same in both schemes.
+ * Over the drawn page a translucent graphite wash, like a pencil shading the passage, so the printed words
+ * show through. Ink 4 is not a dark-scheme role and the page stays white, so the mark looks the same in both.
  */
 .mark {
   margin: 0;
   padding: 0;
   border-radius: 2px;
-  background-color: color-mix(in srgb, var(--mantine-color-ink-3) 45%, transparent);
+  background-color: color-mix(in srgb, var(--mantine-color-ink-4) 45%, transparent);
   color: transparent;
 }

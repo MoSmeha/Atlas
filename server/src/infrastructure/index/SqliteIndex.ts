@@ -117,6 +117,18 @@ export class SqliteIndex implements DocumentIndex {
     this.db.prepare('UPDATE documents SET classification = ? WHERE path = ?').run(value, path);
   }
 
+  excluded(): string[] {
+    return this.db.prepare('SELECT path FROM excluded ORDER BY path COLLATE NOCASE').pluck().all() as string[];
+  }
+
+  exclude(path: string): void {
+    this.db.prepare('INSERT OR IGNORE INTO excluded (path) VALUES (?)').run(path);
+  }
+
+  include(path: string): void {
+    this.db.prepare('DELETE FROM excluded WHERE path = ?').run(path);
+  }
+
   pendingEmbeddingCount(): number {
     const row = this.db.prepare('SELECT COUNT(*) AS count FROM chunks WHERE embedding IS NULL').get() as { count: number };
     return row.count;

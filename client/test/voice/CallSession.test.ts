@@ -27,6 +27,7 @@ const measured: CallDiagnosis = {
   answerDtx: false,
   events: { 'session.started': 1 },
   notes: [],
+  startup: { microphone: 40, offer: 180, answer: 1450, started: 1700, firstWord: 2300 },
 };
 
 /**

@@ -1,5 +1,5 @@
 /*
- * The sheet sits on the reading surface (white in light, the lifted slate in dark), edge to edge,
+ * The sheet sits on the reading surface (white in light, lifted graphite in dark), edge to edge,
  * like the grid in Excel. The grid always runs left to right, so its logical edges are left and right.
  */
 .stage {
@@ -70,16 +70,18 @@
 }
 
 /*
- * Cited rows: the ink wash across the row, the ink tint a step deeper on the row number. The tint alone
- * marks them. Both are role shades, so they stay a light wash in the dark scheme too.
+ * Cited rows: the ink tint across the row, and the row number on the primary fill, as the open source's number is.
+ * Graphite has no hue to lean on, so the filled number carries the mark; both are roles, so they read in both schemes.
  */
 .table tr[data-cited] > td {
-  background-color: var(--mantine-color-ink-0);
+  background-color: var(--mantine-color-ink-1);
 }
 
+/* The theme sets a header cell's colour inline from the dimmed role, so the cited number redefines that role. */
 .table tr[data-cited] > .rowNumber {
-  background-color: var(--mantine-color-ink-1);
-  color: var(--mantine-color-ink-9);
+  --mantine-color-dimmed: var(--atlas-on-ink);
+  background-color: var(--mantine-primary-color-filled);
+  color: var(--atlas-on-ink);
 }
 
 /* A loading or failure line inside a stretch of rows; it stays at the left edge of a wide sheet. */

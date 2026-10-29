@@ -1,6 +1,7 @@
-import { relative, sep } from 'node:path';
+import { relative, resolve, sep } from 'node:path';
 import type { ErrorDetail, IndexPhase, IndexProgress, IndexStatus } from '@atlas/shared';
 import { isIgnoredName } from '../../domain/fileTypes';
+import { cleanItemPath, isWithin, isWithinAny } from '../../domain/folderItems';
 import { AppError, errors } from '../errors';
 import type { Clock } from '../ports/Clock';
 import type { DocumentIndex, DocumentIndexFactory, DocumentRecord, Fingerprint } from '../ports/DocumentIndex';
@@ -46,6 +47,10 @@ export interface IndexFolderDeps {
   steps?: IndexStep[];
   /** Called each time a folder becomes current, for example to start watching it. */
   onFolderActivated?: (folder: string) => void;
+  /** Called when the folder is removed from Atlas, before its files are touched, for example to stop watching it. */
+  onFolderUnloaded?: () => Promise<void>;
+  /** Atlas's own uploads folder: its files are copies, so removing one deletes it. Null when there is none. */
+  uploadsDir?: string | null;
 }
 
 interface Loaded {
@@ -53,6 +58,10 @@ interface Loaded {
   index: DocumentIndex;
   /** Aborts this load's pass and the watcher updates queued behind it. */
   controller: AbortController;
+  /** The folder is the uploads folder. */
+  uploads: boolean;
+  /** Uploaded files and folders deleted during this load, which a pass that listed them earlier must not save. */
+  deleted: string[];
 }
 
 const STEP_MESSAGES: Partial<Record<IndexPhase, string>> = { classifying: 'Classifying documents' };
@@ -91,9 +100,10 @@ export class IndexFolder {
 
     const index = this.loaded?.folder === folder ? this.loaded.index : indexes.open(folder);
     this.loaded?.controller.abort();
-    const loaded: Loaded = { folder, index, controller: new AbortController() };
+    const uploads = this.isUploads(folder);
+    const loaded: Loaded = { folder, index, controller: new AbortController(), uploads, deleted: [] };
     this.loaded = loaded;
-    workspace.activate(folder, index);
+    workspace.activate(folder, index, { uploads });
     this.announce(folder);
     void this.enqueue(loaded, (signal) => this.pass(loaded, files, signal));
     return workspace.status();
@@ -116,6 +126,66 @@ export class IndexFolder {
     });
   }
 
+  /**
+   * Removes a file or subfolder from Atlas, and its pages, tables and passages from the index, straight away. In the
+   * uploads folder the uploaded copies are deleted; in a folder loaded by its path the files stay on disk and later
+   * scans leave them out until they are put back. Throws document_not_found when nothing loaded lies at that path.
+   */
+  async remove(path: string): Promise<IndexStatus> {
+    const loaded = this.require();
+    const item = itemPath(path);
+    const documents = loaded.index.documents().filter((document) => isWithin(document.path, item));
+    if (documents.length === 0) throw errors.documentNotFound(item);
+    if (loaded.uploads) {
+      // Marked first, so a pass reading the file right now does not save it once it is gone.
+      loaded.deleted.push(item);
+      try {
+        await this.deps.fs.remove(loaded.folder, item);
+      } catch (error) {
+        loaded.deleted.pop();
+        throw error;
+      }
+    } else {
+      // A removed folder covers anything removed inside it, so putting the folder back brings all of it back.
+      for (const earlier of loaded.index.excluded()) if (isWithin(earlier, item)) loaded.index.include(earlier);
+      loaded.index.exclude(item);
+    }
+    for (const document of documents) this.forget(loaded, document.path);
+    return this.deps.workspace.status();
+  }
+
+  /** Puts a removed file or subfolder back: the folder is scanned again, which reads what it holds. */
+  async restore(path: string): Promise<IndexStatus> {
+    const loaded = this.require();
+    const item = itemPath(path);
+    if (!loaded.index.excluded().includes(item)) throw errors.documentNotFound(item);
+    loaded.index.include(item);
+    this.log(loaded.folder, item, 'restored', 0, null);
+    return this.load(loaded.folder);
+  }
+
+  /**
+   * Removes the loaded folder from Atlas: indexing stops, the folder is no longer watched and its index is deleted.
+   * Uploaded files are deleted too; a folder loaded by its path keeps its files. Nothing is loaded afterwards.
+   */
+  async unload(): Promise<IndexStatus> {
+    const loaded = this.require();
+    const { workspace } = this.deps;
+    loaded.controller.abort();
+    this.loaded = null;
+    try {
+      await this.deps.onFolderUnloaded?.();
+    } catch (error) {
+      this.log(loaded.folder, '', 'unwatch_failed', 0, logText(error));
+    }
+    workspace.unload();
+    await this.deps.indexes.discard(loaded.folder);
+    if (loaded.uploads) await this.deps.fs.remove(loaded.folder, '');
+    this.log(loaded.folder, '', 'unloaded', 0, null);
+    workspace.emit({ type: 'unloaded', folder: loaded.folder });
+    return workspace.status();
+  }
+
   /** Resolves once the pass and every queued update have finished, with the status they left. */
   async idle(): Promise<IndexStatus> {
     let current: Promise<void>;
@@ -136,25 +206,31 @@ export class IndexFolder {
   private async pass(loaded: Loaded, files: ScannedFile[], signal: AbortSignal): Promise<void> {
     await this.guard(loaded, signal, async () => {
       const { index } = loaded;
-      const present = new Set(files.map((file) => file.entry.relativePath));
+      const kept = files.filter((file) => !this.isRemoved(loaded, file.entry.relativePath));
+      const present = new Set(kept.map((file) => file.entry.relativePath));
       for (const document of index.documents()) if (!present.has(document.path)) this.forget(loaded, document.path);
 
       const changed: ScannedFile[] = [];
-      for (const file of files) {
+      for (const file of kept) {
         if (!sameFingerprint(index.fingerprint(file.entry.relativePath), file.entry)) changed.push(file);
         else this.log(loaded.folder, file.entry.relativePath, 'unchanged', 0, null);
       }
 
       const saved: string[] = [];
+      const keep = (path: string | null) => {
+        if (path !== null) saved.push(path);
+      };
       for (const file of changed.filter((candidate) => candidate.status !== 'pending')) {
-        saved.push(await this.indexFile(loaded, file, signal));
+        keep(await this.indexFile(loaded, file, signal));
       }
       const toRead = changed.filter((candidate) => candidate.status === 'pending');
       for (const [i, file] of toRead.entries()) {
         checkpoint(signal);
+        // Removed while this pass was running.
+        if (this.isRemoved(loaded, file.entry.relativePath)) continue;
         const { name } = file.entry;
         this.progress(signal, 'reading', { current: i + 1, total: toRead.length, file: name, message: `Reading ${name}, ${i + 1} of ${toRead.length}` });
-        saved.push(await this.indexFile(loaded, file, signal));
+        keep(await this.indexFile(loaded, file, signal));
       }
       await this.finish(loaded, saved, signal);
     });
@@ -169,21 +245,25 @@ export class IndexFolder {
         if (path !== null) this.forget(loaded, path);
         return;
       }
-      if (!isListed(entry.relativePath) || sameFingerprint(loaded.index.fingerprint(entry.relativePath), entry)) return;
+      const { relativePath } = entry;
+      if (!isListed(relativePath) || this.isRemoved(loaded, relativePath)) return;
+      if (sameFingerprint(loaded.index.fingerprint(relativePath), entry)) return;
       const file = scanFile(entry, { maxFileBytes: this.deps.maxFileBytes });
       if (file.status === 'pending') {
         this.progress(signal, 'reading', { current: 1, total: 1, file: entry.name, message: `Reading ${entry.name}, 1 of 1` });
       }
-      await this.finish(loaded, [await this.indexFile(loaded, file, signal)], signal);
+      const saved = await this.indexFile(loaded, file, signal);
+      await this.finish(loaded, saved === null ? [] : [saved], signal);
     });
   }
 
-  /** Reads, saves, logs and reports one file; returns its relative path. */
-  private async indexFile(loaded: Loaded, file: ScannedFile, signal: AbortSignal): Promise<string> {
+  /** Reads, saves, logs and reports one file; returns its relative path, or null when it was removed meanwhile. */
+  private async indexFile(loaded: Loaded, file: ScannedFile, signal: AbortSignal): Promise<string | null> {
     const { clock } = this.deps;
     const started = clock.now().getTime();
     const read = await readDocument(file, this.deps.readers);
     checkpoint(signal);
+    if (this.isRemoved(loaded, file.entry.relativePath)) return null;
     const record = saveRecord(loaded.index, read);
     this.log(loaded.folder, record.path, record.status, clock.now().getTime() - started, record.statusDetail);
     this.emitDocument(loaded.index, record.path);
@@ -243,6 +323,24 @@ export class IndexFolder {
     }
   }
 
+  private require(): Loaded {
+    if (this.loaded === null) throw errors.notIndexed();
+    return this.loaded;
+  }
+
+  /** The path was removed from Atlas: excluded in this folder, or an uploaded copy deleted during this load. */
+  private isRemoved(loaded: Loaded, path: string): boolean {
+    return isWithinAny(path, loaded.deleted) || isWithinAny(path, loaded.index.excluded());
+  }
+
+  private isUploads(folder: string): boolean {
+    const uploads = this.deps.uploadsDir ?? null;
+    if (uploads === null) return false;
+    // Windows paths ignore case, so the same folder may arrive spelt differently.
+    const key = (path: string) => (process.platform === 'win32' ? resolve(path).toLowerCase() : resolve(path));
+    return key(folder) === key(uploads);
+  }
+
   private forget(loaded: Loaded, path: string): void {
     if (loaded.index.fingerprint(path) === null) return;
     loaded.index.remove(path);
@@ -296,6 +394,13 @@ function saveRecord(index: DocumentIndex, record: DocumentRecord): DocumentRecor
 
 function sameFingerprint(stored: Fingerprint | null, entry: FileEntry): boolean {
   return stored !== null && stored.mtimeMs === entry.mtimeMs && stored.size === entry.size;
+}
+
+/** A file or subfolder path from a request, cleaned; throws invalid_request for one outside the folder. */
+function itemPath(path: string): string {
+  const item = cleanItemPath(path);
+  if (item === null || !isListed(item)) throw errors.invalidRequest(`"${path}" is not a file or folder inside the loaded folder.`);
+  return item;
 }
 
 /** A path inside the folder that a listing would include: no hidden or lock-file segment and no '..'. */

@@ -1,14 +1,15 @@
-import { Fragment, useRef } from 'react';
+import { Fragment, useCallback, useRef, useState } from 'react';
 import { Divider, Stack } from '@mantine/core';
 import { useFolderStatus } from '../../api/useFolderStatus';
 import { useHealth } from '../../api/useHealth';
 import { MainColumn } from '../../shell/MainColumn';
+import { Opening } from '../../shell/Opening';
 import { UsageReadout } from '../topbar/UsageReadout';
 import { SourceViewerModal } from '../viewer/SourceViewerModal';
+import { CallButton } from '../voice/CallButton';
 import { CallCard } from '../voice/CallCard';
 import { useVoiceCall } from '../voice/useVoiceCall';
 import { Composer } from './Composer';
-import { EmptyState } from './EmptyState';
 import { Turn } from './Turn';
 import { askReadiness } from './askReadiness';
 import { useChat } from './useChat';
@@ -16,10 +17,9 @@ import { useFollowScroll } from './useFollowScroll';
 import { useOpenedSource } from './useOpenedSource';
 
 /**
- * The conversation column: the empty state, then one turn per question, with the composer
- * docked at the bottom, or the call card while a voice call is open. The page scrolls to each new
- * turn and follows its answer as it streams. Clicking an answer's source opens it in the source
- * viewer, at its page or rows.
+ * The conversation column: Atlas's face and line before the first question, then one turn per question, with the
+ * composer docked at the bottom, or the call card while a voice call is open. The page scrolls to each new turn and
+ * follows its answer as it streams. Clicking an answer's source opens it in the source viewer, at its page or rows.
  */
 export function ChatThread() {
   const { turns, streaming, ask, retry, stop } = useChat();
@@ -29,6 +29,10 @@ export function ChatThread() {
   const thread = useRef<HTMLDivElement>(null);
   useFollowScroll(thread, turns.at(-1)?.id ?? null, streaming);
   const { opened, open: openSource, close: closeSource } = useOpenedSource(turns);
+  const [composing, setComposing] = useState(false);
+  // On a fresh page the composer waits below the sheet until Atlas has said its line; then it stays docked.
+  const [composerShown, setComposerShown] = useState(turns.length > 0);
+  const showComposer = useCallback(() => setComposerShown(true), []);
 
   const readiness = askReadiness({
     status: folder.data,
@@ -46,25 +50,17 @@ export function ChatThread() {
         onSend={ask}
         onStop={stop}
         hintAside={<UsageReadout placement="composer" />}
-        onStartCall={voice.callsAvailable ? voice.start : undefined}
+        callButton={voice.callsAvailable ? <CallButton disabled={!readiness.canAsk} /> : undefined}
         maxDictationSeconds={voice.dictationAvailable ? voice.maxDictationSeconds : undefined}
         notice={voice.notice}
+        onComposingChange={setComposing}
       />
     );
-  const empty = turns.length === 0;
 
-  // Before the first question the composer sits under the empty state's heading; after it, it docks at the bottom.
   return (
-    <MainColumn composer={empty ? null : composer}>
-      {empty ? (
-        <EmptyState
-          status={folder.data}
-          statusError={folder.error}
-          canAsk={readiness.canAsk}
-          onAsk={ask}
-          onReload={() => void folder.refetch()}
-          composer={composer}
-        />
+    <MainColumn composer={composer} composerWaiting={!composerShown}>
+      {turns.length === 0 ? (
+        <Opening away={composing || voice.call !== null} onSaid={showComposer} />
       ) : (
         <Stack ref={thread} gap="xl" pb="md">
           {turns.map((turn, index) => (

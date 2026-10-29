@@ -57,6 +57,13 @@ export class FakeFileSystem implements FileSystem {
     this.dirs.add(path);
   }
 
+  async remove(root: string, relativePath: string): Promise<void> {
+    const path = relativePath === '' ? root : posix.join(root, relativePath);
+    const inside = (candidate: string) => candidate === path || candidate.startsWith(`${path}/`);
+    for (const file of [...this.files.keys()]) if (inside(file)) this.files.delete(file);
+    for (const dir of [...this.dirs]) if (inside(dir)) this.dirs.delete(dir);
+  }
+
   private entry(root: string, path: string): FileEntry {
     const file = this.files.get(path) as FakeFile;
     const name = posix.basename(path);

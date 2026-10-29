@@ -38,6 +38,8 @@ interface AtlasFaceProps {
   mood: FaceMood;
   /** Read every frame: Atlas's voice opens the mouth. */
   levels: () => AudioLevels;
+  /** 72px in the call card (56px on a phone), or 156px (120px on a phone) in the empty conversation's opening. */
+  size?: 'call' | 'opening';
 }
 
 interface Parts {
@@ -69,9 +71,10 @@ function draw(parts: Parts, pose: FacePose, breathing: number, blink: number): v
  * Atlas during a call: a philosopher's bust in the app's graphite line work, with curls and a full beard. It blinks
  * and breathes while it listens, raises its brows while the user speaks, looks up while it checks the documents, and
  * moves its mouth with the loudness of its own voice. The ring around it is dashed and turning while the call connects
- * and while it works, and turns ink while it speaks. With reduced motion the face holds one still pose per state.
+ * and while it works, and turns ink while it speaks. With reduced motion the face holds one still pose per state. The
+ * empty conversation uses the same face, larger, to say Atlas's line.
  */
-export function AtlasFace({ mood, levels }: AtlasFaceProps) {
+export function AtlasFace({ mood, levels, size = 'call' }: AtlasFaceProps) {
   const reduceMotion = useReducedMotion();
   const clipId = useId();
   const parts = useRef<Parts>({
@@ -144,7 +147,7 @@ export function AtlasFace({ mood, levels }: AtlasFaceProps) {
     };
 
   return (
-    <svg className={classes.face} viewBox="0 0 120 120" data-mood={mood} role="img" aria-label="Atlas">
+    <svg className={classes.face} viewBox="0 0 120 120" data-mood={mood} data-size={size} role="img" aria-label="Atlas">
       <defs>
         <clipPath id={clipId}>
           <circle cx="60" cy="60" r="58" />

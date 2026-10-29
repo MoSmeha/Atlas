@@ -80,9 +80,17 @@ export function buildCallInstructions(input: CallInstructionsInput): string {
   ].join('\n\n');
 }
 
-/** What the call is told to say first, as a developer message at the start and once more after it starts. */
+/**
+ * What the call is told to say first, as a developer message at the start and once more after it starts: the
+ * dialect's short hello, word for word and quickly, so the user can ask straight away. The Live guide sets pace in
+ * words, as here.
+ */
 export function greetingInstruction(dialect: DialectStyle): string {
-  return `Greet the user now in ${dialect.label}, in one short sentence like this: "${dialect.hello}" Then pause and listen.`;
+  return [
+    `Greet the user now in ${dialect.label} with exactly this line and nothing more: "${dialect.hello}"`,
+    'Say it briskly, at about one and a half times your usual speaking speed; after it, speak at your usual pace.',
+    'Then stop and listen.',
+  ].join(' ');
 }
 
 /**

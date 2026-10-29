@@ -18,8 +18,6 @@ export interface ChatCopy {
     send: string;
     stop: string;
     stopTip: string;
-    call: string;
-    callTip: string;
     dictate: string;
     cancelDictation: string;
     cancelTip: string;
@@ -80,7 +78,7 @@ export const chatCopy: Bilingual<ChatCopy> = {
       },
       hint: {
         idle: 'Enter sends. Shift + Enter adds a line.',
-        idleWithCall: 'Enter sends. Shift + Enter adds a line. The phone starts a voice call.',
+        idleWithCall: 'Enter sends. Shift + Enter adds a line. The phone starts a voice call; the arrow beside it picks the voice.',
         streaming: 'Atlas is answering. Stop it with the button or Esc.',
         recording: 'Say your question. The check mark writes it into the box; Esc cancels.',
         transcribing: 'Writing down what you said.',
@@ -95,8 +93,6 @@ export const chatCopy: Bilingual<ChatCopy> = {
       send: 'Send the question',
       stop: 'Stop the answer',
       stopTip: 'Stop the answer (Esc)',
-      call: 'Start a voice call',
-      callTip: 'Talk to Atlas in a voice call',
       dictate: 'Dictate a question',
       cancelDictation: 'Cancel the dictation',
       cancelTip: 'Cancel (Esc)',
@@ -154,7 +150,7 @@ export const chatCopy: Bilingual<ChatCopy> = {
       },
       hint: {
         idle: 'Enter للإرسال، وShift + Enter لسطر جديد.',
-        idleWithCall: 'Enter للإرسال، وShift + Enter لسطر جديد. زر الهاتف يبدأ مكالمة صوتية.',
+        idleWithCall: 'Enter للإرسال، وShift + Enter لسطر جديد. زر الهاتف يبدأ مكالمة صوتية، والسهم بجانبه يختار الصوت.',
         streaming: 'يجيب Atlas الآن. أوقفه بالزر أو بمفتاح Esc.',
         recording: 'قل سؤالك. علامة الصح تكتبه في المربع، وEsc يلغيه.',
         transcribing: 'جارٍ كتابة ما قلته.',
@@ -169,8 +165,6 @@ export const chatCopy: Bilingual<ChatCopy> = {
       send: 'أرسل السؤال',
       stop: 'أوقف الإجابة',
       stopTip: 'أوقف الإجابة (Esc)',
-      call: 'ابدأ مكالمة صوتية',
-      callTip: 'تحدث إلى Atlas في مكالمة صوتية',
       dictate: 'أملِ سؤالًا بصوتك',
       cancelDictation: 'ألغِ الإملاء الصوتي',
       cancelTip: 'إلغاء (Esc)',

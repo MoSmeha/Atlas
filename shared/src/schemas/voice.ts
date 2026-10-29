@@ -56,6 +56,23 @@ export const StartCallResponse = z.object({
 });
 export type StartCallResponse = z.infer<typeof StartCallResponse>;
 
+const startupMs = z.number().int().nonnegative().max(600_000).nullable();
+
+/** Milliseconds from pressing Call to each step of the call's start; null for a step it never reached. */
+export const CallStartup = z.object({
+  /** The microphone was open. */
+  microphone: startupMs,
+  /** The browser's offer was ready, with its connection candidates. */
+  offer: startupMs,
+  /** The Atlas server answered, once the voice service had created the call. */
+  answer: startupMs,
+  /** The voice service said the call had started. */
+  started: startupMs,
+  /** The first words of Atlas's greeting arrived. */
+  firstWord: startupMs,
+});
+export type CallStartup = z.infer<typeof CallStartup>;
+
 /**
  * What the browser measured about a call's audio, kept in the call log so a call where Atlas could not hear the user
  * can be explained afterwards: was the microphone silent, did its audio leave the browser, what did the service send.
@@ -82,6 +99,8 @@ export const CallDiagnosis = z.object({
   events: z.record(z.string().max(80), z.number().int().nonnegative()),
   /** The errors and notices the service sent, oldest first. */
   notes: z.array(z.string().max(300)).max(10),
+  /** How long each step of the start took; null from a browser that did not measure it. */
+  startup: CallStartup.nullable().default(null),
 });
 export type CallDiagnosis = z.infer<typeof CallDiagnosis>;
 

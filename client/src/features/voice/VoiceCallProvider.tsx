@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toApiError } from '../../api/ApiError';
 import { silence } from '../../api/audioMeter';
 import { api } from '../../api/endpoints';
-import { type LiveConnection, openLiveCall } from '../../api/liveCall';
+import { type LiveConnection, openLiveCall, warmUpCalls } from '../../api/liveCall';
 import { MicrophoneError } from '../../api/microphone';
 import { queryKeys } from '../../api/queryKeys';
 import { useVoices } from '../../api/useVoices';
@@ -161,17 +161,20 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
     void openRef.current?.session.end('hung_up');
   }, []);
 
-  const chooseVoiceAndRestart = useCallback(
-    (next: string) => {
-      rememberVoice(next);
-      setPicked(next);
-      const current = openRef.current;
-      if (current === null || current.session.snapshot().status !== 'live') return;
-      // A call's voice is fixed when it starts, so a new voice means a new call; the chat carries the context over.
-      void current.session.end('switching').then(() => begin(next));
-    },
-    [begin],
-  );
+  // Chosen before a call; a call's voice is fixed once it starts.
+  const pickVoice = useCallback((next: string) => {
+    rememberVoice(next);
+    setPicked(next);
+  }, []);
+
+  // The first offer on a page is slow to make, so it is made once, off the click, as soon as calls are possible.
+  const callsAvailable = data?.callsAvailable ?? false;
+  useEffect(() => {
+    if (!callsAvailable) return;
+    if (typeof window.requestIdleCallback !== 'function') return void setTimeout(warmUpCalls, 0);
+    const handle = window.requestIdleCallback(warmUpCalls, { timeout: 2_000 });
+    return () => window.cancelIdleCallback(handle);
+  }, [callsAvailable]);
 
   // A new chat (Clear chat) ends the call, which belongs to the old one.
   useEffect(() => {
@@ -203,13 +206,13 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<VoiceCallValue>(
     () => ({
-      callsAvailable: data?.callsAvailable ?? false,
+      callsAvailable,
       dictationAvailable: data?.dictationAvailable ?? false,
       maxDictationSeconds: data?.maxDictationSeconds ?? 120,
       voices: data?.voices ?? [],
       preparingVoices: data?.preparingVoices ?? false,
       voiceId,
-      chooseVoice: chooseVoiceAndRestart,
+      chooseVoice: pickVoice,
       call: call satisfies CallView | null,
       notice: notice === null ? null : { tone: notice.tone, text: notice.text(language) },
       pricePerMinute: data?.callPricePerMinute ?? 0,
@@ -219,7 +222,7 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       setMuted: (muted) => openRef.current?.session.setMuted(muted),
       stopQuestion: () => openRef.current?.session.stopQuestion(),
     }),
-    [data, voiceId, chooseVoiceAndRestart, call, notice, language, start, hangUp],
+    [data, callsAvailable, voiceId, pickVoice, call, notice, language, start, hangUp],
   );
 
   return <VoiceCallContext.Provider value={value}>{children}</VoiceCallContext.Provider>;
