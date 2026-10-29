@@ -87,6 +87,8 @@ Choose which AI answers from the top bar: a cheap, fast one for everyday questio
 
 On the sample project, Luna answered all 21 test questions correctly for 2 cents in total ([test report](docs/EVAL.md)).
 
+Beside the model, choose how long it thinks before answering: **Low effort** is fast, **Medium effort** (the default) is medium speed, and **High effort** is slower and most careful.
+
 ### Or use it for free
 
 Atlas can also answer at no cost. The top bar then shows **Free tier** beside the model picker, and each answer's cost reads "Free".

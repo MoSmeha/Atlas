@@ -198,6 +198,8 @@ Settings live in `.env`. Only a model is required: one key, or Ollama.
 
 Atlas keeps only the models your key can see; `pnpm models` lists them. Change `answerTier` to change the default.
 
+**Thinking effort.** The picker beside the model sets the answer model's reasoning effort for the next question: low (fast), medium or high (slower, most careful). Each question sends its `effort`, and the server falls back to the provider's `reasoningEffort` in `models.json` when none is sent. Ollama leaves thinking to each model (`reasoningEffort: null`), so the picker is hidden there and a requested effort is ignored; a configured level the picker does not offer, such as `minimal`, also fixes the effort. Tools that call a model themselves (classification, page vision, schedule dates) keep their own low effort. Every `question` log entry records the effort it ran at, and `pnpm eval --effort low` checks a level before it becomes the default.
+
 **Free providers.** With `ATLAS_PROVIDER=auto` Atlas answers with the first that works: a local model through Ollama, then Gemini's free tier, then OpenAI. The server's first lines say which one answers and why, and the top bar shows a "Free tier" badge (or "Free, on this computer") beside the model picker while a free one does; its tooltip says what that means.
 
 - **Gemini** has its own free lineup in `models.json`: Gemini 3.8 Flash (frontier, the default), 3.6 Flash (balanced) and 3.5 Flash-Lite (small), with `gemini-embedding-001` for search. It runs on Gemini's OpenAI-compatible Chat Completions endpoint. Google uses what its free tier is sent to improve its products, so keep confidential files off it. Limits are per project; AI Studio shows them.
@@ -229,7 +231,7 @@ docs/      images, eval report, note, time log
 | --- | --- |
 | `pnpm test` | About 1,890 unit tests. No key, no network |
 | `pnpm typecheck` | Types in all three packages |
-| `pnpm eval` | 21 real questions checked against `samples/expected.json`; writes [EVAL.md](EVAL.md), or `EVAL-gemini.md` and `EVAL-ollama.md` for the free providers. Costs a few cents on Luna, nothing on the free ones |
+| `pnpm eval` | 21 real questions checked against `samples/expected.json`; writes [EVAL.md](EVAL.md), or `EVAL-gemini.md` and `EVAL-ollama.md` for the free providers. Costs a few cents on Luna, nothing on the free ones. `--model <id>`, `--effort low|medium|high` and `--only <id,id>` narrow a run |
 | `pnpm samples` | Rebuilds the sample documents (needs Microsoft Edge) |
 
 **Latest eval:** 21 of 21 passed on GPT-6 Luna, with a median answer time of 6.9 seconds and **$0.02 for all 21 questions**. Every answer's time, cost and check is in [EVAL.md](EVAL.md).
