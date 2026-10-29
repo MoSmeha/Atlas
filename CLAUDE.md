@@ -46,7 +46,7 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 ## Commands
 
 - `pnpm dev` starts server (port 3001) and client (port 5173). `pnpm cli <folder> "<question>"` asks one question.
-- `pnpm test`, `pnpm typecheck`, `pnpm samples` (regenerate sample documents), `pnpm eval` (costs money), `pnpm models` (which models the API key can see).
+- `pnpm test`, `pnpm typecheck`, `pnpm samples` (regenerate sample documents), `pnpm eval` (costs money on OpenAI), `pnpm models` (which models each key can see, and the local scan; free).
 
 ## Current state
 
@@ -55,6 +55,7 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 - Document viewer (2026-10-29): a register row opens the whole file in the same modal as the source viewer (`features/viewer/`). `DocumentViewerProvider` holds the open file, and any component opens one with `useDocumentViewer().open(documentId)`. PDFs have a page field; workbooks have sheet tabs along the foot. Damaged, password-protected and sheetless files show the reason and a download button. `PdfView` and `SheetView` take a null citation for a whole file.
 - Models (confirmed with `pnpm models`, 2026-10-28): frontier `gpt-6-astra`, balanced `gpt-6.1-sol`, small `gpt-6-luna` (the default answer model since 2026-10-29: the owner wants the demo cheap; `answerTier` in `server/config/models.json`), embeddings `text-embedding-3-small`.
 - Eval (`docs/EVAL.md`, 2026-10-29): 21 of 21 on gpt-6-luna for $0.02, median 6.9 s. An earlier Astra run was 20 of 21 for $1.48.
+- Free providers (2026-10-29): `ATLAS_PROVIDER=auto` (default) picks Ollama when this machine can run its models, then Gemini's free tier (`GEMINI_API_KEY`), then OpenAI; `infrastructure/providers/` (chooseProvider, connectProvider) and `infrastructure/local/` (scanMachine reads RAM and GPU memory, listOllamaModels, pickLocalModels). Gemini and Ollama share `infrastructure/chat/ChatModelClient` on Chat Completions, which keeps each conversation itself in place of `previous_response_id` and replays extra tool-call fields (Gemini 3 thought signatures). Each index records its embedding model and re-embeds when it changes. Voice stays on OpenAI. Built and unit-tested with fakes only: no live Gemini or Ollama call yet, so tool_choice `required`, the strict-shaped schemas and the thought-signature replay are unconfirmed against the real services, and neither free provider has run the eval.
 - Design: `client/PRODUCT.md`, direction contract in `client/.impeccable/surfaces/client.md`, design system in `client/DESIGN.md` (+ `.impeccable/design.json`). The finish review asked for one batch of fixes, which is applied; its verdict pass and fresh screenshots are still to do.
 - README images in `docs/images/` are real captures (Playwright + Edge, script kept outside the repo). Open: the design finish review's verdict pass on the polish fixes.
 - Parallel work used worktrees under `C:\Users\MoSmeha\Atlas-wt\`; remove them with `git worktree remove` when they are no longer needed.

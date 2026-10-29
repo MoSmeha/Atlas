@@ -12,12 +12,25 @@ Ask questions about a folder of project documents, PDF and Excel, in English or 
 | 2. Switch on pnpm | `corepack enable` | `corepack enable` |
 | 3. Get the code | `git clone https://github.com/MoSmeha/Atlas.git; cd Atlas` | `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas` |
 | 4. Install | `pnpm install` | `pnpm install` |
-| 5. Add your OpenAI key | `Copy-Item .env.example .env`, then set `OPENAI_API_KEY=` | `cp .env.example .env`, then set `OPENAI_API_KEY=` |
+| 5. Add a model key | `Copy-Item .env.example .env`, then set `OPENAI_API_KEY=` (or see [Run it free](#run-it-free)) | `cp .env.example .env`, then set `OPENAI_API_KEY=` (or see [Run it free](#run-it-free)) |
 | 6. Start | `pnpm dev`, then open http://localhost:5173 | `pnpm dev`, then open http://localhost:5173 |
 
 The sample project `samples/riyadh-tower` loads by itself. To use your own files, type a folder path in the sidebar or drop files on it.
 
 From the command line: `pnpm cli samples/riyadh-tower "What is the total of each BOQ?"`
+
+### Run it free
+
+Atlas can answer without a paid model in two ways. With `ATLAS_PROVIDER=auto`, the default, it uses the first one that works: a local model, then Gemini, then OpenAI. The server's first lines say which one answers and why.
+
+| Way | What to do | Good to know |
+| --- | --- | --- |
+| A local model, through Ollama | Install [Ollama](https://ollama.com), then `ollama pull qwen3:14b` and `ollama pull bge-m3`. Start Ollama with `OLLAMA_CONTEXT_LENGTH=16384` or more | Nothing leaves the computer. It needs a graphics card with at least 6 GB of memory, or Apple silicon. Atlas picks the largest model with tool support that fits, and skips models under 7 billion parameters. Ollama's default context is shorter than Atlas's prompts, and it cuts them without saying so |
+| Gemini's free tier | Get a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and set `GEMINI_API_KEY=` | Google uses what its free tier is sent to improve its products, so keep confidential files off it. AI Studio shows the daily limits |
+
+`pnpm models` checks this computer for you: how much memory it has, whether Ollama is running and with which models, and which models each key can see. Listing models costs nothing.
+
+Voice calls and dictation still need `OPENAI_API_KEY`. Switching to another provider embeds the folder again once, because one model's search vectors cannot be compared with another's. Neither free option has been through the eval yet.
 
 ## What it does
 
@@ -220,11 +233,14 @@ Every sample document is fictional. `samples/README.md` describes each file, and
 
 ## Settings
 
-Settings live in `.env`. Only the key is required.
+Settings live in `.env`. Only a model is required: one key, or Ollama.
 
 | Name | Default | What it means |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | none | Your OpenAI key |
+| `OPENAI_API_KEY` | none | Your OpenAI key. Voice calls and dictation need it |
+| `GEMINI_API_KEY` | none | A Gemini key, for the free tier |
+| `ATLAS_PROVIDER` | `auto` | `auto`, `openai`, `gemini` or `ollama`. A named provider is used only if it can be; `ollama` also allows a machine without a big enough graphics card, which is slow |
+| `OLLAMA_HOST` | `127.0.0.1:11434` | Where Ollama listens |
 | `ATLAS_FOLDER` | `samples/riyadh-tower` | Folder loaded at start |
 | `PORT` | `3001` | Server port; the web app forwards to it |
 | `ATLAS_DATA_DIR` | `.atlas` | Index cache and uploads |
@@ -243,6 +259,8 @@ Settings live in `.env`. Only the key is required.
 
 Atlas keeps only the models your key can see; `pnpm models` lists them. Change `answerTier` to change the default.
 
+Gemini has its own free lineup in the same file: Gemini 3.8 Flash (frontier, the default), 3.6 Flash (balanced) and 3.5 Flash-Lite (small). Ollama has no list there: the model Atlas picks from what you have pulled fills all three tiers.
+
 **Voices** are set in `server/config/voices.json`: the call model and its price, the silence and length limits, the dictation model, each dialect's speaking rules and sample script, and each voice, built in or designed from a description. Change a description and the next call designs a new voice and deletes the old one. Calls and dictation switch off by themselves when your key cannot see their models.
 
 ## Project layout
@@ -251,7 +269,7 @@ Atlas keeps only the models your key can see; `pnpm models` lists them. Change `
 shared/    Data shapes used by server and web app (Zod)
 server/    src/domain        pure rules
            src/application   agent, tools, checks, ports
-           src/infrastructure mupdf, exceljs, SQLite, OpenAI
+           src/infrastructure mupdf, exceljs, SQLite, OpenAI, Gemini, Ollama
            src/api           web routes
            config/           models.json, voices.json
            scripts/          samples, eval, models
@@ -265,9 +283,9 @@ docs/      images, eval report, note, time log
 
 | Command | What it does |
 | --- | --- |
-| `pnpm test` | About 1,760 unit tests. No key, no network |
+| `pnpm test` | About 1,860 unit tests. No key, no network |
 | `pnpm typecheck` | Types in all three packages |
-| `pnpm eval` | 21 real questions checked against `samples/expected.json`; writes [docs/EVAL.md](docs/EVAL.md). Costs a few cents on Luna |
+| `pnpm eval` | 21 real questions checked against `samples/expected.json`; writes [docs/EVAL.md](docs/EVAL.md), or `docs/EVAL-gemini.md` and `docs/EVAL-ollama.md` for the free providers. Costs a few cents on Luna, nothing on the free ones |
 | `pnpm samples` | Rebuilds the sample documents (needs Microsoft Edge) |
 
 **Latest eval:** 21 of 21 passed on GPT-6 Luna, with a median answer time of 6.9 seconds and **$0.02 for all 21 questions**. Every answer's time, cost and check is in [docs/EVAL.md](docs/EVAL.md).
