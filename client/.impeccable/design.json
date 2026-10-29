@@ -539,7 +539,7 @@
       {
         "name": "avatar-ring-turn",
         "value": "7s linear infinite rotate, ring dashed 4 5",
-        "purpose": "The dashed checking ring while a spoken question runs; no animation under reduced motion."
+        "purpose": "The dashed ring while the call connects and while a spoken question runs; no animation under reduced motion."
       }
     ],
     "breakpoints": [
@@ -677,7 +677,7 @@
       },
       {
         "name": "The Living Face Rule",
-        "body": "Continuous motion is allowed inside the call avatar only, and only while a call is open: blinks every 2.8 to 6.5s, a slow 4.2s breath, brows up while the user speaks, eyes up while a question runs, the mouth following Atlas's measured voice, and the ring dashed and turning while it checks. Under reduced motion it holds one still pose per state, and it does not move in a hidden tab. Every other surface keeps motion for state changes only.",
+        "body": "Continuous motion is allowed inside the call avatar only, and only while a call is open: blinks every 2.8 to 6.5s, a slow 4.2s breath, brows up while the user speaks, eyes up while a question runs, the mouth following Atlas's measured voice, and the ring dashed and turning while the call connects and while it checks. Under reduced motion it holds one still pose per state, and it does not move in a hidden tab. Every other surface keeps motion for state changes only.",
         "section": "components"
       }
     ],
