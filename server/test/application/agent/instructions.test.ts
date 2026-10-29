@@ -55,6 +55,16 @@ describe('buildInstructions', () => {
     expect(text).toContain('what is missing');
   });
 
+  it('asks for plain answers that lead with the answer and keep sources out of the markdown', () => {
+    const text = build();
+    expect(text).toContain('Lead with the direct answer');
+    expect(text).toContain('no SQL, no tool names');
+    expect(text).toContain('Sources are attached to the answer separately');
+    expect(text).toContain('never write them into the markdown');
+    expect(text).toContain('by its file name only, never its folder, full path');
+    expect(text).toContain('answered from list_documents alone, with no sources');
+  });
+
   it('leaves out advice about tools that are not offered', () => {
     const text = build(folder(), ['list_documents', 'query_tables', 'submit_answer']);
     expect(text).toContain('start with list_documents');

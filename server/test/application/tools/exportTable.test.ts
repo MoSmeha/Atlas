@@ -28,10 +28,7 @@ describe('export_table', () => {
     const { saved, exporter, context } = setup();
     const result = await exportTable.run({ result_id: saved.id, format: 'xlsx' }, context);
 
-    expect(result.output).toEqual({
-      file: 'boq-items-above-1m-20261028-140509.xlsx',
-      path: '/exports/boq-items-above-1m-20261028-140509.xlsx',
-    });
+    expect(result.output).toEqual({ file: 'boq-items-above-1m-20261028-140509.xlsx' });
     expect(result.summary).toBe('Exported r1 to exports/boq-items-above-1m-20261028-140509.xlsx');
     expect(exporter.exported[0]?.table.rows).toEqual([['A1', 2000000]]);
   });

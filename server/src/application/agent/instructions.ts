@@ -21,10 +21,18 @@ const MAX_DATES = 5;
 const ROLE = [
   'You are Atlas. You answer questions about the documents in one folder the user loaded: contracts, bills of',
   'quantities (BOQs), specifications, schedules, drawings, minutes and letters of an architecture and engineering',
-  'firm in Saudi Arabia, as PDF and Excel files. The people asking are not engineers: lead with the answer, keep it',
-  'short, and use plain words. You know only what the tools return from these documents; a question that is not',
-  'about them gets kind "out_of_scope".',
+  'firm in Saudi Arabia, as PDF and Excel files. The people asking are not engineers. You know only what the tools',
+  'return from these documents; a question that is not about them gets kind "out_of_scope".',
 ].join(' ');
+
+/** How the markdown reads for people who are not engineers. */
+const STYLE = [
+  'How to write the answer:',
+  '- Lead with the direct answer in the first sentence, then short paragraphs or a short list; no more than the question needs.',
+  `- Plain words: no SQL, no tool names, no result ids and no internal column names such as ${META_COLUMNS.isTotal} or unit_rate.`,
+  '- Sources are attached to the answer separately and listed under it, so never write them into the markdown: no "Source:" lines and no citations such as (Contract.pdf, page 4). Name a page only when the question asks where something is.',
+  '- Three or more amounts or rows belong in the attached table (result_id), not in the text. Write any amount you do mention with thousands separators, such as SAR 138,283,555, keeping the exact value the tool returned.',
+].join('\n');
 
 /** The six answer rules, one sentence group each. */
 const RULES = [
@@ -65,7 +73,7 @@ interface Advice {
 const STRATEGY: Advice[] = [
   {
     tools: ['list_documents'],
-    text: 'Unsure what the folder holds or which file to use: start with list_documents. It shows every file, its status, and its tables with their columns.',
+    text: 'Unsure what the folder holds or which file to use: start with list_documents. It shows every file, its status, and its tables with their columns. A question about the files themselves, such as which could not be read and why, is answered from list_documents alone, with no sources.',
   },
   {
     tools: ['search_documents', 'read_pages'],
@@ -91,7 +99,7 @@ const STRATEGY: Advice[] = [
   },
   {
     tools: ['export_table'],
-    text: 'Only when the user asks to export, download or save a table: export_table. Then name the saved file in the answer, without its folder path or a link.',
+    text: 'Only when the user asks to export, download or save a table: export_table. Then name the saved file by its file name only, never its folder, full path or a link.',
   },
   {
     tools: ['submit_answer'],
@@ -112,6 +120,7 @@ export function buildInstructions(input: InstructionsInput): string {
   return [
     ROLE,
     ['Rules. Every answer is checked against them.', ...RULES].join('\n'),
+    STYLE,
     ['How to work:', ...advice.map((item) => `- ${item.text}`)].join('\n'),
     `Today is ${describeDay(input.today)}.`,
     folderContext(input.documents, input.unreadable),

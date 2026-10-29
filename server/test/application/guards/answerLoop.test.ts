@@ -60,7 +60,7 @@ async function ask(script: Partial<ModelTurnResult>[]) {
     reasoningEffort: null,
     logger: new MemoryRunLogger(),
     onEvent: (event) => events.push(event),
-    onSubmit: checkAnswer({ question, index, session, toolOutputs: () => log.outputs }),
+    onSubmit: checkAnswer({ question, index, session, toolOutputs: () => log.outputs, toolCalls: () => log.calls }),
   });
   return { run, model, events };
 }

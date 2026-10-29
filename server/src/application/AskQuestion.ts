@@ -154,7 +154,13 @@ export class AskQuestion {
       onEvent: input.onEvent,
       onSubmit: checkLanguage(
         isArabic(input.question) ? 'ar' : 'en',
-        checkAnswer({ question: input.question, index, session, toolOutputs: () => outputs.outputs }),
+        checkAnswer({
+          question: input.question,
+          index,
+          session,
+          toolOutputs: () => outputs.outputs,
+          toolCalls: () => outputs.calls,
+        }),
       ),
     });
   }
