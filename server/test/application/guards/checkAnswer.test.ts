@@ -16,8 +16,9 @@ function setup(question = 'What is the contract price?') {
   index.save({ ...pdfRecord('Locked.pdf', []), status: 'encrypted', pageCount: null });
   const session = new Session('s1');
   const outputs: unknown[] = [{ document: 'Contract.pdf', pages: [{ page: 2, text: 'The Contract Price is SAR 48,250,000.' }] }];
-  const onSubmit = checkAnswer({ question, index, session, toolOutputs: () => outputs });
-  return { index, session, outputs, onSubmit };
+  const calls: string[] = ['read_pages'];
+  const onSubmit = checkAnswer({ question, index, session, toolOutputs: () => outputs, toolCalls: () => calls });
+  return { index, session, outputs, calls, onSubmit };
 }
 
 function answer(overrides: Partial<SubmittedAnswer> = {}): SubmittedAnswer {
@@ -165,7 +166,7 @@ describe('checkAnswer', () => {
 
   it('answers not found in Arabic for an Arabic answer', async () => {
     const { index, session } = setup();
-    const onSubmit = checkAnswer({ question: 'ما هو موعد التسليم؟', index, session, toolOutputs: () => [], maxRejections: 0 });
+    const onSubmit = checkAnswer({ question: 'ما هو موعد التسليم؟', index, session, toolOutputs: () => [], toolCalls: () => [], maxRejections: 0 });
     const verdict = await onSubmit(answer({ language: 'ar', markdown: 'موعد التسليم غير مذكور', sources: [] }));
     if (!verdict.accepted) throw new Error(verdict.feedback);
     expect(verdict.value).toMatchObject({ kind: 'not_found', language: 'ar', markdown: 'لم أجد ذلك في المستندات المحمّلة.' });
@@ -177,6 +178,22 @@ describe('checkAnswer', () => {
     const verdict = await onSubmit(answer({ kind: 'not_found', markdown, sources: [] }));
     if (!verdict.accepted) throw new Error(verdict.feedback);
     expect(verdict.value).toMatchObject({ kind: 'not_found', markdown, unreadableFiles: ['Locked.pdf'], warnings: [] });
+  });
+
+  it('accepts an answer about the folder itself, built from list_documents alone, without a source', async () => {
+    const { onSubmit, calls } = setup('Which files could not be read?');
+    calls.splice(0, calls.length, 'list_documents');
+    const markdown = 'One file could not be read: Locked.pdf is password-protected.';
+    const verdict = await onSubmit(answer({ markdown, sources: [] }));
+    if (!verdict.accepted) throw new Error(verdict.feedback);
+    expect(verdict.value).toMatchObject({ kind: 'answer', markdown, sources: [], unreadableFiles: ['Locked.pdf'], warnings: [] });
+  });
+
+  it('still needs a source when a tool other than list_documents was called', async () => {
+    const { onSubmit, calls } = setup('Which files could not be read?');
+    calls.splice(0, calls.length, 'list_documents', 'search_documents');
+    const feedback = feedbackOf(await onSubmit(answer({ markdown: 'Locked.pdf is password-protected.', sources: [] })));
+    expect(feedback.problems).toEqual([expect.stringContaining('needs at least one valid source')]);
   });
 
   it('rejects arguments that do not match the submit_answer schema', async () => {

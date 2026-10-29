@@ -2,6 +2,7 @@ import type { Answer, DocumentSummary, ExcelSource, FileStatus, PdfSource, Sourc
 import { sliceText } from '../../domain/text';
 import type { DocumentIndex } from '../ports/DocumentIndex';
 import type { SavedResult, Session } from '../session/Session';
+import { listDocuments } from '../tools/listDocuments';
 import type { SubmittedSource } from '../tools/submitAnswer';
 import { guardMessages } from './guardMessages';
 import type { AnswerProblem } from './problems';
@@ -16,6 +17,8 @@ export interface SourcesInput {
   kind: Answer['kind'];
   sources: readonly SubmittedSource[];
   resultId: string | null;
+  /** The answer is about the folder's files themselves (see isAboutFolder), so it needs no source. */
+  aboutFolder?: boolean;
 }
 
 export interface SourcesCheck {
@@ -30,7 +33,7 @@ export interface SourcesCheck {
  * Checks every source against the index: the document must be loaded and readable, a PDF page must be between 1
  * and its page count, an Excel sheet must exist and its rows start at 1. Valid ones become the shared Source shape;
  * each invalid one is a problem. result_id must name a saved result in the session. An answer of kind "answer"
- * with no valid source is a problem too.
+ * with no valid source is a problem too, unless it is about the folder's files themselves.
  */
 export function checkSources(input: SourcesInput): SourcesCheck {
   const problems: AnswerProblem[] = [];
@@ -44,19 +47,38 @@ export function checkSources(input: SourcesInput): SourcesCheck {
     else valid.push(checked);
   }
   const sources = withoutRepeats([...valid, ...(result?.sources ?? [])]);
-  if (input.kind === 'answer' && sources.length === 0) problems.push({ type: 'no_source' });
+  if (input.kind === 'answer' && sources.length === 0 && input.aboutFolder !== true) problems.push({ type: 'no_source' });
   return { sources, result, problems };
 }
 
 /**
+ * Whether an answer is about the folder's files themselves, such as which files could not be read and why: kind
+ * "answer", no sources given, and list_documents was the only tool this question called. list_documents returns
+ * the index's own record of the files, not their content, so it has no Source to cite.
+ */
+export function isAboutFolder(answer: { kind: Answer['kind']; sources: readonly unknown[] }, toolCalls: readonly string[]): boolean {
+  return (
+    answer.kind === 'answer' &&
+    answer.sources.length === 0 &&
+    toolCalls.length > 0 &&
+    toolCalls.every((name) => name === listDocuments.name)
+  );
+}
+
+/**
  * Applies the source rule to an accepted answer: one of kind "answer" with no valid source becomes "not found"
- * with the fixed text in its language. A "not found" answer names the files that could not be read.
+ * with the fixed text in its language, unless it is about the folder's files themselves. A "not found" answer and
+ * an answer about the folder name the files that could not be read.
  */
 export function requireSources(
   index: DocumentIndex,
   answer: Pick<Answer, 'kind' | 'language' | 'markdown'>,
   sources: readonly Source[],
+  aboutFolder = false,
 ): Pick<Answer, 'kind' | 'markdown' | 'unreadableFiles'> {
+  if (aboutFolder && answer.kind === 'answer' && sources.length === 0) {
+    return { kind: 'answer', markdown: answer.markdown, unreadableFiles: unreadableFiles(index) };
+  }
   const kind = answer.kind === 'answer' && sources.length === 0 ? 'not_found' : answer.kind;
   if (kind !== 'not_found') return { kind, markdown: answer.markdown, unreadableFiles: [] };
   const markdown = kind === answer.kind && answer.markdown.trim() !== '' ? answer.markdown : guardMessages.notFound(answer.language);

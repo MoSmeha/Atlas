@@ -31,6 +31,7 @@ const STYLE = [
   '- Lead with the direct answer in the first sentence, then short paragraphs or a short list; no more than the question needs.',
   `- Plain words: no SQL, no tool names, no result ids and no internal column names such as ${META_COLUMNS.isTotal} or unit_rate.`,
   '- Sources are attached to the answer separately and listed under it, so never write them into the markdown: no "Source:" lines and no citations such as (Contract.pdf, page 4). Name a page only when the question asks where something is.',
+  '- Three or more amounts or rows belong in the attached table (result_id), not in the text. Write any amount you do mention with thousands separators, such as SAR 138,283,555, keeping the exact value the tool returned.',
 ].join('\n');
 
 /** The six answer rules, one sentence group each. */
