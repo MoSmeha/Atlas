@@ -4,6 +4,7 @@ import { useCopy } from '../../i18n/useCopy';
 import { useLanguage } from '../../i18n/useLanguage';
 import { useSession } from '../../state/useSession';
 import { errorMessage } from '../errors/errorCopy';
+import { isFreeModel } from './freeTier';
 import { ModelOptionRow } from './ModelOptionRow';
 import { topbarCopy } from './topbarCopy';
 
@@ -18,7 +19,7 @@ export function ModelPicker() {
   const models = useModels();
   const lineup = models.data?.models ?? [];
   const value = model ?? models.data?.defaultModel ?? null;
-  const tierOf = (id: string) => lineup.find((option) => option.id === id)?.tier ?? null;
+  const optionOf = (id: string) => lineup.find((option) => option.id === id);
 
   const select = (
     <Select
@@ -34,7 +35,12 @@ export function ModelPicker() {
       disabled={models.data === undefined}
       placeholder={models.isError ? copy.defaultModel : copy.loadingModels}
       renderOption={({ option, checked }) => (
-        <ModelOptionRow label={option.label} tier={tierOf(option.value)} checked={checked === true} />
+        <ModelOptionRow
+          label={option.label}
+          tier={optionOf(option.value)?.tier ?? null}
+          free={isFreeModel(optionOf(option.value))}
+          checked={checked === true}
+        />
       )}
       comboboxProps={{ width: 252, position: 'bottom-end' }}
     />
