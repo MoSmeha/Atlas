@@ -183,7 +183,7 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
       documents: { workspace },
       uploads: { indexFolder, uploadsDir, maxFileBytes: settings.maxFileBytes },
       chat: { askQuestion, sessions, workspace, apiKeyPresent },
-      models: { lineup, answerTier: modelConfig.answerTier },
+      models: { lineup, answerTier: modelConfig.answerTier, provider: provider?.id ?? null },
       usage: { sessions },
       voice: { catalog: voiceCatalog, calls: voiceCalls, transcribe: transcribeSpeech, callsAvailable, dictationAvailable },
     },

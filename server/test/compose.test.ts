@@ -65,6 +65,7 @@ describe('compose', () => {
     expect(response.json()).toEqual({
       models: [{ id: 'qwen3:14b', tier: 'frontier', label: 'qwen3:14b (local)', inputPrice: 0, outputPrice: 0 }],
       defaultModel: 'qwen3:14b',
+      provider: 'ollama',
     });
   });
 
