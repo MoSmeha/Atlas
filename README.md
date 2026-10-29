@@ -9,9 +9,9 @@ Atlas reads every PDF and Excel file in a folder and answers your questions abou
 You need an OpenAI API key. Everything else runs on your own computer.
 
 1. **Install Node.js 24 and pnpm.**
-   Download Node.js 24 from [nodejs.org](https://nodejs.org/en/download) (on macOS you can also run `brew install node@24`). Then install pnpm, the package manager this project uses:
+   Download Node.js 24 from [nodejs.org](https://nodejs.org/en/download) (on macOS you can also run `brew install node@24`). Then switch on pnpm, the package manager this project uses; it comes with Node:
    ```sh
-   npm install --global pnpm
+   corepack enable
    ```
 2. **Get the code.**
    ```sh
@@ -183,6 +183,8 @@ Atlas/
 | `pnpm eval` | Asks the real AI a set of questions about the sample folder and compares the answers with `samples/expected.json`. **Costs money** (it uses your API key). Writes the results to `docs/EVAL.md`. |
 | `pnpm samples` | Makes the sample documents again. Needs Microsoft Edge, which renders the Arabic minutes. |
 
+**Latest eval:** 20 of 21 questions passed on GPT-6 Astra, with a median answer time of 9.6 seconds and $1.48 for the whole run. The one miss and every answer's time and cost are in [docs/EVAL.md](docs/EVAL.md).
+
 ## How to add a tool
 
 1. **Shared shape (only if the web app shows the result).** Add a Zod schema to `shared/src/schemas/`.
@@ -232,7 +234,7 @@ Atlas reads PDFs with mupdf, which is AGPL-3.0, so this repository carries no pe
 
 ## Assumptions and defaults
 
-- **Models.** Answers use OpenAI's frontier model by default (GPT-6 Astra on the key used here), because answer quality matters more than cost for a demo. A small, cheap model (GPT-6 Luna) does bulk work such as sorting documents into types. Search by meaning uses `text-embedding-3-small`.
+- **Models.** Answers use OpenAI's frontier model by default (GPT-6 Astra on the key used here), because answer quality matters more than cost for a demo. The rule was to switch the default to the balanced model (GPT-6.1 Sol) if the median answer took longer than 20 seconds; the eval measured 9.6 seconds, so Astra stays. The picker offers all three. A small, cheap model (GPT-6 Luna) does bulk work such as sorting documents into types. Search by meaning uses `text-embedding-3-small`. The model IDs and prices live in `server/config/models.json`; at start Atlas keeps only the models your key can see.
 - **Local only.** Atlas, its index and your files stay on your computer. The AI runs at OpenAI, so document text is sent there: passages for search by meaning, the start of each file to sort it into a type, the pages a question needs, and page images for scanned pages.
 - **One folder at a time.** Loading a new folder replaces the current one.
 - **PDF and Excel only** (`.pdf`, `.xlsx`, `.xlsm`). Old `.xls`, CSV, Word and images are listed as skipped, with the reason.
