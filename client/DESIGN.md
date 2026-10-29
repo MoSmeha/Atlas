@@ -593,7 +593,8 @@ Mantine defaults, tuned small and quiet.
 ### Chips (badges)
 - **Style:** 20px tall, 6px side padding, 4px corners, 12px/600 sentence case. Neutral badges have a Quiet Chip ground and Soft Text. Amber and red badges have a shade-1 ground, shade-9 text and a 12px Tabler status icon, each from its role, so they read in both schemes. Document-type badges stay neutral beside a coloured kind icon.
 - **State:** status badges show only when a file is not ok, and are focusable so the reason shows in a tooltip.
-- **Free tier:** while Gemini's free tier or a local Ollama model answers, a neutral badge with a 12px crossed-dollar icon sits between the cost-and-time pair and the model picker ("Free tier", or "Free, on this computer"). It stays neutral under the Colour Means Trouble Rule, is focusable, and its tooltip gives the daily limit and where the documents go. The picker's tier hints then say "free" instead of naming a cost, and a free answer's cost reads "Free". Hidden below `xs`.
+- **Free tier:** while a model from Gemini's free tier or a local Ollama model is picked, a neutral badge with a 12px crossed-dollar icon sits between the cost-and-time pair and the model picker ("Free tier", or "Free, on this computer"); it goes when an OpenAI model is picked. It stays neutral under the Colour Means Trouble Rule, is focusable, and its tooltip gives the daily limit and where the documents go. Free models' tier hints say "free" instead of naming a cost, and a free answer's cost reads "Free". Hidden below `xs`.
+- **Model picker groups:** with more than one provider set up, the picker's list (Mantine Select groups) heads each provider's models with its name, "OpenAI", "Gemini, free tier" or "On this computer, free", in the server's order. One provider keeps the flat list. The picker is 176px wide so the longest Gemini name fits.
 
 ### Cards / Containers
 - **Corner Style:** 6px (result table, notices), 8px (sheet, composer, call card, modals).

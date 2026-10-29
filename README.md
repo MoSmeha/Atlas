@@ -89,14 +89,14 @@ On the sample project, Luna answered all 21 test questions correctly for 2 cents
 
 ### Or use it for free
 
-Atlas can also answer at no cost. The top bar then shows **Free tier** beside the model picker, and each answer's cost reads "Free".
+Atlas can also answer at no cost. Every option you set up sits in the same model picker, grouped by who runs it, so you can pick GPT-6 Luna for one question and Gemini for the next. While a free model is picked, the top bar shows **Free tier** beside the picker, and each answer's cost reads "Free".
 
 | Free option | How to set it up | Good to know |
 | --- | --- | --- |
 | Gemini's free tier, from Google | Get a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and add `GEMINI_API_KEY=` to `.env` | There is a daily limit. Google uses what its free tier is sent to improve its products, so keep confidential files off it |
 | A model on your own computer | Install [Ollama](https://ollama.com), then run `ollama pull qwen3:14b` and `ollama pull bge-m3` | Nothing leaves your computer. It needs a graphics card with at least 6 GB of memory |
 
-Atlas picks by itself: a model on your computer first, then Gemini, then OpenAI. Voice calls still use OpenAI. Neither free option has been through the 21 test questions yet.
+The picker starts on a free model: one on your computer if there is one, otherwise Gemini. Searching your documents always uses that default, whichever model answers. Voice calls still use OpenAI. Neither free option has been through the 21 test questions yet.
 
 ## English or Arabic, light or dark
 
