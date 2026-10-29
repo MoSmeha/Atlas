@@ -7,6 +7,10 @@ export type ModelTier = z.infer<typeof ModelTier>;
 export const ModelProvider = z.enum(['openai', 'gemini', 'ollama']);
 export type ModelProvider = z.infer<typeof ModelProvider>;
 
+/** How long the answer model thinks before it answers: low is the fastest, high the slowest and most careful. */
+export const AnswerEffort = z.enum(['low', 'medium', 'high']);
+export type AnswerEffort = z.infer<typeof AnswerEffort>;
+
 export const ModelOption = z.object({
   id: z.string(),
   provider: ModelProvider,
@@ -15,6 +19,8 @@ export const ModelOption = z.object({
   /** US dollars per one million tokens. */
   inputPrice: z.number(),
   outputPrice: z.number(),
+  /** The effort it answers at unless one is picked; null when its provider leaves thinking to the model, so none can be. */
+  defaultEffort: AnswerEffort.nullable(),
 });
 export type ModelOption = z.infer<typeof ModelOption>;
 

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { Answer, ChatEvent, ErrorDetail, Usage } from '@atlas/shared';
+import type { Answer, AnswerEffort, ChatEvent, ErrorDetail, Usage } from '@atlas/shared';
 import { isArabic } from '../domain/language';
 import { zeroUsage, type TokenPrice } from '../domain/pricing';
 import { speechFor } from '../domain/speech';
@@ -13,12 +13,13 @@ import { checkAnswer } from './guards/checkAnswer';
 import { checkLanguage } from './guards/languageGuard';
 import { unreadableFiles } from './guards/sourcesGuard';
 import { ToolOutputLog } from './guards/ToolOutputLog';
+import { questionEffort } from './models/answerEffort';
 import { chooseModel } from './models/chooseModel';
 import { smallModelFor, type ModelChoices } from './models/modelChoices';
 import type { CatalogModel } from './models/pickLineup';
 import type { Clock } from './ports/Clock';
 import type { EmbeddingClient } from './ports/EmbeddingClient';
-import type { ModelClient } from './ports/ModelClient';
+import type { ModelClient, ReasoningEffort } from './ports/ModelClient';
 import type { PageRenderer } from './ports/PageRenderer';
 import type { ResultExporter } from './ports/ResultExporter';
 import type { RunLogger } from './ports/RunLogger';
@@ -41,7 +42,11 @@ export interface AskQuestionDeps {
   exporter: ResultExporter;
   clock: Clock;
   logger: RunLogger;
-  /** The models a question may use, from every provider set up, and the default; their catalog prices give the cost. */
+  /**
+   * The models a question may use, from every provider set up, and the default; their catalog prices give the cost.
+   * A provider's reasoning effort is a question's default, which it may swap unless it is null or a level the picker
+   * does not offer.
+   */
   models: ModelChoices;
   maxRounds: number;
   exportsDir: string;
@@ -54,6 +59,8 @@ export interface AskQuestionInput {
   question: string;
   /** Requested model ID; anything but one of the choices gets the default model. */
   model?: string | null;
+  /** Requested effort; null or left out gives the default. */
+  effort?: AnswerEffort | null;
   /** Spoken in a voice call: the instructions allow for transcription mistakes, and a `speech` event precedes the answer. */
   spoken?: boolean;
   /** Stops the question, for example when the browser disconnects. */
@@ -67,6 +74,7 @@ export type AskOutcome = { ok: true; answer: Answer; usage: Usage } | { ok: fals
 interface Question {
   id: string;
   model: CatalogModel;
+  effort: ReasoningEffort | null;
   session: Session;
   meter: UsageMeter | null;
 }
@@ -84,9 +92,11 @@ export class AskQuestion {
 
   async execute(input: AskQuestionInput): Promise<AskOutcome> {
     const startedAt = this.deps.clock.now().getTime();
+    const model = chooseModel(this.deps.models, input.model);
     const question: Question = {
       id: randomUUID(),
-      model: chooseModel(this.deps.models, input.model),
+      model,
+      effort: questionEffort(this.deps.models.reasoningEffort[model.provider] ?? null, input.effort),
       session: this.deps.sessions.get(input.sessionId),
       meter: this.deps.modelClient === null ? null : new UsageMeter(this.deps.modelClient),
     };
@@ -152,7 +162,7 @@ export class AskQuestion {
       submitTool: submitAnswer,
       context,
       maxRounds: deps.maxRounds,
-      reasoningEffort: deps.models.reasoningEffort[model.provider] ?? null,
+      reasoningEffort: question.effort,
       logger: deps.logger,
       onEvent: input.onEvent,
       onSubmit: checkLanguage(
@@ -195,6 +205,7 @@ export class AskQuestion {
       sessionId: input.sessionId,
       question: input.question,
       model,
+      reasoningEffort: question.effort,
       rounds: result.rounds,
       usage: tokens,
       costUsd,

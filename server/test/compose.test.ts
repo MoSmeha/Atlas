@@ -67,7 +67,7 @@ describe('compose', () => {
     expect(container.api.health.apiKeyPresent).toBe(true);
     const response = await buildApp(container.api).inject({ method: 'GET', url: '/api/models' });
     expect(response.json()).toEqual({
-      models: [{ id: 'qwen3:14b', provider: 'ollama', tier: 'frontier', label: 'qwen3:14b (local)', inputPrice: 0, outputPrice: 0 }],
+      models: [{ id: 'qwen3:14b', provider: 'ollama', tier: 'frontier', label: 'qwen3:14b (local)', inputPrice: 0, outputPrice: 0, defaultEffort: null }],
       defaultModel: 'qwen3:14b',
     });
     expect(providerReport(container)).toEqual([
@@ -162,12 +162,12 @@ describe('compose', () => {
     container.workspace.require().index.close();
   });
 
-  it('offers the choices with the configured answer tier as the default model', async () => {
+  it('offers the choices with the configured answer tier as the default model, and no effort while no provider is set up', async () => {
     const container = await compose(noKey);
     const response = await buildApp(container.api).inject({ method: 'GET', url: '/api/models' });
     const { options, defaultModel } = container.models;
     expect(response.json()).toMatchObject({
-      models: options.map((option) => ({ id: option.id, provider: 'openai' })),
+      models: options.map((option) => ({ id: option.id, provider: 'openai', defaultEffort: null })),
       defaultModel: defaultModel.id,
     });
   });

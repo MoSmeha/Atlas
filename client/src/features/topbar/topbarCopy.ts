@@ -1,4 +1,4 @@
-import type { ModelProvider, ModelTier } from '@atlas/shared';
+import type { AnswerEffort, ModelProvider, ModelTier } from '@atlas/shared';
 import { type ArabicNoun, countAr, countEn } from '../../i18n/count';
 import type { Bilingual, Language } from '../../i18n/language';
 import type { FreeProvider } from './freeTier';
@@ -17,6 +17,10 @@ interface TopbarCopy {
   tiers: Record<ModelTier, string>;
   /** The same, for a provider that charges nothing. */
   freeTiers: Record<ModelTier, string>;
+  /** The effort picker's name, for screen readers. */
+  effort: string;
+  /** Each effort's name, and how fast its answers come. */
+  efforts: Record<AnswerEffort, { label: string; speed: string }>;
   /** Each provider's heading in the picker's list, shown when there are several. */
   providers: Record<ModelProvider, string>;
   /** The badge beside the picker while a free model is chosen, and what it means. */
@@ -57,6 +61,12 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       frontier: 'Most thorough, free',
       balanced: 'Good balance of depth and speed, free',
       small: 'Fastest, free',
+    },
+    effort: 'Thinking effort',
+    efforts: {
+      low: { label: 'Low effort', speed: 'Fast' },
+      medium: { label: 'Medium effort', speed: 'Medium speed' },
+      high: { label: 'High effort', speed: 'Slower, most careful' },
     },
     providers: { openai: 'OpenAI', gemini: 'Gemini, free tier', ollama: 'On this computer, free' },
     free: {
@@ -100,6 +110,12 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       frontier: 'الأدق، ومجاني',
       balanced: 'توازن جيد بين العمق والسرعة، ومجاني',
       small: 'الأسرع، ومجاني',
+    },
+    effort: 'مستوى التفكير',
+    efforts: {
+      low: { label: 'تفكير قليل', speed: 'سريع' },
+      medium: { label: 'تفكير متوسط', speed: 'سرعة متوسطة' },
+      high: { label: 'تفكير عميق', speed: 'أبطأ، والأدق' },
     },
     providers: { openai: 'OpenAI', gemini: 'Gemini، الباقة المجانية', ollama: 'على هذا الجهاز، مجاني' },
     free: {

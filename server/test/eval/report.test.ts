@@ -19,12 +19,14 @@ describe('eval report', () => {
     const report = renderReport({
       date: new Date(2026, 9, 28, 22, 41),
       model: 'gpt-6-luna',
+      effort: 'low',
       folder: 'samples/riyadh-tower',
       indexSeconds: 12.5,
       subset: false,
       results: [result('a', true, 2000), result('b', false, 6000)],
     });
     expect(report).toContain('- **Date:** 2026-10-28 22:41');
+    expect(report).toContain('- **Model:** gpt-6-luna, low reasoning effort\n');
     expect(report).toContain('- **Passed:** 1 of 2\n');
     expect(report).toContain('- **Total cost:** $0.0246');
     expect(report).toContain('median 2.0 s, p90 6.0 s');

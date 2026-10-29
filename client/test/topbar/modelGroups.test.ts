@@ -5,7 +5,7 @@ import { modelGroups } from '../../src/features/topbar/modelGroups';
 const headings = { openai: 'OpenAI', gemini: 'Gemini, free tier', ollama: 'On this computer, free' };
 
 function option(id: string, provider: ModelOption['provider']): ModelOption {
-  return { id, provider, tier: 'small', label: id.toUpperCase(), inputPrice: 0, outputPrice: 0 };
+  return { id, provider, tier: 'small', label: id.toUpperCase(), inputPrice: 0, outputPrice: 0, defaultEffort: null };
 }
 
 describe('modelGroups', () => {

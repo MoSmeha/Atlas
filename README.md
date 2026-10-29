@@ -87,6 +87,8 @@ Choose which AI answers from the top bar: a cheap, fast one for everyday questio
 
 On the sample project, Luna answered all 21 test questions correctly for 2 cents in total ([test report](docs/EVAL.md)).
 
+Beside the model, choose how long it thinks before answering: **Low effort** is fast, **Medium effort** is medium speed, and **High effort** is slower and most careful. GPT models start on Medium and Gemini on Low. In a voice call, a lower effort means Atlas starts speaking its answer sooner.
+
 ### Or use it for free
 
 Atlas can also answer at no cost. Every option you set up sits in the same model picker, grouped by who runs it, so you can pick GPT-6 Luna for one question and Gemini for the next. While a free model is picked, the top bar shows **Free tier** beside the picker, and each answer's cost reads "Free".

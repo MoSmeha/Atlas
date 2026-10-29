@@ -10,6 +10,7 @@ import { Workspace } from '../../src/application/workspace/Workspace';
 import { makeApiDeps, makeAskQuestion } from '../fakes/apiDeps';
 import { FakeIndex } from '../fakes/FakeIndex';
 import { callsTools, FakeModelClient } from '../fakes/FakeModelClient';
+import { testChoices } from '../fakes/lineup';
 import { MemoryRunLogger } from '../fakes/MemoryRunLogger';
 import { boqTable, excelRecord } from '../fakes/records';
 
@@ -88,6 +89,23 @@ describe('POST /api/chat', () => {
     expect(events[0]).toMatchObject({ type: 'started', model: 'small-model' });
     const usage = UsageResponse.parse((await app.inject({ method: 'GET', url: '/api/usage?sessionId=s1' })).json());
     expect(usage).toMatchObject({ last: { model: 'small-model' }, session: { questions: 1 } });
+  });
+
+  it('runs the answer model at the effort the request names, and refuses an effort it does not offer', async () => {
+    const workspace = new Workspace();
+    workspace.activate('/folder', new FakeIndex());
+    const sessions = new SessionStore();
+    const model = new FakeModelClient([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })]);
+    const askQuestion = makeAskQuestion({ workspace, sessions, modelClient: model, models: { ...testChoices, reasoningEffort: { openai: 'medium' } } });
+    const app = buildApp(makeApiDeps({ chat: { askQuestion, sessions, workspace, apiKeyPresent: true } }));
+    apps.push(app);
+
+    await postChat(app, { ...question, question: 'Hello', effort: 'low' });
+    expect(model.requests[0]?.reasoningEffort).toBe('low');
+
+    const refused = await postChat(app, { ...question, question: 'Hello', effort: 'turbo' });
+    expect(refused.statusCode).toBe(400);
+    expect(refused.json().error.code).toBe('invalid_request');
   });
 
   it('ends the stream with an error event when the question fails after it started', async () => {

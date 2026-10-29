@@ -229,6 +229,31 @@ describe('AskQuestion', () => {
     expect(outcome.ok && outcome.usage.model).toBe('frontier-model');
   });
 
+  it('runs the answer model at the requested effort and logs it, and at its provider default when none is asked for', async () => {
+    const medium = { models: { ...models, reasoningEffort: { openai: 'medium' as const } } };
+    const chosen = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })], medium);
+    await chosen.ask.execute({ sessionId: 's1', question: 'Hello', effort: 'high', onEvent: () => {} });
+    expect(chosen.model.requests[0]?.reasoningEffort).toBe('high');
+    expect(chosen.logger.questions[0]).toMatchObject({ reasoningEffort: 'high' });
+
+    const unset = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })], medium);
+    await unset.question('Hello');
+    expect(unset.model.requests[0]?.reasoningEffort).toBe('medium');
+  });
+
+  it("keeps the provider's effort when it leaves thinking to each model or names a level the picker does not offer", async () => {
+    const local = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })], {
+      models: { ...models, reasoningEffort: { openai: null } },
+    });
+    await local.ask.execute({ sessionId: 's1', question: 'Hello', effort: 'low', onEvent: () => {} });
+    expect(local.model.requests[0]?.reasoningEffort).toBeNull();
+    expect(local.logger.questions[0]).toMatchObject({ reasoningEffort: null });
+
+    const minimal = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })]);
+    await minimal.ask.execute({ sessionId: 's1', question: 'Hello', model: 'free-model', effort: 'high', onEvent: () => {} });
+    expect(minimal.model.requests[0]?.reasoningEffort).toBe('minimal');
+  });
+
   it('sends a not_indexed error when no folder is loaded', async () => {
     const { model, logger, sessions, events, question } = setup([], { workspace: new Workspace() });
 

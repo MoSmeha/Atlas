@@ -6,7 +6,7 @@ import { useSession } from '../../state/useSession';
 import { errorMessage } from '../errors/errorCopy';
 import { isFreeModel } from './freeTier';
 import { modelGroups } from './modelGroups';
-import { ModelOptionRow } from './ModelOptionRow';
+import { OptionRow } from './OptionRow';
 import { topbarCopy } from './topbarCopy';
 import { useChosenModel } from './useChosenModel';
 
@@ -22,6 +22,12 @@ export function ModelPicker() {
   const lineup = models.data?.models ?? [];
   const { id: value } = useChosenModel();
   const optionOf = (id: string) => lineup.find((option) => option.id === id);
+  /** What the model's tier is good for; a free model's hint says free instead of naming a cost. */
+  const hintOf = (id: string) => {
+    const option = optionOf(id);
+    if (option === undefined) return null;
+    return (isFreeModel(option) ? copy.freeTiers : copy.tiers)[option.tier];
+  };
 
   const select = (
     <Select
@@ -37,12 +43,7 @@ export function ModelPicker() {
       disabled={models.data === undefined}
       placeholder={models.isError ? copy.defaultModel : copy.loadingModels}
       renderOption={({ option, checked }) => (
-        <ModelOptionRow
-          label={option.label}
-          tier={optionOf(option.value)?.tier ?? null}
-          free={isFreeModel(optionOf(option.value))}
-          checked={checked === true}
-        />
+        <OptionRow label={option.label} hint={hintOf(option.value)} latin checked={checked === true} />
       )}
       maxDropdownHeight={420}
       comboboxProps={{ width: 252, position: 'bottom-end' }}

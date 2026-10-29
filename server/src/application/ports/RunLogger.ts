@@ -1,5 +1,6 @@
 import type { CallDiagnosis } from '@atlas/shared';
 import type { TokenUsage } from '../../domain/pricing';
+import type { ReasoningEffort } from './ModelClient';
 
 export interface ToolLogEntry {
   questionId: string;
@@ -15,6 +16,8 @@ export interface QuestionLogEntry {
   sessionId: string;
   question: string;
   model: string;
+  /** The effort the answer model ran at; null when the provider leaves thinking to each model. */
+  reasoningEffort: ReasoningEffort | null;
   rounds: number;
   usage: TokenUsage;
   costUsd: number;
