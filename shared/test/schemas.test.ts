@@ -57,6 +57,10 @@ describe('shared schemas', () => {
     const diagnosis = { micLabel: 'Mic', micState: 'live', micPeak: 0.4, micEnergy: 1.2, packetsSent: 900, direction: 'sendrecv', answerDtx: false, events: { 'session.started': 1 }, notes: [] };
     expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 30, hangUp: false, diagnosis }).success).toBe(true);
     expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 30, hangUp: false, diagnosis: { ...diagnosis, micPeak: 2 } }).success).toBe(false);
+    // A page from before startup timings still reports its calls.
+    expect(EndCallRequest.parse({ sessionId: 's1', seconds: 30, hangUp: false, diagnosis }).diagnosis?.startup).toBeNull();
+    const startup = { microphone: 40, offer: 180, answer: 1450, started: 1700, firstWord: null };
+    expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 30, hangUp: false, diagnosis: { ...diagnosis, startup } }).success).toBe(true);
   });
 
   it('escapes a call id in the end route', () => {

@@ -2,6 +2,7 @@ import type { Answer, CallDiagnosis, Usage } from '@atlas/shared';
 import { describe, expect, it } from 'vitest';
 import { AppError } from '../../../src/application/errors';
 import { SessionStore } from '../../../src/application/session/SessionStore';
+import { greetingInstruction } from '../../../src/application/voice/callInstructions';
 import type { VoiceCatalog } from '../../../src/application/voice/VoiceCatalog';
 import { BROWSER_EVENTS, VoiceCalls } from '../../../src/application/voice/VoiceCalls';
 import { Workspace } from '../../../src/application/workspace/Workspace';
@@ -64,6 +65,7 @@ const heardNothing: CallDiagnosis = {
   answerDtx: true,
   events: { 'session.started': 1, 'session.output_transcript.delta': 12 },
   notes: [],
+  startup: { microphone: 40, offer: 180, answer: 1450, started: 1700, firstWord: 2300 },
 };
 
 async function rejection(promise: Promise<unknown>): Promise<AppError> {
@@ -82,11 +84,8 @@ describe('VoiceCalls.start', () => {
 
     const started = await calls.start({ sessionId: 's1', voiceId: 'english-female', sdp: 'offer' });
 
-    expect(started).toEqual({
-      callId: 'live_1',
-      sdp: 'answer for offer',
-      greeting: 'Greet the user now in English, in one short sentence like this: "Hi, I\'m Atlas." Then pause and listen.',
-    });
+    expect(started).toEqual({ callId: 'live_1', sdp: 'answer for offer', greeting: greetingInstruction(testVoiceCatalog.dialects.english) });
+    expect(started.greeting).toContain('with exactly this line and nothing more: "Hi, I\'m Atlas."');
     const request = client?.started[0];
     expect(request).toMatchObject({ model: 'live-model', offerSdp: 'offer', voice: { kind: 'builtIn', name: 'marin' } });
     expect(request?.browserEvents).toEqual(BROWSER_EVENTS);
@@ -115,7 +114,7 @@ describe('VoiceCalls.start', () => {
     });
     expect(client?.started[0]?.instructions).toContain('Language and dialect:\nتكلّم باللهجة الخليجية.');
     expect(client?.started[0]?.instructions).toContain('Your voice: A calm man from Riyadh speaking Gulf Arabic.');
-    expect(started.greeting).toBe('Greet the user now in Gulf Arabic, in one short sentence like this: "هلا، أنا أطلس." Then pause and listen.');
+    expect(started.greeting).toContain('Greet the user now in Gulf Arabic with exactly this line and nothing more: "هلا، أنا أطلس."');
   });
 
   it("starts with the chat's recent turns, each answer as a call would say it", async () => {
