@@ -52,7 +52,7 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 
 - All six steps are built: ingestion, the agent with all eleven tools, guards, memory, the CLI, the web client, samples with `samples/expected.json`, the eval, README, `docs/NOTE.md` and `docs/TIMELOG.md`.
 - Models (confirmed with `pnpm models`, 2026-10-28): frontier `gpt-6-astra`, balanced `gpt-6.1-sol`, small `gpt-6-luna` (the default answer model since 2026-10-29: the owner wants the demo cheap; `answerTier` in `server/config/models.json`), embeddings `text-embedding-3-small`.
-- Eval (`docs/EVAL.md`): 20 of 21 on gpt-6-astra. The miss is "items above SAR 1M", which also listed three provisional sums.
+- Eval (`docs/EVAL.md`, 2026-10-29): 21 of 21 on gpt-6-luna for $0.02, median 6.9 s. An earlier Astra run was 20 of 21 for $1.48.
 - Design: `client/PRODUCT.md`, direction contract in `client/.impeccable/surfaces/client.md`, design system in `client/DESIGN.md` (+ `.impeccable/design.json`). The finish review asked for one batch of fixes, which is applied; its verdict pass and fresh screenshots are still to do.
-- Open: the OpenAI credit ran out on 2026-10-28. Once it is topped up, re-run `pnpm eval`, take an answered screenshot for `docs/screenshot.png`, and run the design verdict pass.
+- README images in `docs/images/` are real captures (Playwright + Edge, script kept outside the repo). Open: the design finish review's verdict pass on the polish fixes.
 - Parallel work used worktrees under `C:\Users\MoSmeha\Atlas-wt\`; remove them with `git worktree remove` when they are no longer needed.
