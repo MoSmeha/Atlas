@@ -51,6 +51,29 @@ describe('logicalOrder on glyph clusters', () => {
   });
 });
 
+describe('logicalOrder on the spaces mupdf adds', () => {
+  it('drops the space mupdf adds inside a word before a letter with a diacritic', () => {
+    // "صباحًا" from the sample meeting minutes: mupdf fills the width of حً with a space of its own.
+    const line =
+      '635@345.329-355.346/3 628@341.990-345.329/3 627@339.485-341.985/3 20@334.819-339.485/3 64b@334.819-334.819/1 ' +
+      '62d@334.819-334.819/3 627@331.138-333.637/3';
+    expect(read(line)).toBe('صباحًا');
+  });
+
+  it('keeps the real space before a word that starts with a letter with a diacritic', () => {
+    // "لم تُسجَّل" from the same minutes.
+    const line =
+      '644@525.928-529.267/3 645@520.084-525.923/3 20@517.346-520.085/3 64f@515.003-515.003/1 62a@515.003-515.003/3 ' +
+      '633@505.659-514.007/3 20@500.992-505.659/3 651@500.992-500.992/1 64e@500.992-500.992/1 62c@500.992-500.992/3 ' +
+      '644@493.138-499.816/3';
+    expect(read(line).normalize('NFC')).toBe('لم تُسجَّل'.normalize('NFC'));
+  });
+
+  it('keeps the real space before lam-alef, whose zero-width part sits where the space starts', () => {
+    expect(read('645@595-600/3 20@590.005-595/3 627@590.005-590.005/3 644@583.477-590.005/1')).toBe('م لا');
+  });
+});
+
 describe('logicalOrder on mixed right-to-left lines', () => {
   it('puts a number before the Arabic word that follows it', () => {
     const line =
@@ -96,6 +119,15 @@ describe('logicalOrder on mixed right-to-left lines', () => {
     // "١٢:٣٠" from the same minutes.
     const line = '660@277.001-281.170/1 663@271.993-277.831/1 3a@269.825-271.995/1 662@264.817-269.826/1 661@262.313-264.812/1';
     expect(read(line)).toBe('١٢:٣٠');
+  });
+
+  it('keeps a percent sign and full stop after the number, with no space before them', () => {
+    // "التأسيس ٧٠٪." from the same minutes; mupdf lists ".٪" first, left to right.
+    const line =
+      '2e@150.293-152.462/0 66a@152.460-158.309/0 660@163.317-167.486/3 667@158.309-164.147/1 20@167.496-170.235/0 ' +
+      '627@202.790-205.289/3 644@199.451-202.790/3 62a@196.112-199.451/3 623@193.608-196.107/3 633@185.260-193.608/3 ' +
+      '64a@181.921-185.260/3 633@170.235-181.922/1';
+    expect(read(line)).toBe('التأسيس ٧٠٪.');
   });
 
   it('keeps Arabic-Indic digits that are already left to right', () => {

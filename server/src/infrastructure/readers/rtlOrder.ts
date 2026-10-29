@@ -1,3 +1,4 @@
+import { orderRightToLeft } from '../../domain/bidi';
 import type { RawChar } from './stextBlocks';
 
 export type Direction = 'ltr' | 'rtl';
@@ -29,14 +30,31 @@ export function lineDirection(text: string, page: Direction): Direction {
 }
 
 /**
- * One line's characters in reading order. mupdf gives each Arabic word in logical order with three slips,
- * all undone here: the characters of one glyph (lam-alef, the rial ligature, a letter with its diacritic)
- * come out reversed, numbers in Arabic-Indic digits come out from right to left, and on a right-to-left line
- * the runs of Arabic and of Latin text or digits are listed from left to right.
+ * One line's characters in reading order. mupdf gives each Arabic word in logical order with four slips,
+ * all undone here: it adds a space inside a word before a letter with a diacritic, the characters of one glyph
+ * (lam-alef, the rial ligature, a letter with its diacritic) come out reversed, numbers in Arabic-Indic digits
+ * come out from right to left, and on a right-to-left line the runs of Arabic, of Latin text or digits and of
+ * punctuation are listed from left to right (see orderRightToLeft).
  */
 export function logicalOrder(chars: readonly RawChar[], direction: Direction): RawChar[] {
-  const ordered = unreverseArabicNumbers(unreverseClusters(chars));
-  return direction === 'rtl' ? orderRunsRightToLeft(ordered) : ordered;
+  const ordered = unreverseArabicNumbers(unreverseClusters(dropClusterSpaces(chars)));
+  return direction === 'rtl' ? orderRightToLeft(ordered) : ordered;
+}
+
+/**
+ * Edge gives a letter and its diacritic as one cluster, which mupdf places with zero width at the letter's left
+ * edge; mupdf then fills the letter's width with a space of its own, so "صباحًا" would read "صبا حًا". That space
+ * starts exactly where the cluster sits. A real space before such a letter starts at the letter's right edge.
+ */
+function dropClusterSpaces(chars: readonly RawChar[]): RawChar[] {
+  return chars.filter((char, index) => !(char.rtl && SPACE.test(char.c) && startsMarkCluster(chars, index + 1, char.x0)));
+}
+
+/** True when zero-width characters at `x`, one of them a diacritic, start at `index`. */
+function startsMarkCluster(chars: readonly RawChar[], index: number, x: number): boolean {
+  let end = index;
+  while (end < chars.length && isZeroWidth(chars[end]!) && Math.abs(chars[end]!.x0 - x) < SAME) end += 1;
+  return chars.slice(index, end).some((char) => MARK.test(char.c));
 }
 
 /**
@@ -89,44 +107,6 @@ function unreverseClusters(chars: readonly RawChar[]): RawChar[] {
     index = end;
   }
   return out;
-}
-
-/** Reverses the order of direction runs when mupdf listed them left to right, keeping each run as it is. */
-function orderRunsRightToLeft(chars: RawChar[]): RawChar[] {
-  const runs = splitRuns(chars)
-    .map(trimSpaces)
-    .filter((run) => run.length > 0);
-  if (runs.length < 2) return chars;
-  const centers = runs.map(center);
-  if (!centers.every((value, k) => k === 0 || value > centers[k - 1]!)) return chars;
-  const out: RawChar[] = [];
-  for (const run of runs.reverse()) {
-    if (out.length > 0) out.push({ c: ' ', x0: run[0]!.x1, x1: run[0]!.x1, rtl: true });
-    out.push(...run);
-  }
-  return out;
-}
-
-function splitRuns(chars: RawChar[]): RawChar[][] {
-  const runs: RawChar[][] = [];
-  for (const char of chars) {
-    const run = runs.at(-1);
-    if (run && run[0]!.rtl === char.rtl) run.push(char);
-    else runs.push([char]);
-  }
-  return runs;
-}
-
-function trimSpaces(run: RawChar[]): RawChar[] {
-  let start = 0;
-  let end = run.length;
-  while (start < end && SPACE.test(run[start]!.c)) start += 1;
-  while (end > start && SPACE.test(run[end - 1]!.c)) end -= 1;
-  return run.slice(start, end);
-}
-
-function center(run: RawChar[]): number {
-  return (Math.min(...run.map((char) => char.x0)) + Math.max(...run.map((char) => char.x1))) / 2;
 }
 
 function isArabicDigit(char: RawChar | undefined): boolean {
