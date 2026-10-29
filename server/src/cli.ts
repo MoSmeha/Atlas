@@ -31,7 +31,7 @@ async function run(args: string[]): Promise<number> {
     if (container.modelClient === null) throw errors.missingApiKey();
     const status = await loadFolder(container, folder, terminal);
     if (question === '') {
-      await chat(container, terminal, status.suggestions);
+      await chat(container, terminal, status.suggestions.map((suggestion) => suggestion.en));
       return 0;
     }
     return (await askOnce(container, terminal, question)) ? 0 : 1;

@@ -1,4 +1,4 @@
-import type { DocumentSummary, DocumentType, FileStatus, TableSummary } from '@atlas/shared';
+import type { DocumentSummary, DocumentType, FileStatus, SuggestedQuestion, TableSummary } from '@atlas/shared';
 import { currencyKey, UNSPECIFIED_CURRENCY } from '../../domain/currency';
 import { revisionName } from '../../domain/revisionName';
 import { isBoqTable } from '../tools/boqTables';
@@ -17,53 +17,89 @@ const NAME_TYPES: readonly [DocumentType, RegExp][] = [
   ['Schedule', /(?<![a-z])(?:programme|program|schedule|milestones?)(?![a-z])/i],
 ];
 const SCHEDULE_LABEL = /(?<![a-z])(?:start|finish|milestone|deadline|due date)(?![a-z])/i;
+const UNREADABLE_QUESTION: SuggestedQuestion = {
+  en: 'Which files could not be read and why?',
+  ar: 'أي الملفات تعذّرت قراءتها، ولماذا؟',
+};
 /** Questions that suit any folder, so there are always five. */
-const GENERAL = [
-  'What documents are in this folder and what is each one about?',
-  'Who are the parties named in these documents?',
-  'What are the key dates in these documents?',
-  'Which files could not be read and why?',
-  'Which documents mention payment terms?',
+const GENERAL: readonly SuggestedQuestion[] = [
+  {
+    en: 'What documents are in this folder and what is each one about?',
+    ar: 'ما المستندات الموجودة في هذا المجلد، وما موضوع كل منها؟',
+  },
+  { en: 'Who are the parties named in these documents?', ar: 'من الأطراف المذكورة في هذه المستندات؟' },
+  { en: 'What are the key dates in these documents?', ar: 'ما التواريخ الرئيسية في هذه المستندات؟' },
+  UNREADABLE_QUESTION,
+  { en: 'Which documents mention payment terms?', ar: 'أي المستندات تذكر شروط الدفع؟' },
 ];
 
 /**
  * Five questions that fit what the folder holds, in priority order: BOQ totals, items above 1 million in the BOQs'
  * currency, BOQ arithmetic, two revisions of one BOQ, a contract's scope, dates in the PDFs, an Arabic document, a
- * scanned one, a file in several currencies, then general questions. Real file names, no model call, and the same
- * answer whatever order the documents come in.
+ * scanned one, a file in several currencies, then general questions. Each comes in English and Arabic, so the
+ * empty chat can offer them in the interface language. Real file names, no model call, and the same answer
+ * whatever order the documents come in.
  */
-export function suggest(documents: readonly DocumentSummary[]): string[] {
+export function suggest(documents: readonly DocumentSummary[]): SuggestedQuestion[] {
   const docs = documents.toSorted((a, b) => compareText(a.path, b.path));
   const nameOf = namer(docs);
   const readable = docs.filter((doc) => doc.status === 'ok' && doc.kind !== 'other');
   const boqs = readable.filter(isBoq);
-  const questions: (string | null)[] = [];
+  const questions: (SuggestedQuestion | null)[] = [];
 
   if (boqs.length > 0) {
     const [only] = boqs;
-    questions.push(boqs.length === 1 && only ? `What is the total of ${nameOf(only)}?` : 'What is the total of each BOQ?');
-    questions.push(`List all cost items above ${million(mainCurrency(boqs))}`);
-    questions.push('Check the BOQ arithmetic for errors');
+    questions.push(
+      boqs.length === 1 && only
+        ? { en: `What is the total of ${nameOf(only)}?`, ar: `ما مجموع ${nameOf(only)}؟` }
+        : { en: 'What is the total of each BOQ?', ar: 'ما مجموع كل جدول كميات؟' },
+    );
+    const currency = mainCurrency(boqs);
+    questions.push({
+      en: `List all cost items above ${million(currency)}`,
+      ar: `اعرض كل بنود التكلفة التي تزيد على ${millionAr(currency)}`,
+    });
+    questions.push({ en: 'Check the BOQ arithmetic for errors', ar: 'تحقق من أخطاء الحساب في جداول الكميات' });
   }
   const revisions = revisionPair(boqs);
-  if (revisions) questions.push(`What changed between ${nameOf(revisions[0])} and ${nameOf(revisions[1])}?`);
+  if (revisions) {
+    const earlier = nameOf(revisions[0]);
+    const later = nameOf(revisions[1]);
+    questions.push({ en: `What changed between ${earlier} and ${later}?`, ar: `ما الذي تغيّر بين ${earlier} و${later}؟` });
+  }
   const contract = readable.find((doc) => typeOf(doc) === 'Contract');
-  if (contract) questions.push(`Summarize the scope of work in ${nameOf(contract)}`);
-  if (readable.some((doc) => doc.kind === 'pdf')) questions.push('Extract all dates and deliverables from these documents');
+  if (contract) {
+    questions.push({ en: `Summarize the scope of work in ${nameOf(contract)}`, ar: `لخّص نطاق العمل في ${nameOf(contract)}` });
+  }
+  if (readable.some((doc) => doc.kind === 'pdf')) {
+    questions.push({
+      en: 'Extract all dates and deliverables from these documents',
+      ar: 'استخرج كل التواريخ والمخرجات من هذه المستندات',
+    });
+  }
   const arabic = readable.find((doc) => doc.language === 'ar');
   if (arabic) questions.push(aboutArabic(arabic, nameOf(arabic)));
   const scanned = docs.find(isScanned);
-  if (scanned) questions.push(`What does ${nameOf(scanned)} show?`);
+  if (scanned) questions.push({ en: `What does ${nameOf(scanned)} show?`, ar: `ماذا يُظهر ${nameOf(scanned)}؟` });
   const mixed = readable.find((doc) => doc.tables.length > 0 && currenciesOf(doc).length > 1);
-  if (mixed) questions.push(`What is the total per currency of ${nameOf(mixed)}?`);
+  if (mixed) {
+    questions.push({ en: `What is the total per currency of ${nameOf(mixed)}?`, ar: `ما مجموع ${nameOf(mixed)} لكل عملة؟` });
+  }
 
-  if (docs.some((doc) => UNREADABLE.has(doc.status))) questions.push('Which files could not be read and why?');
+  if (docs.some((doc) => UNREADABLE.has(doc.status))) questions.push(UNREADABLE_QUESTION);
   questions.push(largeTableQuestion(readable.filter((doc) => !boqs.includes(doc)), nameOf));
   const schedule = readable.find(isSchedule);
-  if (schedule) questions.push(`List the milestones in ${nameOf(schedule)} with their planned dates`);
+  if (schedule) {
+    questions.push({
+      en: `List the milestones in ${nameOf(schedule)} with their planned dates`,
+      ar: `اعرض المراحل الرئيسية في ${nameOf(schedule)} مع تواريخها المخططة`,
+    });
+  }
   questions.push(...GENERAL);
 
-  return [...new Set(questions.filter((question): question is string => question !== null))].slice(0, SUGGESTION_COUNT);
+  const unique = new Map<string, SuggestedQuestion>();
+  for (const question of questions) if (question !== null && !unique.has(question.en)) unique.set(question.en, question);
+  return [...unique.values()].slice(0, SUGGESTION_COUNT);
 }
 
 /** Classified as a BOQ, or holding a table with quantity, rate and amount columns. */
@@ -128,7 +164,10 @@ function currencies(tables: readonly TableSummary[], extra: readonly string[] = 
 }
 
 /** A threshold question over the largest table with an amount column, when it is big enough to need SQL. */
-function largeTableQuestion(docs: readonly DocumentSummary[], nameOf: (doc: DocumentSummary) => string): string | null {
+function largeTableQuestion(
+  docs: readonly DocumentSummary[],
+  nameOf: (doc: DocumentSummary) => string,
+): SuggestedQuestion | null {
   let best: { doc: DocumentSummary; table: TableSummary } | null = null;
   for (const doc of docs) {
     for (const table of doc.tables) {
@@ -138,19 +177,28 @@ function largeTableQuestion(docs: readonly DocumentSummary[], nameOf: (doc: Docu
   }
   if (best === null) return null;
   const [currency] = currencies([best.table], best.doc.currencies);
-  return `How many entries in ${nameOf(best.doc)} are above ${million(currency ?? null)}?`;
+  const name = nameOf(best.doc);
+  return {
+    en: `How many entries in ${name} are above ${million(currency ?? null)}?`,
+    ar: `كم عدد القيود في ${name} التي تزيد على ${millionAr(currency ?? null)}؟`,
+  };
 }
 
-/** A question in English about an Arabic document. */
-function aboutArabic(doc: DocumentSummary, name: string): string {
+/** A question about an Arabic document, fitted to its type. */
+function aboutArabic(doc: DocumentSummary, name: string): SuggestedQuestion {
   const type = typeOf(doc);
-  if (type === 'Minutes') return `What was decided in ${name}?`;
-  if (type === 'Contract') return `What are the key terms of ${name}?`;
-  return `What are the main points of ${name}?`;
+  if (type === 'Minutes') return { en: `What was decided in ${name}?`, ar: `ما الذي تقرر في ${name}؟` };
+  if (type === 'Contract') return { en: `What are the key terms of ${name}?`, ar: `ما الشروط الرئيسية في ${name}؟` };
+  return { en: `What are the main points of ${name}?`, ar: `ما النقاط الرئيسية في ${name}؟` };
 }
 
 function million(currency: string | null): string {
   return currency === null ? '1 million' : `${currency} 1 million`;
+}
+
+/** The threshold in figures, so the Arabic question carries the exact number; the currency code stays as written. */
+function millionAr(currency: string | null): string {
+  return currency === null ? '1,000,000' : `1,000,000 ${currency}`;
 }
 
 /** The file name, or the path when another file in the folder has the same name. */

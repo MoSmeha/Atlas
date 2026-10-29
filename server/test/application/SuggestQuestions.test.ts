@@ -1,6 +1,9 @@
 import type { Classification, DocumentSummary, DocumentType, TableColumn, TableSummary } from '@atlas/shared';
 import { describe, expect, it } from 'vitest';
-import { SUGGESTION_COUNT, suggest } from '../../src/application/indexing/SuggestQuestions';
+import { SUGGESTION_COUNT, suggest as suggestBoth } from '../../src/application/indexing/SuggestQuestions';
+
+/** The English side, which most checks read. */
+const suggest = (documents: readonly DocumentSummary[]) => suggestBoth(documents).map((question) => question.en);
 
 function doc(path: string, overrides: Partial<DocumentSummary> = {}): DocumentSummary {
   const name = path.split('/').pop() ?? path;
@@ -63,6 +66,16 @@ describe('suggest', () => {
       'Check the BOQ arithmetic for errors',
       'What changed between BOQ_Phase1_Rev0.xlsx and BOQ_Phase1_Rev1.xlsx?',
       'Summarize the scope of work in Contract_Main_Works.pdf',
+    ]);
+  });
+
+  it('writes each question in Arabic too, with the file names and currency code as they are', () => {
+    expect(suggestBoth(sampleFolder()).map((question) => question.ar)).toEqual([
+      'ما مجموع كل جدول كميات؟',
+      'اعرض كل بنود التكلفة التي تزيد على 1,000,000 SAR',
+      'تحقق من أخطاء الحساب في جداول الكميات',
+      'ما الذي تغيّر بين BOQ_Phase1_Rev0.xlsx وBOQ_Phase1_Rev1.xlsx؟',
+      'لخّص نطاق العمل في Contract_Main_Works.pdf',
     ]);
   });
 

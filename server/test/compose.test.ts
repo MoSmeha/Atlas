@@ -74,7 +74,7 @@ describe('compose', () => {
 
     expect(status.phase).toBe('ready');
     expect(status.suggestions).toHaveLength(5);
-    expect(status.suggestions).toContain('Extract all dates and deliverables from these documents');
+    expect(status.suggestions.map((question) => question.en)).toContain('Extract all dates and deliverables from these documents');
     await container.watchFolder.stop();
     container.workspace.require().index.close();
   });

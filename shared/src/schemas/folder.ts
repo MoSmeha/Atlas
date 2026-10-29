@@ -17,12 +17,19 @@ export const IndexProgress = z.object({
 });
 export type IndexProgress = z.infer<typeof IndexProgress>;
 
+/**
+ * A suggested question in both interface languages. The empty chat shows the one for the interface
+ * language, and the answer comes back in that language.
+ */
+export const SuggestedQuestion = z.object({ en: z.string(), ar: z.string() });
+export type SuggestedQuestion = z.infer<typeof SuggestedQuestion>;
+
 export const IndexStatus = z.object({
   folder: z.string().nullable(),
   phase: IndexPhase,
   progress: IndexProgress.nullable(),
   documents: z.array(DocumentSummary),
-  suggestions: z.array(z.string()),
+  suggestions: z.array(SuggestedQuestion),
   error: ErrorDetail.nullable(),
 });
 export type IndexStatus = z.infer<typeof IndexStatus>;
