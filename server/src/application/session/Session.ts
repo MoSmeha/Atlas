@@ -1,5 +1,6 @@
 import type { Answer, Source, Usage } from '@atlas/shared';
 import type { CleanValue } from '../../domain/table';
+import { ScheduleCache } from '../schedule/ScheduleCache';
 import { NumberEvidence } from './NumberEvidence';
 
 /** Rows a tool computed, kept under an id so the answer, export_table and calculate can reuse them. */
@@ -30,6 +31,8 @@ export class Session {
   totalCostUsd = 0;
   /** Numbers seen in this chat; calculate checks its typed inputs against it. */
   readonly evidence = new NumberEvidence();
+  /** What extract_schedule already read and checked in this chat. */
+  readonly schedules = new ScheduleCache();
   private readonly results = new Map<string, SavedResult>();
   private nextResult = 1;
 

@@ -76,6 +76,22 @@ describe('findScheduleCandidates: English', () => {
     ]);
   });
 
+  it('gives a table cell that holds only a date the row title before it', () => {
+    const page =
+      'M2  Design Submission 1 (shoring, piling and\nsubstructure)\n\n31 August 2026\n\n' +
+      'D6  Design Submission 2 drawings, calculations and\nspecifications\n\n31 August 2026';
+    expect(candidates(page).map((candidate) => [candidate.match, candidate.sentence])).toEqual([
+      ['31 August 2026', 'M2 Design Submission 1 (shoring, piling and substructure) 31 August 2026'],
+      ['31 August 2026', 'D6 Design Submission 2 drawings, calculations and specifications 31 August 2026'],
+    ]);
+  });
+
+  it('keeps a deliverable due on a day of each month', () => {
+    expect(summary(candidates('D4  Monthly Progress Report  by the 7th day of each month'))).toEqual([
+      ['deliverable', 'Report', null, null],
+    ]);
+  });
+
   it('joins a Hijri date with the Gregorian date that restates it', () => {
     expect(summary(candidates('Site handover on 11 Ramadan 1447 AH (1 March 2026) is required.'))).toEqual([
       ['milestone', '11 Ramadan 1447 AH (1 March 2026)', '2026-03-01', '11 Ramadan 1447 AH'],

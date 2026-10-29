@@ -72,7 +72,7 @@ const MILESTONE = new RegExp(
 const OBLIGATION = new RegExp(
   [
     '(?<![\\p{L}])(?:shall|must|(?:is|are)\\s+(?:required|to\\s+be)|required\\s+to|will\\s+be\\s+required|no\\s+later',
-    '|not\\s+later|prior\\s+to|upon|within|after|before|following)(?![\\p{L}])',
+    '|not\\s+later|prior\\s+to|upon|within|after|before|following|(?:each|every)\\s+(?:day|week|month|quarter|year))(?![\\p{L}])',
     `|${['يجب', 'يلتزم', 'يتعين', 'على المقاول', 'على الاستشاري', 'يتم', 'سيتم', 'عند', 'بعد', 'قبل', 'خلال'].map(arabicPattern).join('|')}`,
   ].join(''),
   'iu',
@@ -87,41 +87,55 @@ const DATE_PAIR_GAP = new RegExp(
  * Every possible date, deadline, duration, milestone or deliverable in the pages, one candidate per date or
  * duration with its sentence. A sentence with no date becomes a milestone or deliverable candidate when it names a
  * task ("submit", "handover", "تسليم") and asks for it. A Hijri date next to the Gregorian date it restates is one
- * candidate with both. The same match in the same sentence (a page header, say) is kept once, on its first page.
+ * candidate with both. A sentence that is only a date, like a table cell, takes the sentence before it as context.
+ * The same match in the same sentence (a page header, say) is kept once, on its first page.
  */
 export function findScheduleCandidates(pages: readonly SchedulePage[]): ScheduleCandidate[] {
   const seen = new Set<string>();
   const candidates: ScheduleCandidate[] = [];
   for (const page of pages) {
-    for (const sentence of splitSentences(page.text)) {
-      for (const fields of sentenceCandidates(sentence, page.document)) {
+    const sentences = splitSentences(page.text);
+    sentences.forEach((sentence, i) => {
+      for (const fields of sentenceCandidates(sentence, page.document, sentences[i - 1] ?? null)) {
         const key = `${fields.document}\n${fields.match}\n${fields.sentence}`;
         if (seen.has(key)) continue;
         seen.add(key);
         candidates.push({ id: `c${candidates.length + 1}`, ...fields, page: page.page });
       }
-    }
+    });
   }
   return candidates;
 }
 
-function sentenceCandidates(sentence: string, document: string): ScheduleFields[] {
-  const mentions = pairHijriDates(sentence, findDateMentions(sentence));
-  if (mentions.length === 0) {
+function sentenceCandidates(sentence: string, document: string, previous: string | null): ScheduleFields[] {
+  const found = pairHijriDates(sentence, findDateMentions(sentence));
+  if (found.length === 0) {
     const task = findTask(sentence);
     if (task === null || !OBLIGATION.test(sentence)) return [];
     const sentenceAround = clipAround(sentence, task.index, task.index + task.match.length);
     return [{ kind: task.kind, match: task.match, sentence: sentenceAround, document, isoDate: null, hijri: null, duration: null }];
   }
+  // A table cell that holds only a date, such as "15 April 2026" under a wrapped row title, says nothing alone:
+  // the sentence before it, the rest of the row, goes with it.
+  const lead = previous !== null && onlyDates(sentence, found) ? `${previous} ` : '';
+  const text = lead + sentence;
+  const mentions = found.map((mention) => ({ ...mention, start: mention.start + lead.length, end: mention.end + lead.length }));
   return mentions.map((mention) => ({
-    kind: mentionKind(sentence, mention),
+    kind: mentionKind(text, mention),
     match: mention.text,
-    sentence: clipAround(sentence, mention.start, mention.end),
+    sentence: clipAround(text, mention.start, mention.end),
     document,
     isoDate: mention.isoDate,
     hijri: mention.hijri,
     duration: mention.duration,
   }));
+}
+
+/** True when nothing but the dates and durations, brackets and marks such as "م" is left of the sentence. */
+function onlyDates(sentence: string, mentions: readonly DateMention[]): boolean {
+  let rest = sentence;
+  for (const mention of mentions.toReversed()) rest = rest.slice(0, mention.start) + rest.slice(mention.end);
+  return !/\p{L}{2}/u.test(rest);
 }
 
 /** The first task word in a text: a deliverable ("submit", "report", "تقديم") before a milestone ("handover", "اعتماد"). */

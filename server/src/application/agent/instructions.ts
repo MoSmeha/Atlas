@@ -80,7 +80,10 @@ const STRATEGY: Advice[] = [
     tools: ['check_boq_arithmetic'],
     text: 'Whether a BOQ adds up (quantity times rate, section and bill totals): check_boq_arithmetic.',
   },
-  { tools: ['extract_schedule'], text: 'Dates, deadlines, milestones, durations and the programme: extract_schedule.' },
+  {
+    tools: ['extract_schedule'],
+    text: 'Dates, deadlines, milestones, durations, deliverables and the programme: extract_schedule, called once with document null, which covers every document. Pass a document only when the user asks about that one document; never call it again per document.',
+  },
   { tools: ['compare_revisions'], text: 'What changed between two revisions of a document: compare_revisions.' },
   {
     tools: ['calculate'],
