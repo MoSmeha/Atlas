@@ -31,7 +31,7 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 ## Git workflow
 
 - `main` changes only through `git merge --no-ff <branch>`. Work happens on `feature/<topic>`, `fix/<topic>`, `docs/<topic>` or `test/<topic>`.
-- Commit one file or one small change at a time: `<scope>: <what changed>`, at most 8 words. Scopes: setup, shared, server, ingestion, agent, tools, client, tests, docs, fix.
+- Commit one coherent change at a time, a module together with its tests (the owner asked for fewer commits): `<scope>: <what changed>`, at most 8 words. Scopes: setup, shared, server, ingestion, agent, tools, client, tests, docs, fix.
 - No empty or whitespace-only commits, and no AI attribution anywhere.
 - Parallel agents each use their own worktree and branch, stage only the paths they changed (never `git add -A`), and never touch `main`. One coordinator merges.
 - When a unit is done and verified: push the branch, merge it into main with `--no-ff`, push main, delete the local branch (the owner approved pushing for this repo).
@@ -50,7 +50,9 @@ Atlas answers questions about a folder of PDFs and Excel files, with an LLM that
 
 ## Current state
 
-- Step 1 done: workspace, shared schemas, server skeleton with health route and error hook, settings, JSONL logging, model config, ports, fakes.
-- Model IDs in `server/config/models.json` are confirmed against the account with `pnpm models` (2026-10-28): frontier `gpt-6-astra`, balanced `gpt-6.1-sol`, small `gpt-6-luna`, embeddings `text-embedding-3-small`. The key is in `.env`.
-- Design direction set with the impeccable skill: `client/PRODUCT.md` and the direction contract in `client/.impeccable/surfaces/client.md` (category standard at the craft of Claude.ai, Perplexity, Linear). DESIGN.md is written at the polish pass.
-- Next: steps 2 to 5 in parallel (ingestion, agent, remaining tools, client).
+- All six steps are built: ingestion, the agent with all eleven tools, guards, memory, the CLI, the web client, samples with `samples/expected.json`, the eval, README, `docs/NOTE.md` and `docs/TIMELOG.md`.
+- Models (confirmed with `pnpm models`, 2026-10-28): frontier `gpt-6-astra` (default), balanced `gpt-6.1-sol`, small `gpt-6-luna`, embeddings `text-embedding-3-small`. The default stays frontier because the eval's median answer time was 9.6 s (the rule was to switch above 20 s).
+- Eval (`docs/EVAL.md`): 20 of 21 on gpt-6-astra. The miss is "items above SAR 1M", which also listed three provisional sums.
+- Design: `client/PRODUCT.md`, direction contract in `client/.impeccable/surfaces/client.md`, design system in `client/DESIGN.md` (+ `.impeccable/design.json`). The finish review asked for one batch of fixes, which is applied; its verdict pass and fresh screenshots are still to do.
+- Open: the OpenAI credit ran out on 2026-10-28. Once it is topped up, re-run `pnpm eval`, take an answered screenshot for `docs/screenshot.png`, and run the design verdict pass.
+- Parallel work used worktrees under `C:\Users\MoSmeha\Atlas-wt\`; remove them with `git worktree remove` when they are no longer needed.
