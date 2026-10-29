@@ -23,7 +23,7 @@ export interface VoiceCallValue {
   preparingVoices: boolean;
   /** The voice the next call uses, and the one the open call uses. */
   voiceId: string | null;
-  /** Picks a voice and remembers it; an open call reconnects in the new voice. */
+  /** Picks the next call's voice and remembers it. */
   chooseVoice(voiceId: string): void;
   /** The open call, or null when there is none. */
   call: CallView | null;

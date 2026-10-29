@@ -14,7 +14,7 @@ import type { CallView } from './CallSession';
 import { type CallCopy, callCopy, clockText, micTroubleMessage } from './callCopy';
 import { faceMood } from './faceMotion';
 import { useVoiceCall } from './useVoiceCall';
-import { VoicePicker } from './VoicePicker';
+import { voiceName } from './voiceChoice';
 
 const settleTiming = { animationDuration: `${motion.durationMs}ms`, animationTimingFunction: motion.easing };
 
@@ -31,7 +31,7 @@ function statusText(call: CallView, voice: VoiceOption | undefined, working: str
     case 'connecting':
       return preparing ? status.preparing(voice) : status.calling(voice);
     case 'ending':
-      return call.endReason === 'switching' ? status.switching : status.ending;
+      return status.ending;
     case 'ended':
       return status.ended;
     case 'live':
@@ -54,7 +54,8 @@ function urgentHint(call: CallView, preparing: boolean, copy: CallCopy, language
 
 /**
  * The voice call, docked where the question box was: Atlas's face, what it is doing, the call's length and cost, the
- * latest words from each side, and the controls. Every question it answers lands in the thread above as a normal turn.
+ * latest words from each side, the voice it was started in, and the controls. Every question it answers lands in the
+ * thread above as a normal turn.
  */
 export function CallCard() {
   const voice = useVoiceCall();
@@ -113,15 +114,9 @@ export function CallCard() {
           </div>
         </div>
         <div className={classes.controls}>
-          <VoicePicker
-            className={classes.picker}
-            size={phone ? 'md' : 'sm'}
-            voices={voice.voices}
-            preparing={voice.preparingVoices}
-            voiceId={voice.voiceId}
-            onChange={voice.chooseVoice}
-            disabled={!live}
-          />
+          <Text fz="xs" c="dimmed" className={classes.voice}>
+            {current === undefined ? null : copy.picker.current(voiceName(current, language))}
+          </Text>
           <div className={classes.actions}>
             {call.busy &&
               live &&

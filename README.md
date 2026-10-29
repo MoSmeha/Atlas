@@ -64,7 +64,7 @@ Press the phone button and talk to Atlas as you would on a call, in English or i
     <td>
 
 - **English and five Arabic dialects:** Gulf, Levantine, Egyptian, North African and Modern Standard, each with a female and a male voice.
-- **Interrupt any time,** mute yourself, or switch voice in the middle of a call.
+- **Pick the voice before you call,** from the arrow beside the call button. Interrupt any time, or mute yourself.
 - **The same checked answers.** The voice reads out the answer Atlas has already checked. It never works out numbers by itself.
 - **A face.** A line-drawn bust blinks, listens and moves its mouth as it speaks.
 - **Prefer typing?** The microphone button turns your speech into a typed question you can read before sending.

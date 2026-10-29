@@ -1,6 +1,6 @@
 import { type FormEvent, type KeyboardEvent, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { ActionIcon, Group, Loader, Stack, Text, Textarea, Tooltip } from '@mantine/core';
-import { IconArrowUp, IconCheck, IconMicrophone, IconPhone, IconPlayerStopFilled, IconX } from '@tabler/icons-react';
+import { IconArrowUp, IconCheck, IconMicrophone, IconPlayerStopFilled, IconX } from '@tabler/icons-react';
 import { toApiError } from '../../api/ApiError';
 import { MicrophoneError } from '../../api/microphone';
 import { useDictation } from '../../api/useDictation';
@@ -26,8 +26,8 @@ interface ComposerProps {
   onStop: () => void;
   /** Quiet text at the end of the hint line, such as the last answer's cost and time on a phone. */
   hintAside?: ReactNode;
-  /** Starts a voice call; left out while calls are off. With an empty box it takes the Send button's place. */
-  onStartCall?: () => void;
+  /** The call button, with its voice beside it; left out while calls are off. With an empty box it takes Send's place. */
+  callButton?: ReactNode;
   /** Dictation into the box, up to this many seconds at a time; left out while it is off. */
   maxDictationSeconds?: number;
   /** Shown on the hint line in place of the hint, such as why the last call could not start. */
@@ -53,7 +53,7 @@ const MAX_QUESTION = 4000;
 /**
  * The question box docked under the conversation. Enter sends, Shift+Enter starts a new line,
  * and while an answer streams the Send button becomes Stop (Esc works too). With the box empty the
- * button starts a voice call instead, and the microphone beside it dictates a question into the box.
+ * call button takes Send's place, and the microphone beside it dictates a question into the box.
  */
 export function Composer({
   readiness,
@@ -61,7 +61,7 @@ export function Composer({
   onSend,
   onStop,
   hintAside,
-  onStartCall,
+  callButton,
   maxDictationSeconds,
   notice,
   onComposingChange,
@@ -88,7 +88,7 @@ export function Composer({
   const transcribing = dictation.phase === 'transcribing';
   const question = value.trim();
   const canSend = readiness.canAsk && !streaming && question !== '' && !recording && !transcribing;
-  const offerCall = onStartCall !== undefined && question === '' && !recording && !transcribing;
+  const offerCall = callButton !== undefined && question === '' && !recording && !transcribing;
   const composing = question !== '' || recording || transcribing;
 
   useEffect(() => {
@@ -135,7 +135,7 @@ export function Composer({
         ? readinessText(readiness.hint, copy, language)
         : streaming
           ? copy.hint.streaming
-          : onStartCall === undefined
+          : callButton === undefined
             ? copy.hint.idle
             : copy.hint.idleWithCall;
 
@@ -206,19 +206,7 @@ export function Composer({
               </ActionIcon>
             </Tooltip>
           ) : offerCall ? (
-            <Tooltip label={copy.callTip}>
-              <ActionIcon
-                variant="filled"
-                color="ink"
-                size={34}
-                radius="md"
-                onClick={onStartCall}
-                disabled={!readiness.canAsk}
-                aria-label={copy.call}
-              >
-                <IconPhone size={17} stroke={2} />
-              </ActionIcon>
-            </Tooltip>
+            callButton
           ) : (
             !recording && (
               <ActionIcon type="submit" variant="filled" color="ink" size={34} radius="md" disabled={!canSend} aria-label={copy.send}>

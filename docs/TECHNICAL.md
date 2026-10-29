@@ -107,7 +107,9 @@ sequenceDiagram
 - **Cost.** A call costs $0.05 a minute, billed by the second, plus the usual cost of each answer. It hangs up after 2 minutes with nothing said and at 30 minutes, and closing the page or stopping the server hangs it up too. The call's cost is added to the chat's total. Dictation uses `gpt-transcribe` at $0.0045 a minute, with the folder's file and sheet names as hints.
 - **Your key stays on the server.** The browser sends its call offer to the Atlas server, which starts the call with the key; only audio and events go between the browser and OpenAI.
 
-A browser set to Arabic starts calls in Gulf Arabic; any other starts in English. The picker remembers the last choice.
+The voice is chosen before the call, from the arrow beside the call button, and is fixed once the call starts. A browser set to Arabic starts calls in Gulf Arabic; any other starts in English. The last choice is remembered.
+
+**Starting quickly.** Atlas greets with one short line ("I'm Atlas. Ask me anything.", or the dialect's own in `voices.json`), asked for word for word at about one and a half times the usual pace; the Live guide sets pace in words, and the voice has no speed setting. The browser's first WebRTC offer on a page costs about 0.8 s in Edge, so the client makes a throwaway one ahead of time (`warmUpCalls`) and the call's own offer takes milliseconds. Each `call_end` log entry's `diagnosis.startup` gives the milliseconds from pressing Call to the microphone, the offer, the server's answer, `session.started` and Atlas's first words, so a slow start shows which step held it up.
 
 ## How the code is arranged
 

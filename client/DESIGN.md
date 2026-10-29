@@ -411,7 +411,7 @@ components:
     typography: "{typography.label}"
     width: "44px"
   voice-picker:
-    width: "208px"
+    width: "250px"
   said-aloud-label:
     textColor: "{colors.dimmed}"
     typography: "{typography.label}"
@@ -543,7 +543,7 @@ Spacing runs on an 8/12/16/24/32 scale (`xs` to `xl`). Tight inner rhythm uses 2
 
 Below `sm`, the sidebar toggle gives way to the burger, the language and theme controls move from the top bar to the sidebar's foot under a hairline, Clear chat becomes an icon button, the cost-and-time pair moves to the composer's hint line, and the viewer goes full screen. Ctrl+B opens and closes the folded sidebar there too. Below `xs` (36em), a source's place always drops under its name.
 
-During a voice call the call card takes the composer's place in the dock, at the same width, and the opening steps back while it is open. Inside it, 12px padding and 12px gaps: the avatar and a text block side by side, then a control row under a 1px Quiet Chip rule (voice picker at the start, actions at the end). Below `xs` the avatar drops to 56px, controls grow to 40px, the picker takes the row's remaining width so the controls stay on one line, only the latest caption shows, and the standing hint under the card is hidden.
+During a voice call the call card takes the composer's place in the dock, at the same width, and the opening steps back while it is open. Inside it, 12px padding and 12px gaps: the avatar and a text block side by side, then a control row under a 1px Quiet Chip rule (the call's voice at the start, actions at the end). Below `xs` the avatar drops to 56px, controls grow to 40px, the voice's name takes the row's remaining width so the controls stay on one line, only the latest caption shows, and the standing hint under the card is hidden.
 
 Content widths inside the viewer cap at 560 to 600px for notes and states. The PDF page centres on the chrome stage with 16px padding, and the sheet runs edge to edge on the surface like a grid in Excel. A workbook opened whole keeps its sheet tabs along the viewer's foot, as Excel does.
 
@@ -644,7 +644,7 @@ Answer markdown at 15px/1.55 (Arabic 1.07x at 1.75) with a 3px caret on the prim
 A question asked in a call is a normal turn. Its heading ends with a dimmed 16px outline microphone, 8px after the text on its inline-end side. Under the sources, "Said aloud" keeps what the voice said: a dimmed 14px speaker icon, a 12px/600 dimmed label, and the transcript in 13px Soft Text with `dir="auto"`. The written answer stays the record.
 
 ### Call Card
-The voice call, in the composer's place and in the composer's own frame: the surface, 8px corners, a 1px Border-gray edge, settling in with the 180ms fade-and-rise. Beside the avatar, a 13px/600 status line ("Listening", "Muted", the running step's name, "Atlas is speaking", truncated, announced politely) with the call's clock and cost at the line end in dimmed 12px tabular numerals (price per minute in a tooltip). Under it, "You" and "Atlas" captions: a 44px dimmed 12px/600 speaker column and 13px words capped at two lines, set against their end so the newest words stay in view. The latest speaker's line reads in Body Text, the other in Dimmed. The control row holds the voice picker, a default Stop answer while a question runs, a default mute toggle and a filled graphite End call (34 to 36px). On a phone they are 40px icon buttons. A dimmed 12px hint sits under the card.
+The voice call, in the composer's place and in the composer's own frame: the surface, 8px corners, a 1px Border-gray edge, settling in with the 180ms fade-and-rise. Beside the avatar, a 13px/600 status line ("Listening", "Muted", the running step's name, "Atlas is speaking", truncated, announced politely) with the call's clock and cost at the line end in dimmed 12px tabular numerals (price per minute in a tooltip). Under it, "You" and "Atlas" captions: a 44px dimmed 12px/600 speaker column and 13px words capped at two lines, set against their end so the newest words stay in view. The latest speaker's line reads in Body Text, the other in Dimmed. The control row holds the call's voice in dimmed 12px ("Voice: Gulf Arabic, female voice", chosen before the call), a default Stop answer while a question runs, a default mute toggle and a filled graphite End call (34 to 36px). On a phone they are 40px icon buttons. A dimmed 12px hint sits under the card.
 
 ### Call Avatar
 A philosopher's bust with curls and a full beard, drawn like marble: graphite line work (gray 8 at 1.2 to 1.7 stroke, curls and cloak folds in gray 5) with white skin and cloth, no colour in the drawing. The drawing takes the fixed light marble values (`--atlas-marble-*`) in both schemes; only the Hover Ground disc behind it and its ring follow the theme. A 72px circle in the call card (56px on a phone, which drops the curls and folds, draws heavier lines and larger eyes so it reads as a face first). Its ring carries the state: a Hairline ring while it listens, a gray 6 ring whose weight follows the user's voice while they speak, a dashed gray 5 ring turning once every 7s while a question runs, and a 1.5px ring in the link colour while Atlas speaks (graphite in light, chalk in dark). Before and after the live call it rests at 85% opacity with its eyes lowered. The empty conversation uses the same face at 156px.
@@ -663,7 +663,7 @@ Nothing else sits under it: no heading, no summary line and no suggested questio
 - **Access:** a figure with the line as a blockquote and the byline as its caption, read like any content; hidden from assistive technology while it steps back.
 
 ### Voice Picker
-A Mantine Select (208px in the call card) grouped under "English" and "Arabic". Options read "Gulf · female"; each Arabic dialect shows its own name in Arabic, dimmed and right to left, at the option's end. Its dropdown opens upward at 240px on the raised surface. Choosing another voice mid-call reconnects in the new voice.
+The voice is chosen before the call, from the call button itself: a filled graphite split control in the composer (`CallButton`), the 34px phone joined to a 22px arrow. The phone's tooltip and name say the voice it calls in ("Call Atlas in Gulf Arabic, female voice"). The arrow opens a Mantine Combobox upward at 250px on the raised surface, grouped under "English" and "Arabic"; options read "Gulf · female", each Arabic dialect shows its own name in Arabic, dimmed and right to left, and the chosen voice carries a check at the end. It works from the keyboard (Enter or the arrows open it, Enter picks). A call's voice is fixed once it starts: the call card names it in dimmed 12px at the start of its control row.
 
 ## Do's and Don'ts
 

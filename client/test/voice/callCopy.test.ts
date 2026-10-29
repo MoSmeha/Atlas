@@ -32,7 +32,7 @@ describe('endedMessage', () => {
     expect(endedMessage('idle', 90, 30)).toContain('after 90 seconds of silence');
     expect(endedMessage('limit', 120, 30)).toBe('Calls end after 30 minutes. Call again to keep going.');
     expect(endedMessage('hung_up', 120, 30)).toBeNull();
-    expect(endedMessage('switching', 120, 30, 'ar')).toBeNull();
+    expect(endedMessage('failed', 120, 30, 'ar')).toBeNull();
   });
 
   it('says the same in Arabic, with Western digits', () => {

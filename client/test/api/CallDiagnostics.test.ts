@@ -58,8 +58,29 @@ describe('CallDiagnostics', () => {
       answerDtx: true,
       events: {},
       notes: [],
+      startup: { microphone: null, offer: null, answer: null, started: null, firstWord: null },
     });
     expect(diagnostics.sentSilence()).toBe(false);
+  });
+
+  it('times each step of the start from pressing Call, keeping the first time each is reached', () => {
+    let now = 1_000;
+    const diagnostics = new CallDiagnostics(() => now);
+    now = 1_045;
+    diagnostics.noteStep('microphone');
+    now = 1_180.4;
+    diagnostics.noteStep('offer');
+    now = 2_400;
+    diagnostics.noteStep('answer');
+    now = 2_650;
+    diagnostics.noteEvent(JSON.stringify({ type: 'session.started' }));
+    now = 3_100;
+    diagnostics.noteEvent(JSON.stringify({ type: 'session.output_transcript.delta', delta: "I'm" }));
+    now = 3_300;
+    diagnostics.noteEvent(JSON.stringify({ type: 'session.output_transcript.delta', delta: ' Atlas.' }));
+    diagnostics.noteStep('microphone');
+
+    expect(diagnostics.report(track()).startup).toEqual({ microphone: 45, offer: 180, answer: 1400, started: 1650, firstWord: 2100 });
   });
 
   it('tells pure digital silence from a reading not taken yet', async () => {

@@ -6,6 +6,7 @@ import { MainColumn } from '../../shell/MainColumn';
 import { Opening } from '../../shell/Opening';
 import { UsageReadout } from '../topbar/UsageReadout';
 import { SourceViewerModal } from '../viewer/SourceViewerModal';
+import { CallButton } from '../voice/CallButton';
 import { CallCard } from '../voice/CallCard';
 import { useVoiceCall } from '../voice/useVoiceCall';
 import { Composer } from './Composer';
@@ -49,7 +50,7 @@ export function ChatThread() {
         onSend={ask}
         onStop={stop}
         hintAside={<UsageReadout placement="composer" />}
-        onStartCall={voice.callsAvailable ? voice.start : undefined}
+        callButton={voice.callsAvailable ? <CallButton disabled={!readiness.canAsk} /> : undefined}
         maxDictationSeconds={voice.dictationAvailable ? voice.maxDictationSeconds : undefined}
         notice={voice.notice}
         onComposingChange={setComposing}

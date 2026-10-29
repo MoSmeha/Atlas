@@ -9,11 +9,8 @@ import { type Fragment, joinQuestion, latestUtterance, startsNewTurn, wordsBetwe
 
 export type CallStatus = 'connecting' | 'live' | 'ending' | 'ended';
 export type CallActivity = 'listening' | 'hearing' | 'thinking' | 'speaking';
-/**
- * Why a call ended: the user hung up, silence, the length limit, a broken connection, the service, a new voice, or a
- * start that failed.
- */
-export type EndReason = 'hung_up' | 'idle' | 'limit' | 'dropped' | 'content' | 'switching' | 'failed';
+/** Why a call ended: the user hung up, silence, the length limit, a broken connection, the service, or a start that failed. */
+export type EndReason = 'hung_up' | 'idle' | 'limit' | 'dropped' | 'content' | 'failed';
 /**
  * Why Atlas may not be hearing the user: the microphone gives no sound at all, or it picks up speech but not one word
  * of it has reached the call.
