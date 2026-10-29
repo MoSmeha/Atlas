@@ -3,6 +3,8 @@ import { join, relative } from 'node:path';
 import { parseArgs } from 'node:util';
 import { AnswerEffort, type IndexEvent, type ToolStep } from '@atlas/shared';
 import { pickableEffort, questionEffort } from '../../src/application/models/answerEffort';
+import type { CatalogModel } from '../../src/application/models/pickLineup';
+import type { ReasoningEffort } from '../../src/application/ports/ModelClient';
 import { repoRoot } from '../../src/infrastructure/settings';
 import { compose, type Container } from '../../src/main';
 import type { CheckResult, RunTrace } from './checks';
@@ -15,8 +17,8 @@ const RUNS_DIR = join(repoRoot, 'eval-runs');
 /**
  * pnpm eval [--model <id>] [--effort low|medium|high] [--only <id,id>]
  * Indexes the sample folder, asks every eval question, checks each answer against samples/expected.json and writes
- * a report to eval-runs/. A full run also copies it to docs/EVAL.md, or docs/EVAL-<provider>.md for Gemini and
- * Ollama, so a free run never replaces the OpenAI report. Failed questions still exit 0: the report is the output.
+ * a report to eval-runs/. A full run also copies it to docs/EVAL.md, or docs/EVAL-<provider>.md when the model is
+ * Gemini's or Ollama's, so a free run never replaces the OpenAI report. Failed questions still exit 0: the report is the output.
  */
 async function main(): Promise<void> {
   const { values } = parseArgs({
@@ -26,11 +28,13 @@ async function main(): Promise<void> {
   const selected = pickQuestions(values.only);
   const container = await compose();
   if (container.provider === null) stop(container.providerChoice.reason);
-  const published = join(repoRoot, 'docs', container.provider.id === 'openai' ? 'EVAL.md' : `EVAL-${container.provider.id}.md`);
-  const model = pickModel(container, values.model);
-  const effort = pickEffort(container, values.effort);
-  const runsAt = questionEffort(container.modelConfig.reasoningEffort, effort);
-  console.log(`${container.provider.label}: model ${model}, effort ${runsAt ?? "the model's own"}, ${selected.length} of ${questions.length} questions`);
+  const chosen = pickModel(container, values.model);
+  const model = chosen.id;
+  const published = join(repoRoot, 'docs', chosen.provider === 'openai' ? 'EVAL.md' : `EVAL-${chosen.provider}.md`);
+  const configured = container.models.reasoningEffort[chosen.provider] ?? null;
+  const effort = pickEffort(configured, values.effort);
+  const runsAt = questionEffort(configured, effort);
+  console.log(`Model ${model} (${chosen.provider}), effort ${runsAt ?? "the model's own"}, ${selected.length} of ${questions.length} questions`);
 
   const indexSeconds = await indexSamples(container);
   const runId = Date.now().toString(36);
@@ -67,20 +71,21 @@ function pickQuestions(only: string | undefined): EvalQuestion[] {
   return questions.filter((question) => wanted.has(question.id));
 }
 
-/** --model when it is one of the lineup's three models, otherwise the configured default answer model. */
-function pickModel(container: Container, requested: string | undefined): string {
-  const ids = Object.values(container.lineup).map((model) => model.id);
-  if (requested === undefined) return container.lineup[container.modelConfig.answerTier].id;
-  if (!ids.includes(requested)) stop(`Model ${requested} is not in the lineup. Use one of: ${ids.join(', ')}`);
-  return requested;
+/** --model when it is one of the choices, from any provider set up, otherwise the default model. */
+function pickModel(container: Container, requested: string | undefined): CatalogModel {
+  const { options, defaultModel } = container.models;
+  if (requested === undefined) return defaultModel;
+  const chosen = options.find((model) => model.id === requested);
+  if (!chosen) stop(`Model ${requested} is not offered. Use one of: ${options.map((model) => model.id).join(', ')}`);
+  return chosen;
 }
 
-/** --effort when it is low, medium or high and the provider lets one be picked; null (the configured default) without it. */
-function pickEffort(container: Container, requested: string | undefined): AnswerEffort | null {
+/** --effort when it is low, medium or high and the model's provider lets one be picked; null (the configured default) without it. */
+function pickEffort(configured: ReasoningEffort | null, requested: string | undefined): AnswerEffort | null {
   if (requested === undefined) return null;
   const parsed = AnswerEffort.safeParse(requested);
   if (!parsed.success) stop(`Effort ${requested} is not one of: ${AnswerEffort.options.join(', ')}`);
-  if (pickableEffort(container.modelConfig.reasoningEffort) === null) stop(`${container.provider?.label} answers at a fixed effort, so --effort cannot change it.`);
+  if (pickableEffort(configured) === null) stop("This model's provider answers at a fixed effort, so --effort cannot change it.");
   return parsed.data;
 }
 

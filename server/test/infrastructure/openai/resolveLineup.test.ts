@@ -5,7 +5,7 @@ import { resolveLineup, resolveModels } from '../../../src/infrastructure/openai
 import { FakeModelClient } from '../../fakes/FakeModelClient';
 
 function model(id: string, tier: CatalogModel['tier']): CatalogModel {
-  return { id, tier, label: id, inputPrice: 1, cachedInputPrice: 0.1, outputPrice: 2 };
+  return { id, provider: 'openai', tier, label: id, inputPrice: 1, cachedInputPrice: 0.1, outputPrice: 2 };
 }
 
 const config: ProviderModels = {

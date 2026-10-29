@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LocalPick } from '../../../src/infrastructure/local/pickLocalModels';
-import { chooseProvider, type ProviderInputs } from '../../../src/infrastructure/providers/chooseProvider';
+import { chooseProvider, offeredProviders, type ProviderInputs } from '../../../src/infrastructure/providers/chooseProvider';
 
 const ready: LocalPick = {
   chat: { name: 'qwen3:14b', sizeBytes: 1, parameterBillions: 14.8, capabilities: ['tools'] },
@@ -39,5 +39,21 @@ describe('chooseProvider', () => {
       reason: 'ATLAS_PROVIDER is ollama, but Ollama is not running; …',
     });
     expect(chooseProvider(inputs({ setting: 'ollama', local: ready })).id).toBe('ollama');
+  });
+});
+
+describe('offeredProviders', () => {
+  it('offers every provider that is set up, in a fixed order, whichever is the default', () => {
+    const both = inputs({ hasGeminiKey: true, hasOpenAiKey: true });
+    expect(offeredProviders(both, chooseProvider(both))).toEqual(['openai', 'gemini']);
+    const all = inputs({ local: ready, hasGeminiKey: true, hasOpenAiKey: true });
+    expect(offeredProviders(all, chooseProvider(all))).toEqual(['openai', 'gemini', 'ollama']);
+    const named = inputs({ setting: 'openai', hasGeminiKey: true, hasOpenAiKey: true });
+    expect(offeredProviders(named, chooseProvider(named))).toEqual(['openai', 'gemini']);
+  });
+
+  it('offers nothing when there is no default provider', () => {
+    const missing = inputs({ setting: 'gemini', hasOpenAiKey: true });
+    expect(offeredProviders(missing, chooseProvider(missing))).toEqual([]);
   });
 });

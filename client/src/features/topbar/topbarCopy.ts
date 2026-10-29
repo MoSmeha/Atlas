@@ -1,4 +1,4 @@
-import type { AnswerEffort, ModelTier } from '@atlas/shared';
+import type { AnswerEffort, ModelProvider, ModelTier } from '@atlas/shared';
 import { type ArabicNoun, countAr, countEn } from '../../i18n/count';
 import type { Bilingual, Language } from '../../i18n/language';
 import type { FreeProvider } from './freeTier';
@@ -21,7 +21,9 @@ interface TopbarCopy {
   effort: string;
   /** Each effort's name, and how fast its answers come. */
   efforts: Record<AnswerEffort, { label: string; speed: string }>;
-  /** The badge beside the picker while a free provider answers, and what it means. */
+  /** Each provider's heading in the picker's list, shown when there are several. */
+  providers: Record<ModelProvider, string>;
+  /** The badge beside the picker while a free model is chosen, and what it means. */
   free: Record<FreeProvider, { label: string; hint: string }>;
   /** The cost of an answer that cost nothing. */
   freeCost: string;
@@ -66,6 +68,7 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       medium: { label: 'Medium effort', speed: 'Medium speed' },
       high: { label: 'High effort', speed: 'Slower, most careful' },
     },
+    providers: { openai: 'OpenAI', gemini: 'Gemini, free tier', ollama: 'On this computer, free' },
     free: {
       gemini: {
         label: 'Free tier',
@@ -114,6 +117,7 @@ export const topbarCopy: Bilingual<TopbarCopy> = {
       medium: { label: 'تفكير متوسط', speed: 'سرعة متوسطة' },
       high: { label: 'تفكير عميق', speed: 'أبطأ، والأدق' },
     },
+    providers: { openai: 'OpenAI', gemini: 'Gemini، الباقة المجانية', ollama: 'على هذا الجهاز، مجاني' },
     free: {
       gemini: {
         label: 'الباقة المجانية',

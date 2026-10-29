@@ -1,26 +1,21 @@
-import { type AnswerEffort, type ModelOption, type ModelProvider, ModelsResponse, type ModelTier, routes } from '@atlas/shared';
-import { lineupModels, type CatalogModel, type Lineup } from '../../application/models/pickLineup';
+import { type ModelOption, ModelsResponse, routes } from '@atlas/shared';
+import { pickableEffort } from '../../application/models/answerEffort';
+import type { ModelChoices } from '../../application/models/modelChoices';
+import type { CatalogModel } from '../../application/models/pickLineup';
 import type { RoutePlugin } from '../zod';
 
 export interface ModelsDeps {
-  lineup: Lineup;
-  /** Tier of the default answer model (`answerTier` of the model config). */
-  answerTier: ModelTier;
-  /** The configured effort when the user may pick another (see pickableEffort), otherwise null. */
-  defaultEffort: AnswerEffort | null;
-  /** Who answers; null while no provider is set up. */
-  provider: ModelProvider | null;
+  /** Every model a question may use, from every provider set up, and the default. */
+  choices: ModelChoices;
 }
 
 export const modelsRoutes: RoutePlugin<{ deps: ModelsDeps }> = async (app, { deps }) => {
   app.get(routes.models, { schema: { response: { 200: ModelsResponse } } }, async () => ({
-    models: lineupModels(deps.lineup).map(modelOption),
-    defaultModel: deps.lineup[deps.answerTier].id,
-    defaultEffort: deps.defaultEffort,
-    provider: deps.provider,
+    models: deps.choices.options.map((model) => modelOption(model, deps.choices)),
+    defaultModel: deps.choices.defaultModel.id,
   }));
 };
 
-function modelOption({ id, tier, label, inputPrice, outputPrice }: CatalogModel): ModelOption {
-  return { id, tier, label, inputPrice, outputPrice };
+function modelOption({ id, provider, tier, label, inputPrice, outputPrice }: CatalogModel, choices: ModelChoices): ModelOption {
+  return { id, provider, tier, label, inputPrice, outputPrice, defaultEffort: pickableEffort(choices.reasoningEffort[provider] ?? null) };
 }

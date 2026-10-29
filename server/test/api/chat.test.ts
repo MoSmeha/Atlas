@@ -10,6 +10,7 @@ import { Workspace } from '../../src/application/workspace/Workspace';
 import { makeApiDeps, makeAskQuestion } from '../fakes/apiDeps';
 import { FakeIndex } from '../fakes/FakeIndex';
 import { callsTools, FakeModelClient } from '../fakes/FakeModelClient';
+import { testChoices } from '../fakes/lineup';
 import { MemoryRunLogger } from '../fakes/MemoryRunLogger';
 import { boqTable, excelRecord } from '../fakes/records';
 
@@ -95,7 +96,7 @@ describe('POST /api/chat', () => {
     workspace.activate('/folder', new FakeIndex());
     const sessions = new SessionStore();
     const model = new FakeModelClient([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })]);
-    const askQuestion = makeAskQuestion({ workspace, sessions, modelClient: model, reasoningEffort: 'medium' });
+    const askQuestion = makeAskQuestion({ workspace, sessions, modelClient: model, models: { ...testChoices, reasoningEffort: { openai: 'medium' } } });
     const app = buildApp(makeApiDeps({ chat: { askQuestion, sessions, workspace, apiKeyPresent: true } }));
     apps.push(app);
 

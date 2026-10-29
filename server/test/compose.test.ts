@@ -34,10 +34,13 @@ afterAll(async () => {
 });
 
 describe('compose', () => {
-  it('works without an API key: no model client, lineup in catalog order', async () => {
+  it('works without an API key: no model client, the OpenAI lineup in catalog order', async () => {
     const container = await compose(noKey);
+    const lineup = pickLineup(container.modelConfig.catalog, null);
     expect(container.modelClient).toBeNull();
-    expect(container.lineup).toEqual(pickLineup(container.modelConfig.catalog, null));
+    expect(container.providers).toEqual([]);
+    expect(container.models.options).toEqual([lineup.frontier, lineup.balanced, lineup.small]);
+    expect(container.models.defaultModel).toEqual(lineup[container.modelConfig.answerTier]);
     expect(container.api.health.apiKeyPresent).toBe(false);
   });
 
@@ -59,15 +62,20 @@ describe('compose', () => {
     expect(container.provider?.id).toBe('ollama');
     expect(container.localProblem).toBeNull();
     expect(container.embeddings?.model).toBe('bge-m3:latest');
-    expect(Object.values(container.lineup).map((model) => model.id)).toEqual(['qwen3:14b', 'qwen3:14b', 'qwen3:14b']);
+    expect(container.providers.map((offered) => offered.id)).toEqual(['ollama']);
+    expect(container.models.options.map((model) => model.id)).toEqual(['qwen3:14b']);
     expect(container.api.health.apiKeyPresent).toBe(true);
     const response = await buildApp(container.api).inject({ method: 'GET', url: '/api/models' });
     expect(response.json()).toEqual({
-      models: [{ id: 'qwen3:14b', tier: 'frontier', label: 'qwen3:14b (local)', inputPrice: 0, outputPrice: 0 }],
+      models: [{ id: 'qwen3:14b', provider: 'ollama', tier: 'frontier', label: 'qwen3:14b (local)', inputPrice: 0, outputPrice: 0, defaultEffort: null }],
       defaultModel: 'qwen3:14b',
-      defaultEffort: null,
-      provider: 'ollama',
     });
+    expect(providerReport(container)).toEqual([
+      'Models: Ollama on this machine (qwen3:14b, search by bge-m3:latest) by default. Ollama is running with models that fit this machine.',
+      '  Ollama on this machine (qwen3:14b, search by bge-m3:latest): qwen3:14b (default)',
+      '  Search: bge-m3:latest',
+      expect.stringMatching(/^ {2}Note: Ollama silently cuts prompts/),
+    ]);
   });
 
   it('does not scan the machine when a cloud provider is named', async () => {
@@ -154,14 +162,13 @@ describe('compose', () => {
     container.workspace.require().index.close();
   });
 
-  it('offers the lineup with the configured answer tier and effort as the defaults', async () => {
+  it('offers the choices with the configured answer tier as the default model, and no effort while no provider is set up', async () => {
     const container = await compose(noKey);
     const response = await buildApp(container.api).inject({ method: 'GET', url: '/api/models' });
-    const { lineup, modelConfig } = container;
+    const { options, defaultModel } = container.models;
     expect(response.json()).toMatchObject({
-      models: [{ id: lineup.frontier.id }, { id: lineup.balanced.id }, { id: lineup.small.id }],
-      defaultModel: lineup[modelConfig.answerTier].id,
-      defaultEffort: modelConfig.reasoningEffort,
+      models: options.map((option) => ({ id: option.id, provider: 'openai', defaultEffort: null })),
+      defaultModel: defaultModel.id,
     });
   });
 });
