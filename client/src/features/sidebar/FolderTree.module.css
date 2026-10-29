@@ -99,9 +99,9 @@
   padding-inline: 4px 6px;
 }
 
-/* The file open in the viewer. */
+/* The file open in the viewer: the ink tint role, a step deeper than the wash so it reads on the chrome in both schemes. */
 .file[data-active] {
-  background-color: var(--mantine-primary-color-light);
+  background-color: var(--mantine-color-ink-1);
 }
 
 /* The name is the row's button, and its click area stretches over the whole row. */
