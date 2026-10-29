@@ -1,199 +1,245 @@
 # Atlas
 
-Atlas reads every PDF and Excel file in a folder and answers your questions about them, in English or Arabic. Each answer lists its sources: the file and page for a PDF, or the file, sheet and rows for a spreadsheet. Numbers in an answer are worked out by code (a database query or a calculator), not typed by the AI, so a total covers every row and can be checked. When the documents do not say, Atlas answers "not found" instead of guessing.
+Ask questions about a folder of project documents, PDF and Excel, in English or Arabic. Every answer shows its sources. Totals and lists are worked out by code over every row, not typed by the AI.
 
-![Atlas answering a question about the sample project](docs/screenshot.png)
+![Atlas answering "What is the total of each BOQ?"](docs/images/answer.png)
 
-## Run it in six steps
+## Run it
 
-You need an OpenAI API key. Everything else runs on your own computer.
+| Step | Windows (PowerShell) | macOS / Linux |
+| --- | --- | --- |
+| 1. Install Node.js 24 | [nodejs.org](https://nodejs.org/en/download) | [nodejs.org](https://nodejs.org/en/download) or `brew install node@24` |
+| 2. Switch on pnpm | `corepack enable` | `corepack enable` |
+| 3. Get the code | `git clone https://github.com/MoSmeha/Atlas.git; cd Atlas` | `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas` |
+| 4. Install | `pnpm install` | `pnpm install` |
+| 5. Add your OpenAI key | `Copy-Item .env.example .env`, then set `OPENAI_API_KEY=` | `cp .env.example .env`, then set `OPENAI_API_KEY=` |
+| 6. Start | `pnpm dev`, then open http://localhost:5173 | `pnpm dev`, then open http://localhost:5173 |
 
-1. **Install Node.js 24 and pnpm.**
-   Download Node.js 24 from [nodejs.org](https://nodejs.org/en/download) (on macOS you can also run `brew install node@24`). Then switch on pnpm, the package manager this project uses; it comes with Node:
-   ```sh
-   corepack enable
-   ```
-2. **Get the code.**
-   ```sh
-   git clone https://github.com/MoSmeha/Atlas.git
-   cd Atlas
-   ```
-3. **Install the libraries.**
-   ```sh
-   pnpm install
-   ```
-4. **Add your API key.** Copy the example settings file to `.env`, then open `.env` in a text editor and put your key after `OPENAI_API_KEY=`.
+The sample project `samples/riyadh-tower` loads by itself. To use your own files, type a folder path in the sidebar or drop files on it.
 
-   | Windows (PowerShell) | macOS / Linux |
-   | --- | --- |
-   | `Copy-Item .env.example .env` | `cp .env.example .env` |
-
-5. **Start Atlas.**
-   ```sh
-   pnpm dev
-   ```
-   This starts two programs: the server (port 3001) and the web app (port 5173). Leave the window open.
-6. **Open [http://localhost:5173](http://localhost:5173).** The sample folder `samples/riyadh-tower` loads by itself. To use your own documents, type the full path of a folder in the sidebar (for example `C:\Projects\Tower` or `/Users/me/Projects/Tower`), or drop files onto it.
-
-**Command line.** `pnpm cli <folder> "<question>"` asks one question without the browser, for example:
-
-```sh
-pnpm cli samples/riyadh-tower "Which BOQ items are above SAR 1M?"
-```
+From the command line: `pnpm cli samples/riyadh-tower "What is the total of each BOQ?"`
 
 ## What it does
 
-**What you can ask.** Plain questions about the loaded documents, for example:
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/start.png" alt="Folder loaded with suggested questions"><br><b>Load a folder.</b> Every file is listed with its type, and Atlas suggests questions that fit.</td>
+    <td width="50%"><img src="docs/images/table.png" alt="57 cost items above SAR 1 million with the export menu"><br><b>Exact rows.</b> "Above SAR 1 million" is a database query over every row. Export the rows to Excel or CSV.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/pdf-source.png" alt="PDF opened at page 37 with the clause highlighted"><br><b>Open a source.</b> A PDF opens at the cited page, with the sentence highlighted.</td>
+    <td><img src="docs/images/excel-source.png" alt="Excel sheet with the cited rows tinted"><br><b>Or the sheet.</b> A spreadsheet opens at the cited rows.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/arabic.png" alt="Arabic question answered in Arabic"><br><b>Arabic in, Arabic out.</b> Answers read right to left. File names and numbers are kept as written.</td>
+    <td><img src="docs/images/scanned.png" alt="Scanned survey read as an image"><br><b>Scanned pages.</b> A page with no text is shown to the AI as an image.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/revisions.png" alt="BOQ revision comparison"><br><b>Compare revisions.</b> Items added, removed and changed, and the change in total.</td>
+    <td><img src="docs/images/not-found.png" alt="Not found answer naming unreadable files"><br><b>No guessing.</b> When the documents don't say, Atlas says so and names the files it could not read.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/trace.png" alt="How I found this, with the SQL query"><br><b>How I found this.</b> Every step Atlas took, with its time.</td>
+    <td><img src="docs/images/mobile.png" alt="Atlas at phone width" width="240"><br><b>Phone width.</b> The same app on a narrow screen.</td>
+  </tr>
+</table>
 
-- "Which cost items are above SAR 1 million?" (counted over every row, not a sample)
-- "What is the scope of the main works contract?"
-- "What are the key dates and deliverables?"
-- "What changed between BOQ Rev 0 and Rev 1?"
-- "Do the bills of quantities add up?"
-- "ما الحجر الذي اعتُمد لواجهة المنصة؟" (asked in Arabic, answered in Arabic)
+## How it works
 
-**What an answer contains.**
+### A question becomes an answer
 
-| Part | What you see |
-| --- | --- |
-| The answer | Text that appears word by word while Atlas works. You can stop it with the Stop button or Esc. |
-| Result table | When the answer is a list or table, its rows appear under the answer, worked out by code. **Export** saves them as an Excel file (with a sources sheet) or a CSV file. |
-| Sources | A numbered list: file and page for a PDF (with the quoted passage), or file, sheet and rows for a spreadsheet. Clicking a source opens it at that page or those rows. |
-| How I found this | A folded list of every step Atlas took: what it searched for, the database query it ran, the pages it read, and how long each step took. |
-| Warnings | Shown when Atlas could not fully check an answer, for example a number it could not trace to a document. |
+```mermaid
+sequenceDiagram
+  actor You
+  participant App as Web app
+  participant Atlas as Atlas server
+  participant AI as OpenAI model
+  participant Tools as Tools (code)
+  participant Index as SQLite index
+  You->>App: Ask a question
+  App->>Atlas: Question
+  loop Until the AI hands in its answer
+    Atlas->>AI: Question, file list, tools
+    AI->>Atlas: Call a tool, e.g. query_tables
+    Atlas->>Tools: Run it
+    Tools->>Index: SQL, search, page text
+    Index-->>Tools: Rows and passages
+    Tools-->>Atlas: Result, rows saved under an id
+    Atlas-->>AI: Tool result
+  end
+  AI->>Atlas: submit_answer: text, rows id, sources
+  Atlas->>Atlas: Check numbers and sources
+  Atlas-->>App: Streamed answer, table, sources, steps
+```
 
-**Around the chat.** The sidebar lists every file with its status (read, empty, damaged, password-protected, scanned, too large or skipped) and its document type (contract, BOQ, specification and so on). The top bar has a model picker, the cost and time of the last answer, and a button to clear the chat.
-
-## Tools
-
-Atlas works like a careful assistant with a set of tools. For each question, the AI decides which tools to use and in what order. Every tool is code: the AI asks, the code does the work.
-
-| Tool | What it does |
-| --- | --- |
-| `list_documents` | Lists every file in the folder: its status, type, pages or sheets, language, currencies and the tables found in it. |
-| `export_table` | Saves a result table as an Excel or CSV file the user can open. |
-| `search_documents` | Finds the passages about a topic, by exact words and by meaning, and returns the file, page and a short extract. |
-| `read_pages` | Returns the exact text of a range of PDF pages, so Atlas can quote and cite them. |
-| `calculate` | Does arithmetic in code (totals, differences, percentages). It refuses numbers that did not come from a document or the question. |
-| `extract_schedule` | Finds dates, deadlines, durations, milestones and deliverables in every document, with the sentence and page each comes from. |
-| `query_tables` | Runs one read-only database query over every table Atlas loaded (BOQs, ledgers, schedules), for counts, totals and "above X" questions. |
-| `check_boq_arithmetic` | Checks every bill of quantities: quantity times rate against the amount, and each total against the rows it adds up. |
-| `look_at_page` | Shows one PDF page as an image to the AI and asks it a question. Used for scanned pages, drawings and stamps. |
-| `compare_revisions` | Compares two revisions of a bill of quantities: items added, removed and changed, and the change in total per currency. |
-| `submit_answer` | Hands in the final answer with its sources. Atlas checks it first: every number must trace to a tool result and every source must exist, or the answer goes back to the AI to fix. |
-
-## Edge cases
-
-What Atlas does with awkward files and questions, and the sample file in `samples/` that shows each one. One bad file never stops the others from loading.
-
-| Case | What Atlas does | Sample |
-| --- | --- | --- |
-| Empty folder | Says the folder is empty and asks for a folder with PDF or Excel files. | `samples/empty-folder/` |
-| Folder that does not exist | Says "Folder not found" with the path, and suggests copying it from the File Explorer address bar. | Type any wrong path |
-| Damaged PDF | Lists it as **Corrupt** with the reason; it is not read. | `Drawing_Register.pdf` |
-| Password-protected PDF | Lists it as **Encrypted**; Atlas is not given passwords. | `Tender_Addendum_03.pdf` |
-| Excel file of 0 bytes | Lists it as **Empty**. | `Cost_Report_Empty.xlsx` |
-| Workbook whose sheets are all empty | Lists it as **Empty**. | `Blank_Template.xlsx` |
-| Scanned PDF (an image, no text) | Lists it as **Scanned**, then reads the page by showing the image to the AI (`look_at_page`). | `Site_Survey_Scanned.pdf` |
-| 300-page PDF | Indexes every page once. Search finds the right pages; only those are read. | `Specification_Volume_2.pdf` |
-| Sheet with 10,000 rows | Loads every row into a database table; counts and totals are a query over all rows. | `Cost_Ledger_10k.xlsx` |
-| BOQ table running over several PDF pages | Reads it as one table. Repeated headers are skipped; "Carried forward" and "Brought forward" lines are marked as totals, not items. | `BOQ_Phase2_Facade.pdf` |
-| Header row below title rows | Finds the real header under the title rows. | `BOQ_Phase1_Rev0.xlsx`, `Programme_Milestones.xlsx` |
-| Merged header cells | Joins a two-row header, such as "Rates and Amounts (SAR)" over "Rate" and "Amount". | `BOQ_Phase1_Rev0.xlsx` |
-| Two tables on one sheet | Splits them into separate tables, each with its own header and currency. | `Equipment_Imports.xlsx` |
-| Amounts written as "SAR 1.2M" or in Arabic digits ("٣٢٠٬٠٠٠ ر.س") | Turns them into plain numbers (1,200,000 and 320,000) and keeps the currency. | `Provisional_Sums.xlsx` |
-| Several currencies | Never adds them together: one total per currency. Each table keeps its own currency, and a query that adds them together is flagged back to the AI. | `Equipment_Imports.xlsx` |
-| Arabic PDF, Arabic question | Reads the Arabic text in the right order and answers in Arabic, right to left. | `Meeting_Minutes_07_AR.pdf` |
-| English question, answer only in the Arabic PDF | Search by meaning works across languages, so it finds the Arabic page; the answer is in English and cites the Arabic source. | `Meeting_Minutes_07_AR.pdf` |
-| Two revisions of the same BOQ | Both load. `compare_revisions` lists what was added, removed and changed between them. | `BOQ_Phase1_Rev0.xlsx`, `BOQ_Phase1_Rev1.xlsx` |
-| Word file (.docx) | Lists it as **Skipped**: only PDF and Excel files are read. | `Cover_Letter.docx` |
-| Question the documents do not answer | Answers "not found", says what it looked for, and names any files it could not read. | Any question off the documents |
-| Text in a document that gives the AI orders | Treated as document text, never as an instruction. Asked for the contract value, Atlas still gives SAR 187,462,350.00. | `Specification_Volume_2.pdf`, page 297 |
-
-`samples/README.md` describes every sample file. `samples/expected.json` holds the right answers.
-
-## How it is built
-
-The server is split into layers. Arrows point from the part that uses to the part that is used.
+### What happens when a folder loads
 
 ```mermaid
 flowchart LR
-  client["Web app<br/>(React, client/)"] -- "HTTP and streamed events (SSE)" --> api
-
-  subgraph server["Server (server/src)"]
-    api["api/<br/>web routes"] --> application["application/<br/>agent, tools, answer checks, ports"]
-    application --> domain["domain/<br/>pure rules: tables, money, dates, SQL check"]
-    infrastructure["infrastructure/<br/>adapters"] -. "implements the ports of" .-> application
-  end
-
-  infrastructure --> openai["OpenAI API<br/>(answers, vision, embeddings)"]
-  infrastructure --> sqlite[("SQLite file<br/>one per folder")]
-  infrastructure --> files["The folder's PDF and Excel files"]
+  folder[/"Folder"/] --> scan["Scan<br/>a status for every file"]
+  scan -->|PDF| pdf["mupdf<br/>text, positions, scanned pages"]
+  scan -->|Excel| xlsx["exceljs<br/>every sheet, formulas, merged cells"]
+  scan -->|other| skip["Listed as skipped"]
+  pdf --> tables["Table finder<br/>headers, totals, SAR 1.2M, Arabic digits"]
+  xlsx --> tables
+  tables --> sql[("SQL tables<br/>one per table found")]
+  pdf --> chunks["Page passages"]
+  chunks --> fts[("Keyword index")]
+  chunks --> vec[("Meaning index<br/>embeddings")]
+  pdf --> classify["Small model<br/>document type"]
+  xlsx --> classify
+  classify --> suggest["Five suggested questions"]
 ```
 
-- **domain**: rules with no outside connections, such as reading "SAR 1.2M" or finding a table header.
-- **application**: the question-answering loop, the tools and the answer checks. It talks to the outside only through *ports* (interfaces).
-- **infrastructure**: the *adapters* behind those ports: mupdf for PDFs, exceljs for Excel, SQLite for the index, OpenAI for the AI.
-- **api**: the web routes the browser calls.
+A watcher re-reads a file as soon as it is added or changed. The index is cached per folder, so loading a folder again takes milliseconds.
 
-The index of a folder is one SQLite database file in `.atlas/indexes/`, so loading the same folder again is fast.
+### Every answer is checked before you see it
+
+```mermaid
+flowchart TD
+  submit["AI hands in an answer"] --> numbers{"Does every number come<br/>from a tool result?"}
+  numbers -->|No| back["Sent back to the AI to fix<br/>(at most twice)"]
+  back --> submit
+  numbers -->|Yes| sources{"Does every source exist?<br/>File, page, sheet, rows"}
+  sources -->|Some bad| back
+  sources -->|None at all| notfound["Shown as 'not found'<br/>with the files that could not be read"]
+  sources -->|Yes| shown["Shown with its table and sources"]
+```
+
+### How the code is arranged
+
+```mermaid
+flowchart LR
+  client["Web app<br/>React, Mantine"] -- "HTTP and streamed events" --> api
+  subgraph server["Server"]
+    api["api<br/>web routes"] --> app["application<br/>agent, tools, checks, ports"]
+    app --> domain["domain<br/>pure rules: money, tables, dates, SQL check"]
+    infra["infrastructure<br/>mupdf, exceljs, SQLite, OpenAI"] -. implements ports .-> app
+  end
+  infra --> openai["OpenAI API"]
+  infra --> sqlite[("One SQLite file<br/>per folder")]
+  infra --> files[/"Your PDF and Excel files"/]
+```
+
+## Tools
+
+The AI decides which tools to call. The tools are code: the AI asks, and the code does the work.
+
+| Tool | Job |
+| --- | --- |
+| `list_documents` | Every file: its status, type, pages or sheets, tables and currencies |
+| `search_documents` | Finds passages by exact words and by meaning |
+| `read_pages` | Exact text of a range of PDF pages |
+| `query_tables` | One read-only SQL query over every loaded table |
+| `look_at_page` | Shows a page image to the AI, for scanned pages and drawings |
+| `check_boq_arithmetic` | Quantity × rate against the amount, and subtotals against their rows |
+| `extract_schedule` | Dates, deadlines, durations and deliverables, Hijri dates included |
+| `compare_revisions` | Two BOQ revisions: items added, removed and changed |
+| `calculate` | Safe arithmetic on numbers the tools returned |
+| `export_table` | Saves a result as `.xlsx` or `.csv` |
+| `submit_answer` | Hands in the answer, which is then checked as shown above |
+
+## Edge cases
+
+<table>
+  <tr>
+    <td width="300"><img src="docs/images/files.png" alt="Sidebar with file statuses" width="280"></td>
+    <td>
+
+| Case | What Atlas does | Sample |
+| --- | --- | --- |
+| Damaged PDF | Listed as **Damaged** | `Drawing_Register.pdf` |
+| Password-protected PDF | Listed as **Password protected** | `Tender_Addendum_03.pdf` |
+| 0-byte Excel file | Listed as **Empty** | `Cost_Report_Empty.xlsx` |
+| Workbook with only empty sheets | Listed as **Empty** | `Blank_Template.xlsx` |
+| Scanned PDF | Listed as **Scanned**, read as an image | `Site_Survey_Scanned.pdf` |
+| Word file | Listed as **skipped** | `Cover_Letter.docx` |
+| 300-page PDF | Search finds the right pages; only those are read | `Specification_Volume_2.pdf` |
+| 10,000-row sheet | All rows in SQL; counts and totals cover every row | `Cost_Ledger_10k.xlsx` |
+| BOQ running over PDF pages | One table; carried-forward lines are not items | `BOQ_Phase2_Facade.pdf` |
+| Header under title rows, merged headers | Real header found, headers joined | `BOQ_Phase1_Rev0.xlsx` |
+| Two tables on one sheet | Split, each with its own currency | `Equipment_Imports.xlsx` |
+| "SAR 1.2M", Arabic-Indic digits | Read as plain numbers | `Provisional_Sums.xlsx` |
+| Several currencies | Never added together; one total per currency | `Equipment_Imports.xlsx` |
+| Arabic PDF | Read in the right order; Arabic questions answered in Arabic | `Meeting_Minutes_07_AR.pdf` |
+| English question, answer only in Arabic | Found by meaning, answered in English | `Meeting_Minutes_07_AR.pdf` |
+| Two revisions of a BOQ | Compared row by row | `BOQ_Phase1_Rev0/Rev1.xlsx` |
+| Question not in the documents | "Not found", with the unreadable files named | Any off-topic question |
+| A document that orders the AI around | Treated as text; the real contract value is given | `Specification_Volume_2.pdf` p. 297 |
+| Empty folder, wrong path | A clear message in the sidebar (below) | `samples/empty-folder/` |
+
+</td>
+  </tr>
+</table>
+
+<img src="docs/images/folder-error.png" alt="Folder not found message" width="300">
+
+Every sample document is fictional. `samples/README.md` describes each file, and `samples/expected.json` holds the right answers.
 
 ## Settings
 
-Settings live in `.env` at the repository root (copied from `.env.example`). Only the API key is required.
+Settings live in `.env`. Only the key is required.
 
-| Name | In `.env.example` | If left out | What it means |
-| --- | --- | --- | --- |
-| `OPENAI_API_KEY` | (empty) | none | Your OpenAI key. Without it, Atlas lists files but cannot answer. |
-| `ATLAS_FOLDER` | `samples/riyadh-tower` | no folder | Folder to load when the server starts. Relative paths start at the repository root. |
-| `PORT` | `3001` | `3001` | Port of the server. The web app forwards its `/api` calls to it. |
-| `ATLAS_DATA_DIR` | `.atlas` | `.atlas` | Where the index files and uploaded files are kept. |
-| `ATLAS_LOG_DIR` | `.logs` | `.logs` | Where a log of each question is written (one JSON line per event). |
-| `ATLAS_EXPORTS_DIR` | `exports` | `exports` | Where exported Excel and CSV files are saved. |
-| `ATLAS_MAX_FILE_MB` | `200` | `200` | Files larger than this are listed as "too large" and not read. |
-| `ATLAS_MAX_ROUNDS` | `12` | `12` | Most tool rounds per question before Atlas asks for the final answer. |
+| Name | Default | What it means |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | none | Your OpenAI key |
+| `ATLAS_FOLDER` | `samples/riyadh-tower` | Folder loaded at start |
+| `PORT` | `3001` | Server port; the web app forwards to it |
+| `ATLAS_DATA_DIR` | `.atlas` | Index cache and uploads |
+| `ATLAS_LOG_DIR` | `.logs` | One log line per tool call and question |
+| `ATLAS_EXPORTS_DIR` | `exports` | Exported `.xlsx` and `.csv` files |
+| `ATLAS_MAX_FILE_MB` | `200` | Larger files are listed as too large |
+| `ATLAS_MAX_ROUNDS` | `12` | Tool rounds before the AI must answer |
 
-**Models.** `server/config/models.json` lists the OpenAI models Atlas may use, with their prices per million tokens, in three tiers: frontier, balanced and small. At start, Atlas asks OpenAI which models the key can see and picks, in each tier, the first listed model that is available (newest first). Questions go to the frontier model by default (`answerTier`); the model picker in the top bar switches to another tier. The small model sorts documents into types and checks schedule dates. Run `pnpm models` to see which models your key can see and the lineup Atlas will use.
+**Models** are set in `server/config/models.json`.
+
+| Tier | Model | Used for |
+| --- | --- | --- |
+| small | GPT-6 Luna | **Default for answers** (cheap), sorting documents into types, confirming dates |
+| balanced | GPT-6.1 Sol | Picker option |
+| frontier | GPT-6 Astra | Picker option for the hardest questions |
+
+Atlas keeps only the models your key can see; `pnpm models` lists them. Change `answerTier` to change the default.
 
 ## Project layout
 
 ```text
-Atlas/
-├── shared/      Data shapes shared by server and web app (Zod schemas)
-├── server/
-│   ├── src/
-│   │   ├── domain/          Pure rules: tables, money, currencies, dates, SQL safety
-│   │   ├── application/     Agent loop, tools, answer checks, ports
-│   │   ├── infrastructure/  Adapters: PDF, Excel, SQLite, OpenAI, files, logs
-│   │   └── api/             Web routes
-│   ├── config/      models.json: model IDs and prices
-│   ├── scripts/     Sample generator, model check, eval
-│   └── test/        Tests, laid out like src/, with fakes in test/fakes
-├── client/      Web app (React, Vite, Mantine)
-├── samples/     Fictional sample documents and their right answers
-└── docs/        Screenshot, time log and eval report
+shared/    Data shapes used by server and web app (Zod)
+server/    src/domain        pure rules
+           src/application   agent, tools, checks, ports
+           src/infrastructure mupdf, exceljs, SQLite, OpenAI
+           src/api           web routes
+           config/           models.json
+           scripts/          samples, eval, models
+           test/             tests, with fakes for every port
+client/    web app (React, Vite, Mantine), DESIGN.md
+samples/   fictional documents and their right answers
+docs/      images, eval report, note, time log
 ```
 
 ## Tests and eval
 
 | Command | What it does |
 | --- | --- |
-| `pnpm test` | Runs the unit tests. Needs no API key and no network. |
-| `pnpm typecheck` | Checks the TypeScript types in all three packages. |
-| `pnpm eval` | Asks the real AI a set of questions about the sample folder and compares the answers with `samples/expected.json`. **Costs money** (it uses your API key). Writes the results to `docs/EVAL.md`. |
-| `pnpm samples` | Makes the sample documents again. Needs Microsoft Edge, which renders the Arabic minutes. |
+| `pnpm test` | About 1,650 unit tests. No key, no network |
+| `pnpm typecheck` | Types in all three packages |
+| `pnpm eval` | 21 real questions checked against `samples/expected.json`; writes [docs/EVAL.md](docs/EVAL.md). Costs a few cents on Luna |
+| `pnpm samples` | Rebuilds the sample documents (needs Microsoft Edge) |
 
-**Latest eval:** 20 of 21 questions passed on GPT-6 Astra (the default at the time), with a median answer time of 9.6 seconds and $1.48 for the whole run. The one miss and every answer's time and cost are in [docs/EVAL.md](docs/EVAL.md). To run it on another model: `pnpm eval --model gpt-6-luna`.
+**Latest eval:** 21 of 21 passed on GPT-6 Luna, with a median answer time of 6.9 seconds and **$0.02 for all 21 questions**. Every answer's time, cost and check is in [docs/EVAL.md](docs/EVAL.md).
 
-## How to add a tool
+## Add a tool
 
-1. **Shared shape (only if the web app shows the result).** Add a Zod schema to `shared/src/schemas/`.
-2. **The tool.** Add one file to `server/src/application/tools/`, built with `defineTool`. Parameters are a Zod object; optional fields use `.nullable()`. Use only the ports in the context (`context.index`, `context.model` and so on), never SQLite, mupdf or OpenAI directly. Throw `ToolError` for a problem the AI can fix.
-3. **Register it.** Add it to the `tools` list in `server/src/application/tools/registry.ts`. The instructions test checks that every tool is named in the agent instructions, so add one advice line for it to `STRATEGY` in `server/src/application/agent/instructions.ts`.
-4. **A unit test.** Add a test in `server/test/application/tools/` using the fakes in `server/test/fakes/` (`FakeIndex`, `makeToolContext`).
-5. **An eval question.** Add one question that needs the tool to `server/scripts/eval/questions.ts`.
+```mermaid
+flowchart LR
+  a["Step 1: Shape<br/>Zod schema in shared/<br/>(only if the app shows it)"] --> b["Step 2: Tool<br/>one file in<br/>application/tools/"]
+  b --> c["Step 3: Register<br/>registry.ts + one advice<br/>line in instructions.ts"]
+  c --> d["Step 4: Test<br/>with the fakes in<br/>test/fakes/"]
+  d --> e["Step 5: Eval<br/>one question in<br/>scripts/eval/questions.ts"]
+```
 
-A tiny example, a tool that gives a PDF's page count:
+<details>
+<summary>A tiny example tool and its test</summary>
 
 ```ts
 // server/src/application/tools/pageCount.ts
@@ -228,17 +274,11 @@ it('counts the pages of a PDF', async () => {
 });
 ```
 
-## Licences
+</details>
 
-Atlas reads PDFs with mupdf, which is AGPL-3.0, so this repository carries no permissive LICENSE file. The other main libraries are MIT (React, Mantine, Fastify, exceljs, better-sqlite3, Zod, chokidar, Vite) or Apache-2.0 (the OpenAI SDK, pdf.js).
+## Good to know
 
-## Assumptions and defaults
-
-- **Models.** Answers use OpenAI's small model by default (GPT-6 Luna), to keep a demo cheap: a typical answer costs a fraction of a cent. The model picker in the top bar switches to the balanced model (GPT-6.1 Sol) or the frontier model (GPT-6 Astra) for a harder question; Astra costs about 100 times more per token. To change the default, set `answerTier` in `server/config/models.json` to `small`, `balanced` or `frontier`. Luna also does bulk work such as sorting documents into types. Search by meaning uses `text-embedding-3-small`. The model IDs and prices live in `server/config/models.json`; at start Atlas keeps only the models your key can see.
-- **Local only.** Atlas, its index and your files stay on your computer. The AI runs at OpenAI, so document text is sent there: passages for search by meaning, the start of each file to sort it into a type, the pages a question needs, and page images for scanned pages.
-- **One folder at a time.** Loading a new folder replaces the current one.
-- **PDF and Excel only** (`.pdf`, `.xlsx`, `.xlsm`). Old `.xls`, CSV, Word and images are listed as skipped, with the reason.
-- **No passwords.** Password-protected files are listed, not opened.
-- **Currencies are never converted.** Amounts in different currencies are totalled separately.
-- **The interface is in English.** Questions and answers can be in English or Arabic.
-- **Fictional samples.** Every sample document was invented for testing; no real company document was used.
+- **Local.** The app, its index and your files stay on your computer. The AI runs at OpenAI, so passages, page images and the first pages of each file are sent there.
+- **One folder at a time.** PDF and Excel only (`.pdf`, `.xlsx`, `.xlsm`).
+- **Licences.** mupdf is AGPL-3.0, so this repository has no permissive LICENSE file. The other main libraries are MIT or Apache-2.0.
+- **More.** Design notes are in [docs/NOTE.md](docs/NOTE.md), time spent in [docs/TIMELOG.md](docs/TIMELOG.md), and the design system in [client/DESIGN.md](client/DESIGN.md).
