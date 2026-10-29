@@ -23,7 +23,7 @@ From the command line: `pnpm cli samples/riyadh-tower "What is the total of each
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/images/start.png" alt="Folder loaded with suggested questions"><br><b>Load a folder.</b> Every file is listed with its type, and Atlas suggests questions that fit.</td>
+    <td width="50%"><img src="docs/images/start.png" alt="Folder loaded with suggested questions"><br><b>Load a folder.</b> Every file is listed with its type, and Atlas suggests questions that fit. Click a file to read it: a PDF page by page, a workbook sheet by sheet.</td>
     <td width="50%"><img src="docs/images/table.png" alt="57 cost items above SAR 1 million with the export menu"><br><b>Exact rows.</b> "Above SAR 1 million" is a database query over every row. Export the rows to Excel or CSV.</td>
   </tr>
   <tr>

@@ -275,7 +275,7 @@ A cool, nearly colourless palette: blue-tinted grays carry the structure, one in
 
 ### Primary
 - **Atlas Ink** (`ink`): filled primary buttons (Load, Send, Stop), focus outlines (2px, 2px offset), the input caret, links, the active source number, the 3px streaming caret at the end of a growing answer, and the call avatar's 1.5px ring while Atlas speaks (the voice's streaming caret). The composer's phone, the dictation check mark and End call are primary actions and take the filled ink too.
-- **Ink Wash** (`ink-wash`): the ground of the source row open in the viewer and of cited rows in the sheet viewer.
+- **Ink Wash** (`ink-wash`): the ground of the source row or register row whose file is open in the viewer, and of cited rows in the sheet viewer.
 - **Ink Tint** (`ink-tint`): `<mark>` highlights and the row-number cell of a cited sheet row, a step deeper than the row itself.
 - **Ink Selection** (`ink-selection`): text selection ground, with Ink Deep (`ink-deep`) text.
 - **Ink Mark** (`ink-mark`): mixed at 45% over the rendered PDF page so the printed words of a cited passage show through.
@@ -286,9 +286,9 @@ A cool, nearly colourless palette: blue-tinted grays carry the structure, one in
 
 ### Neutral
 - **Page Ground** (`page-ground`): the conversation background, a step lighter than every gray. The docked composer strip reuses it so turns scroll under it cleanly.
-- **White** (`white`): surfaces that hold content you read: composer box, result-table frame, PDF page, sheet stage.
+- **White** (`white`): surfaces that hold content you read: composer box, result-table frame, PDF page, sheet stage, the open sheet's tab. On the chrome ground, a register row also lifts to white under the pointer.
 - **Hover Ground** (`hover-ground`): the hover tint on rows and quiet controls, sticky table headers, the disabled composer and the "not found" notice ground.
-- **Chrome Ground** (`chrome-ground`): the top bar, the sidebar, the viewer stage behind a PDF page, sheet headers and the row-number gutter.
+- **Chrome Ground** (`chrome-ground`): the top bar, the sidebar, the viewer stage behind a PDF page, sheet headers, the row-number gutter and the strip of sheet tabs.
 - **Quiet Chip** (`quiet-chip`): neutral badges and source numbers. Also the hairline between suggested questions and under the viewer header.
 - **Hairline** (`hairline`): table frames, quote rules, the trace rail, the PDF page edge and the sheet gutter rule.
 - **Border** (`border`): input and composer borders, the default control border, scrollbar thumbs and trace markers.
@@ -329,7 +329,7 @@ Spacing runs on an 8/12/16/24/32 scale (`xs` to `xl`). Tight inner rhythm uses 2
 
 During a voice call the call card takes the composer's docked place at the same width. Inside it, 12px padding and 12px gaps: the avatar and a text block side by side, then a control row under a 1px Quiet Chip rule (voice picker at the start, actions at the end). Below `xs` the avatar drops to 56px, controls grow to 40px, the picker takes the row's remaining width so the controls stay on one line, only the latest caption shows, and the standing hint under the card is hidden.
 
-Content widths inside the viewer cap at 560 to 600px for notes and states. The PDF page centres on the chrome stage with 16px padding, and the sheet runs edge to edge on white like a grid in Excel.
+Content widths inside the viewer cap at 560 to 600px for notes and states. The PDF page centres on the chrome stage with 16px padding, and the sheet runs edge to edge on white like a grid in Excel. A workbook opened whole keeps its sheet tabs along the viewer's foot, as Excel does.
 
 ## Elevation & Depth
 
@@ -384,8 +384,13 @@ Mantine defaults, tuned small and quiet.
 ### Document Register Row
 Two lines per file. Line one: a dimmed 18px Tabler outline file-kind icon and a 13px name, truncated, with the full path in a tooltip. Line two: dimmed 12px tabular meta ("4 sheets, 4 tables") left, and the type badge plus any status badge right. Rows arrive with a 180ms 2px rise.
 
+The whole row opens the file in the viewer. Its ground bleeds 8px past the text, lifts to white under the pointer, and takes the Ink Wash while the file is open. The focus ring sits inside the row, so the list's edge never clips it. The status badge stays above the row's button, so its reason still shows on hover and focus.
+
 ### Numbered Sources
 A labelled ordered list of quiet full-width rows: a 24px by 18px tabular number chip, a file-kind icon, the bold name with its dimmed place (page, sheet and rows), an optional two-line quote behind an inline-start hairline, and a trailing open icon that darkens on hover. The open source turns Ink Wash with a filled ink number. Opening one shows the viewer at that page with the quote washed in ink, or at the sheet with the cited rows tinted.
+
+### Viewer
+A 1040px modal (full screen on a phone): the file's icon, name and place in the header, a control bar under a hairline, and a stage that scrolls. Opened from a source, it starts at the cited page or rows and offers a way back to them. Opened from the register, it shows the whole file. A PDF starts at page 1 with previous and next buttons, a 52px tabular page field (type a number and press Enter) and the arrow keys. A workbook starts at the top of its first sheet, with the sheets as tabs along the foot on the chrome ground: the open one is white, with the ink rule on its top edge. A file the viewer cannot draw (damaged, password protected, or a workbook with no sheets read) shows the reason in a notice in its status colour, with a default "Download the file" button.
 
 ### Result Table
 A title (13px/600) and an Export menu (default button, Excel or CSV) sit above a white 6px hairline frame with a sticky Hover Ground header (dimmed 600 labels, balanced wrap). Rows highlight on hover. Numbers align right with tabular figures, and empty cells show a faint dash. The row count and "Show N more" sit below the frame.
