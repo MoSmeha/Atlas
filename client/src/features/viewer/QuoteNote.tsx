@@ -1,6 +1,7 @@
 import { Stack, Text } from '@mantine/core';
-import { formatNumber } from '../chat/formatNumber';
+import { useCopy } from '../../i18n/useCopy';
 import type { HighlightState } from './useQuoteHighlight';
+import { type ViewerCopy, viewerCopy } from './viewerCopy';
 import classes from './SourceViewer.module.css';
 
 interface QuoteNoteProps {
@@ -10,14 +11,17 @@ interface QuoteNoteProps {
   citedPage: number;
 }
 
-const stateText: Partial<Record<HighlightState, string>> = {
-  not_found: 'These words are not in the page text exactly as quoted, so nothing is highlighted. Check the page by eye.',
-  no_text: 'This page is a scanned image with no text to search, so the passage cannot be highlighted. Check the page by eye.',
-};
+/** The plain line under the quote: where it is, or why it is not highlighted; null when it is marked or still being looked for. */
+function noteText(copy: ViewerCopy, state: HighlightState | null, citedPage: number): string | null {
+  if (state === null) return copy.quoteOnPage(citedPage);
+  if (state === 'not_found') return copy.quoteNotFound;
+  if (state === 'no_text') return copy.quoteNoText;
+  return null;
+}
 
 /** The quoted passage above the page, and a plain line when it cannot be highlighted on it. */
 export function QuoteNote({ quote, state, citedPage }: QuoteNoteProps) {
-  const note = state === null ? `The quoted passage is on page ${formatNumber(citedPage)}.` : stateText[state];
+  const note = noteText(useCopy(viewerCopy), state, citedPage);
 
   return (
     <Stack gap={4}>

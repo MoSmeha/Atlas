@@ -1,6 +1,9 @@
-/* The sheet sits on white, edge to edge, like the grid in Excel. */
+/*
+ * The sheet sits on the reading surface (white in light, the lifted slate in dark), edge to edge,
+ * like the grid in Excel. The grid always runs left to right, so its logical edges are left and right.
+ */
 .stage {
-  background-color: var(--mantine-color-white);
+  background-color: var(--atlas-surface);
 }
 
 .table {
@@ -66,9 +69,12 @@
   overflow-wrap: break-word;
 }
 
-/* Cited rows: the brand's light tint across the row, a step deeper on the row number. The tint alone marks them. */
+/*
+ * Cited rows: the ink wash across the row, the ink tint a step deeper on the row number. The tint alone
+ * marks them. Both are role shades, so they stay a light wash in the dark scheme too.
+ */
 .table tr[data-cited] > td {
-  background-color: var(--mantine-primary-color-light);
+  background-color: var(--mantine-color-ink-0);
 }
 
 .table tr[data-cited] > .rowNumber {
