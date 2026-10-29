@@ -1,7 +1,8 @@
 import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { parseArgs } from 'node:util';
-import type { IndexEvent, ToolStep } from '@atlas/shared';
+import { AnswerEffort, type IndexEvent, type ToolStep } from '@atlas/shared';
+import { pickableEffort, questionEffort } from '../../src/application/models/answerEffort';
 import { repoRoot } from '../../src/infrastructure/settings';
 import { compose, type Container } from '../../src/main';
 import type { CheckResult, RunTrace } from './checks';
@@ -12,25 +13,30 @@ const FOLDER = join(repoRoot, 'samples', 'riyadh-tower');
 const RUNS_DIR = join(repoRoot, 'eval-runs');
 
 /**
- * pnpm eval [--model <id>] [--only <id,id>]
+ * pnpm eval [--model <id>] [--effort low|medium|high] [--only <id,id>]
  * Indexes the sample folder, asks every eval question, checks each answer against samples/expected.json and writes
  * a report to eval-runs/. A full run also copies it to docs/EVAL.md, or docs/EVAL-<provider>.md for Gemini and
  * Ollama, so a free run never replaces the OpenAI report. Failed questions still exit 0: the report is the output.
  */
 async function main(): Promise<void> {
-  const { values } = parseArgs({ options: { model: { type: 'string' }, only: { type: 'string' } }, allowPositionals: true });
+  const { values } = parseArgs({
+    options: { model: { type: 'string' }, effort: { type: 'string' }, only: { type: 'string' } },
+    allowPositionals: true,
+  });
   const selected = pickQuestions(values.only);
   const container = await compose();
   if (container.provider === null) stop(container.providerChoice.reason);
   const published = join(repoRoot, 'docs', container.provider.id === 'openai' ? 'EVAL.md' : `EVAL-${container.provider.id}.md`);
   const model = pickModel(container, values.model);
-  console.log(`${container.provider.label}: model ${model}, ${selected.length} of ${questions.length} questions`);
+  const effort = pickEffort(container, values.effort);
+  const runsAt = questionEffort(container.modelConfig.reasoningEffort, effort);
+  console.log(`${container.provider.label}: model ${model}, effort ${runsAt ?? "the model's own"}, ${selected.length} of ${questions.length} questions`);
 
   const indexSeconds = await indexSamples(container);
   const runId = Date.now().toString(36);
   const results: QuestionResult[] = [];
   for (const [index, question] of selected.entries()) {
-    const result = await ask(container, question, `eval-${runId}-${question.session ?? question.id}`, model);
+    const result = await ask(container, question, `eval-${runId}-${question.session ?? question.id}`, model, effort);
     results.push(result);
     const position = `[${String(index + 1).padStart(2)}/${selected.length}]`;
     const cost = `$${(result.usage?.costUsd ?? 0).toFixed(4)}`;
@@ -39,9 +45,9 @@ async function main(): Promise<void> {
 
   const date = new Date();
   const subset = selected.length < questions.length;
-  const report = renderReport({ date, model, folder: relative(repoRoot, FOLDER).replaceAll('\\', '/'), indexSeconds, subset, results });
+  const report = renderReport({ date, model, effort: runsAt, folder: relative(repoRoot, FOLDER).replaceAll('\\', '/'), indexSeconds, subset, results });
   mkdirSync(RUNS_DIR, { recursive: true });
-  const path = join(RUNS_DIR, `${stamp(date)}-${model.replace(/[^\w.-]+/g, '_')}.md`);
+  const path = join(RUNS_DIR, `${stamp(date)}-${model.replace(/[^\w.-]+/g, '_')}${runsAt === null ? '' : `-${runsAt}`}.md`);
   writeFileSync(path, report, 'utf8');
   if (!subset) copyFileSync(path, published);
   const passed = results.filter((result) => result.pass).length;
@@ -69,6 +75,15 @@ function pickModel(container: Container, requested: string | undefined): string 
   return requested;
 }
 
+/** --effort when it is low, medium or high and the provider lets one be picked; null (the configured default) without it. */
+function pickEffort(container: Container, requested: string | undefined): AnswerEffort | null {
+  if (requested === undefined) return null;
+  const parsed = AnswerEffort.safeParse(requested);
+  if (!parsed.success) stop(`Effort ${requested} is not one of: ${AnswerEffort.options.join(', ')}`);
+  if (pickableEffort(container.modelConfig.reasoningEffort) === null) stop(`${container.provider?.label} answers at a fixed effort, so --effort cannot change it.`);
+  return parsed.data;
+}
+
 /** Loads the sample folder and waits until it is ready, printing each phase and progress step once. */
 async function indexSamples(container: Container): Promise<number> {
   const started = performance.now();
@@ -91,13 +106,20 @@ async function indexSamples(container: Container): Promise<number> {
   return seconds;
 }
 
-async function ask(container: Container, question: EvalQuestion, sessionId: string, model: string): Promise<QuestionResult> {
+async function ask(
+  container: Container,
+  question: EvalQuestion,
+  sessionId: string,
+  model: string,
+  effort: AnswerEffort | null,
+): Promise<QuestionResult> {
   const steps = new Map<string, ToolStep>();
   const started = performance.now();
   const outcome = await container.askQuestion.execute({
     sessionId,
     question: question.question,
     model,
+    effort,
     onEvent: (event) => {
       if (event.type === 'step') steps.set(event.step.id, event.step);
     },

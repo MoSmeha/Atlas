@@ -13,6 +13,10 @@ export const ModelOption = z.object({
 });
 export type ModelOption = z.infer<typeof ModelOption>;
 
+/** How long the answer model thinks before it answers: low is the fastest, high the slowest and most careful. */
+export const AnswerEffort = z.enum(['low', 'medium', 'high']);
+export type AnswerEffort = z.infer<typeof AnswerEffort>;
+
 /** Who answers: OpenAI, Gemini's free tier, or a model on this computer through Ollama. */
 export const ModelProvider = z.enum(['openai', 'gemini', 'ollama']);
 export type ModelProvider = z.infer<typeof ModelProvider>;
@@ -20,6 +24,8 @@ export type ModelProvider = z.infer<typeof ModelProvider>;
 export const ModelsResponse = z.object({
   models: z.array(ModelOption),
   defaultModel: z.string(),
+  /** The effort a question gets unless one is picked; null when the provider leaves thinking to each model, so none can be. */
+  defaultEffort: AnswerEffort.nullable(),
   /** Null while no provider is set up. */
   provider: ModelProvider.nullable(),
 });

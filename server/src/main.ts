@@ -8,6 +8,7 @@ import { ClassifyDocument } from './application/indexing/ClassifyDocument';
 import { IndexFolder } from './application/indexing/IndexFolder';
 import { suggestionsStep } from './application/indexing/suggestionsStep';
 import { WatchFolder } from './application/indexing/WatchFolder';
+import { pickableEffort } from './application/models/answerEffort';
 import type { Lineup } from './application/models/pickLineup';
 import type { Clock } from './application/ports/Clock';
 import type { EmbeddingClient } from './application/ports/EmbeddingClient';
@@ -183,7 +184,7 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
       documents: { workspace },
       uploads: { indexFolder, uploadsDir, maxFileBytes: settings.maxFileBytes },
       chat: { askQuestion, sessions, workspace, apiKeyPresent },
-      models: { lineup, answerTier: modelConfig.answerTier, provider: provider?.id ?? null },
+      models: { lineup, answerTier: modelConfig.answerTier, defaultEffort: pickableEffort(modelConfig.reasoningEffort), provider: provider?.id ?? null },
       usage: { sessions },
       voice: { catalog: voiceCatalog, calls: voiceCalls, transcribe: transcribeSpeech, callsAvailable, dictationAvailable },
     },

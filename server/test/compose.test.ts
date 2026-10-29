@@ -65,6 +65,7 @@ describe('compose', () => {
     expect(response.json()).toEqual({
       models: [{ id: 'qwen3:14b', tier: 'frontier', label: 'qwen3:14b (local)', inputPrice: 0, outputPrice: 0 }],
       defaultModel: 'qwen3:14b',
+      defaultEffort: null,
       provider: 'ollama',
     });
   });
@@ -153,13 +154,14 @@ describe('compose', () => {
     container.workspace.require().index.close();
   });
 
-  it('offers the lineup with the configured answer tier as the default model', async () => {
+  it('offers the lineup with the configured answer tier and effort as the defaults', async () => {
     const container = await compose(noKey);
     const response = await buildApp(container.api).inject({ method: 'GET', url: '/api/models' });
     const { lineup, modelConfig } = container;
     expect(response.json()).toMatchObject({
       models: [{ id: lineup.frontier.id }, { id: lineup.balanced.id }, { id: lineup.small.id }],
       defaultModel: lineup[modelConfig.answerTier].id,
+      defaultEffort: modelConfig.reasoningEffort,
     });
   });
 });

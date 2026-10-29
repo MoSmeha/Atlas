@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { Answer, ChatEvent, ErrorDetail, ModelTier, Usage } from '@atlas/shared';
+import type { Answer, AnswerEffort, ChatEvent, ErrorDetail, ModelTier, Usage } from '@atlas/shared';
 import { isArabic } from '../domain/language';
 import { zeroUsage, type TokenPrice } from '../domain/pricing';
 import { speechFor } from '../domain/speech';
@@ -13,6 +13,7 @@ import { checkAnswer } from './guards/checkAnswer';
 import { checkLanguage } from './guards/languageGuard';
 import { unreadableFiles } from './guards/sourcesGuard';
 import { ToolOutputLog } from './guards/ToolOutputLog';
+import { questionEffort } from './models/answerEffort';
 import { chooseModel } from './models/chooseModel';
 import type { CatalogModel, Lineup } from './models/pickLineup';
 import type { Clock } from './ports/Clock';
@@ -44,6 +45,7 @@ export interface AskQuestionDeps {
   lineup: Lineup;
   /** Tier of the default answer model (`answerTier` of the model config). */
   answerTier: ModelTier;
+  /** The default effort; a question may ask for another unless this is null or a level the picker does not offer. */
   reasoningEffort: ReasoningEffort | null;
   maxRounds: number;
   exportsDir: string;
@@ -56,6 +58,8 @@ export interface AskQuestionInput {
   question: string;
   /** Requested model ID; anything but one of the lineup's three gets the default answer model. */
   model?: string | null;
+  /** Requested effort; null or left out gives the default. */
+  effort?: AnswerEffort | null;
   /** Spoken in a voice call: the instructions allow for transcription mistakes, and a `speech` event precedes the answer. */
   spoken?: boolean;
   /** Stops the question, for example when the browser disconnects. */
@@ -69,6 +73,7 @@ export type AskOutcome = { ok: true; answer: Answer; usage: Usage } | { ok: fals
 interface Question {
   id: string;
   model: CatalogModel;
+  effort: ReasoningEffort | null;
   session: Session;
   meter: UsageMeter | null;
 }
@@ -89,6 +94,7 @@ export class AskQuestion {
     const question: Question = {
       id: randomUUID(),
       model: chooseModel(this.deps.lineup, this.deps.answerTier, input.model),
+      effort: questionEffort(this.deps.reasoningEffort, input.effort),
       session: this.deps.sessions.get(input.sessionId),
       meter: this.deps.modelClient === null ? null : new UsageMeter(this.deps.modelClient),
     };
@@ -154,7 +160,7 @@ export class AskQuestion {
       submitTool: submitAnswer,
       context,
       maxRounds: deps.maxRounds,
-      reasoningEffort: deps.reasoningEffort,
+      reasoningEffort: question.effort,
       logger: deps.logger,
       onEvent: input.onEvent,
       onSubmit: checkLanguage(
@@ -197,6 +203,7 @@ export class AskQuestion {
       sessionId: input.sessionId,
       question: input.question,
       model,
+      reasoningEffort: question.effort,
       rounds: result.rounds,
       usage: tokens,
       costUsd,

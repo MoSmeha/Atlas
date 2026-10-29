@@ -89,7 +89,7 @@ export function makeApiDeps(overrides: Partial<ApiDeps> = {}): ApiDeps {
     documents: { workspace },
     uploads: { indexFolder, uploadsDir: '/data/uploads', maxFileBytes: 10 * 1024 * 1024 },
     chat: { askQuestion: makeAskQuestion({ workspace, sessions }), sessions, workspace, apiKeyPresent: false },
-    models: { lineup: testLineup, answerTier: 'frontier', provider: 'openai' },
+    models: { lineup: testLineup, answerTier: 'frontier', defaultEffort: 'medium', provider: 'openai' },
     usage: { sessions },
     voice: {
       catalog: testVoiceCatalog,

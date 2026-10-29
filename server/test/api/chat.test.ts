@@ -90,6 +90,23 @@ describe('POST /api/chat', () => {
     expect(usage).toMatchObject({ last: { model: 'small-model' }, session: { questions: 1 } });
   });
 
+  it('runs the answer model at the effort the request names, and refuses an effort it does not offer', async () => {
+    const workspace = new Workspace();
+    workspace.activate('/folder', new FakeIndex());
+    const sessions = new SessionStore();
+    const model = new FakeModelClient([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })]);
+    const askQuestion = makeAskQuestion({ workspace, sessions, modelClient: model, reasoningEffort: 'medium' });
+    const app = buildApp(makeApiDeps({ chat: { askQuestion, sessions, workspace, apiKeyPresent: true } }));
+    apps.push(app);
+
+    await postChat(app, { ...question, question: 'Hello', effort: 'low' });
+    expect(model.requests[0]?.reasoningEffort).toBe('low');
+
+    const refused = await postChat(app, { ...question, question: 'Hello', effort: 'turbo' });
+    expect(refused.statusCode).toBe(400);
+    expect(refused.json().error.code).toBe('invalid_request');
+  });
+
   it('ends the stream with an error event when the question fails after it started', async () => {
     const { app } = setup([]);
     const events = sseEvents((await postChat(app, question)).body);
