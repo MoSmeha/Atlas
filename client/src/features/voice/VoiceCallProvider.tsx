@@ -71,7 +71,12 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
     async (outcome: CallOutcome, callSessionId: string) => {
       if (outcome.callId === null) return;
       try {
-        await api.endCall(outcome.callId, { sessionId: callSessionId, seconds: outcome.seconds, hangUp: !outcome.confirmed });
+        await api.endCall(outcome.callId, {
+          sessionId: callSessionId,
+          seconds: outcome.seconds,
+          hangUp: !outcome.confirmed,
+          diagnosis: outcome.diagnosis,
+        });
       } catch (error) {
         console.warn('Could not report the end of the call', error);
       }
@@ -126,13 +131,15 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       if (session.snapshot().status === 'ended') {
         // Hung up while it was still connecting: the call exists on the service and bills until it is hung up.
         connection.dispose();
-        void api.endCall(connection.callId, { sessionId, seconds: 0, hangUp: true }).catch(() => undefined);
+        void api.endCall(connection.callId, { sessionId, seconds: 0, hangUp: true, diagnosis: connection.diagnosis() }).catch(() => undefined);
         return;
       }
       current.connection = connection;
       session.attach(connection);
+      // A voice made for this call is ready from now on.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.voices });
     },
-    [data, report, sessionId],
+    [data, queryClient, report, sessionId],
   );
 
   const start = useCallback(() => {
@@ -168,7 +175,12 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       if (current === null || current.connection === null) return;
       const seconds = current.session.snapshot().seconds;
       current.connection.send({ type: 'session.close', event_id: 'page_closed' });
-      api.endCallOnExit(current.connection.callId, { sessionId: current.sessionId, seconds, hangUp: true });
+      api.endCallOnExit(current.connection.callId, {
+        sessionId: current.sessionId,
+        seconds,
+        hangUp: true,
+        diagnosis: current.connection.diagnosis(),
+      });
       current.connection.dispose();
     };
     window.addEventListener('pagehide', onPageHide);
@@ -184,6 +196,7 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       dictationAvailable: data?.dictationAvailable ?? false,
       maxDictationSeconds: data?.maxDictationSeconds ?? 120,
       voices: data?.voices ?? [],
+      preparingVoices: data?.preparingVoices ?? false,
       voiceId,
       chooseVoice: chooseVoiceAndRestart,
       call: call satisfies CallView | null,

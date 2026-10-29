@@ -1,4 +1,5 @@
 import type { MicrophoneProblem } from '../../api/microphone';
+import type { MicTrouble } from './CallSession';
 
 /**
  * What the call tells the voice to say when Atlas has no answer to give. GPT-Live says it in the call's language
@@ -12,6 +13,19 @@ export const spokenUpdates = {
   /** Quiet context, never said on its own. */
   stopped: 'The user stopped this question in the app, so it has no answer. Do not answer it yourself.',
 };
+
+/** The hint while a call waits for its voice to be made, which happens once per voice. */
+export const preparingVoiceHint = 'A new voice takes about 20 seconds to make, the first time only. After that its calls start straight away.';
+
+/** Plain words for a call that may not be hearing the user, and what to try. */
+export function micTroubleMessage(trouble: MicTrouble): string {
+  switch (trouble) {
+    case 'silent':
+      return 'Your microphone is sending no sound. Check the input device in your sound settings, then call again.';
+    case 'unheard':
+      return "Atlas hasn't caught any of your words yet. If you are speaking, end the call and call again.";
+  }
+}
 
 /** Plain words for a microphone that could not be opened, and what to do about it. */
 export function microphoneMessage(problem: MicrophoneProblem): string {

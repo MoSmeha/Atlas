@@ -1,4 +1,6 @@
+import type { CallDiagnosis } from '@atlas/shared';
 import { type AudioLevels, AudioMeter } from './audioMeter';
+import { CallDiagnostics } from './CallDiagnostics';
 import { api } from './endpoints';
 import { type LiveCommand, type LiveEvent, parseLiveEvent } from './liveEvents';
 import { closeMicrophone, openMicrophone } from './microphone';
@@ -12,6 +14,10 @@ export interface LiveConnection {
   /** Turns the microphone track on or off; the call keeps running. */
   setMicEnabled(enabled: boolean): void;
   levels(): AudioLevels;
+  /** The microphone gives the call no sound at all: its track is muted or ended, or what it sent was pure silence. */
+  micSilent(): boolean;
+  /** What the call measured about its audio so far, for the call log; after dispose, as it was at that moment. */
+  diagnosis(): CallDiagnosis;
   /** Ends the call and waits for its final length in seconds; null when the end was not confirmed in time. */
   close(timeoutMs: number): Promise<number | null>;
   /** Lets go of the microphone, the audio and the connection at once. */
@@ -30,6 +36,8 @@ export interface OpenCallOptions {
 const CHANNEL = 'oai-events';
 /** Host candidates gather in well under a second; the offer goes with what there is after this long. */
 const ICE_WAIT_MS = 4_000;
+/** How often the call reads how its microphone audio is being sent. */
+const STATS_MS = 2_000;
 
 /**
  * Opens the microphone and connects to GPT-Live over WebRTC: the browser makes an offer, the Atlas server exchanges it
@@ -41,16 +49,23 @@ export async function openLiveCall(options: OpenCallOptions): Promise<LiveConnec
   const meter = new AudioMeter();
   const audio = new Audio();
   audio.autoplay = true;
+  const diagnostics = new CallDiagnostics();
   let microphone: MediaStream | null = null;
   let peer: RTCPeerConnection | null = null;
   let channel: RTCDataChannel | null = null;
+  let sampler: ReturnType<typeof setInterval> | undefined;
+  let final: CallDiagnosis | null = null;
   let ending = false;
   let disposed = false;
   let onClosed: ((seconds: number) => void) | null = null;
 
+  const micTrack = () => microphone?.getAudioTracks()[0] ?? null;
   const dispose = () => {
     if (disposed) return;
     disposed = true;
+    // Read before the microphone is released, which ends its track.
+    final = diagnostics.report(micTrack());
+    clearInterval(sampler);
     channel?.close();
     peer?.close();
     closeMicrophone(microphone);
@@ -78,6 +93,7 @@ export async function openLiveCall(options: OpenCallOptions): Promise<LiveConnec
 
     channel = peer.createDataChannel(CHANNEL);
     channel.addEventListener('message', ({ data }) => {
+      diagnostics.noteEvent(data);
       const event = parseLiveEvent(data);
       if (event === null) return;
       if (event.type === 'session.closed') onClosed?.(event.usage.seconds);
@@ -94,6 +110,8 @@ export async function openLiveCall(options: OpenCallOptions): Promise<LiveConnec
 
     const open = channel;
     const mic = microphone;
+    const connected = peer;
+    sampler = setInterval(() => void diagnostics.sample(connected).catch(() => undefined), STATS_MS);
     return {
       callId: started.callId,
       greeting: started.greeting,
@@ -103,7 +121,16 @@ export async function openLiveCall(options: OpenCallOptions): Promise<LiveConnec
       setMicEnabled: (enabled) => {
         for (const track of mic.getAudioTracks()) track.enabled = enabled;
       },
-      levels: () => meter.levels(),
+      levels: () => {
+        const levels = meter.levels();
+        diagnostics.noteMicLevel(levels.mic);
+        return levels;
+      },
+      micSilent: () => {
+        const track = micTrack();
+        return track === null || track.readyState === 'ended' || track.muted || diagnostics.sentSilence();
+      },
+      diagnosis: () => final ?? diagnostics.report(micTrack()),
       close: (timeoutMs) =>
         new Promise<number | null>((resolve) => {
           ending = true;

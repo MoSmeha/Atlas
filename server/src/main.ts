@@ -118,7 +118,7 @@ export async function compose(settings: Settings = loadSettings()): Promise<Cont
   });
   const callsAvailable = voiceClient !== null && canUse(voiceCatalog.call.model);
   const dictationAvailable = transcriber !== null && canUse(voiceCatalog.dictation.model);
-  const voiceCalls = new VoiceCalls({ voiceClient, available: callsAvailable, catalog: voiceCatalog, workspace, sessions, logger });
+  const voiceCalls = new VoiceCalls({ voiceClient, available: callsAvailable, catalog: voiceCatalog, workspace, sessions, logger, clock });
   const transcribeSpeech = new TranscribeSpeech({
     transcriber: dictationAvailable ? transcriber : null,
     workspace,
@@ -169,6 +169,8 @@ async function start(): Promise<void> {
   const { frontier, balanced, small } = container.lineup;
   console.log(`Atlas server listening on http://${settings.host}:${settings.port}`);
   console.log(`Models: frontier ${frontier.id}, balanced ${balanced.id}, small ${small.id}`);
+  // Each designed voice is made once, in the background, so no call waits for its voice; later starts skip them.
+  void container.voiceCalls.prepareVoices();
   if (settings.startFolder !== null) await loadStartFolder(container, settings.startFolder);
 }
 

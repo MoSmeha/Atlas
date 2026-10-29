@@ -68,8 +68,8 @@ function draw(parts: Parts, pose: FacePose, breathing: number, blink: number): v
 /**
  * Atlas during a call: a philosopher's bust in the app's graphite line work, with curls and a full beard. It blinks
  * and breathes while it listens, raises its brows while the user speaks, looks up while it checks the documents, and
- * moves its mouth with the loudness of its own voice. The ring around it is dashed while it works and turns ink while
- * it speaks. With reduced motion the face holds one still pose per state.
+ * moves its mouth with the loudness of its own voice. The ring around it is dashed and turning while the call connects
+ * and while it works, and turns ink while it speaks. With reduced motion the face holds one still pose per state.
  */
 export function AtlasFace({ mood, levels }: AtlasFaceProps) {
   const reduceMotion = useReducedMotion();

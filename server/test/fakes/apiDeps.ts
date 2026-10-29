@@ -27,6 +27,7 @@ export function makeVoiceCalls(deps: Partial<VoiceCallsDeps> = {}): VoiceCalls {
     workspace: new Workspace(),
     sessions: new SessionStore(),
     logger: new MemoryRunLogger(),
+    clock: new FakeClock(),
     ...deps,
   });
 }

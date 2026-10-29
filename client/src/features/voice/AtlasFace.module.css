@@ -37,8 +37,12 @@
   stroke-width: 1.5px;
 }
 
-/* Working: the ring turns dashed, as the trace rail does while a step runs, and slowly goes round. */
-.face[data-mood='thinking'] .ring {
+/*
+ * Working: the ring turns dashed, as the trace rail does while a step runs, and slowly goes round. It does the same
+ * while the call connects, which can take a while the first time a voice is used.
+ */
+.face[data-mood='thinking'] .ring,
+.face[data-mood='connecting'] .ring {
   stroke: var(--mantine-color-gray-5);
   stroke-dasharray: 4 5;
   animation: turn 7s linear infinite;
@@ -50,7 +54,8 @@
   stroke-width: 1.5px;
 }
 
-.face[data-mood='resting'] {
+.face[data-mood='resting'],
+.face[data-mood='connecting'] {
   opacity: 0.85;
 }
 
@@ -61,7 +66,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .face[data-mood='thinking'] .ring {
+  .face[data-mood='thinking'] .ring,
+  .face[data-mood='connecting'] .ring {
     animation: none;
   }
 }

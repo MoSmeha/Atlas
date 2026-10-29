@@ -44,7 +44,7 @@ describe('shared schemas', () => {
   });
 
   it('parses an Arabic dialect voice and rejects a dialect Atlas does not offer', () => {
-    const gulf = { id: 'gulf-female', label: 'Gulf Arabic', nativeLabel: 'خليجي', language: 'ar', dialect: 'gulf', gender: 'female' };
+    const gulf = { id: 'gulf-female', label: 'Gulf Arabic', nativeLabel: 'خليجي', language: 'ar', dialect: 'gulf', gender: 'female', ready: false };
     expect(VoiceOption.parse(gulf).dialect).toBe('gulf');
     expect(VoiceOption.safeParse({ ...gulf, dialect: 'iraqi' }).success).toBe(false);
   });
@@ -52,8 +52,11 @@ describe('shared schemas', () => {
   it('bounds a call start and a call end', () => {
     expect(StartCallRequest.safeParse({ sessionId: 's1', voiceId: 'gulf-female', sdp: 'v=0' }).success).toBe(true);
     expect(StartCallRequest.safeParse({ sessionId: 's1', voiceId: 'gulf-female', sdp: '' }).success).toBe(false);
-    expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 75.5, hangUp: false }).success).toBe(true);
-    expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: -1, hangUp: false }).success).toBe(false);
+    expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 75.5, hangUp: false, diagnosis: null }).success).toBe(true);
+    expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: -1, hangUp: false, diagnosis: null }).success).toBe(false);
+    const diagnosis = { micLabel: 'Mic', micState: 'live', micPeak: 0.4, micEnergy: 1.2, packetsSent: 900, direction: 'sendrecv', events: { 'session.started': 1 }, notes: [] };
+    expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 30, hangUp: false, diagnosis }).success).toBe(true);
+    expect(EndCallRequest.safeParse({ sessionId: 's1', seconds: 30, hangUp: false, diagnosis: { ...diagnosis, micPeak: 2 } }).success).toBe(false);
   });
 
   it('escapes a call id in the end route', () => {

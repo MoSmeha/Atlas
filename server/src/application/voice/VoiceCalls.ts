@@ -1,5 +1,7 @@
+import type { CallDiagnosis } from '@atlas/shared';
 import { AppError, errors } from '../errors';
-import type { RunLogger } from '../ports/RunLogger';
+import type { Clock } from '../ports/Clock';
+import type { RunLogger, VoiceLogEntry } from '../ports/RunLogger';
 import type { CallVoice, VoiceClient } from '../ports/VoiceClient';
 import type { SessionStore } from '../session/SessionStore';
 import type { Workspace } from '../workspace/Workspace';
@@ -27,6 +29,7 @@ export interface VoiceCallsDeps {
   workspace: Workspace;
   sessions: SessionStore;
   logger: RunLogger;
+  clock: Clock;
 }
 
 export interface StartCallInput {
@@ -49,6 +52,8 @@ export interface EndCallInput {
   seconds: number;
   /** The browser could not close the call itself, so the server hangs it up. */
   hangUp: boolean;
+  /** What the browser measured about the call's audio; null when it never connected. */
+  diagnosis: CallDiagnosis | null;
 }
 
 interface OpenCall {
@@ -59,10 +64,12 @@ interface OpenCall {
 /**
  * Voice calls about the loaded folder. A call starts with the chat's recent turns and the folder's file names; each
  * question in it is asked through the chat like a typed one. Ending a call adds its length and cost to the chat.
+ * Designed voices can be made ahead of their first call, so no call waits for one.
  */
 export class VoiceCalls {
   private readonly deps: VoiceCallsDeps;
   private readonly open = new Map<string, OpenCall>();
+  private preparing = false;
 
   constructor(deps: VoiceCallsDeps) {
     this.deps = deps;
@@ -109,7 +116,15 @@ export class VoiceCalls {
     this.open.delete(input.callId);
     this.deps.sessions.find(input.sessionId)?.recordCall(input.callId, input.seconds, this.deps.catalog.call.pricePerMinute);
     const error = input.hangUp ? await this.hangUp(input.callId) : null;
-    this.log({ event: 'call_end', sessionId: input.sessionId, callId: input.callId, voice: call.voice, seconds: input.seconds, error });
+    this.log({
+      event: 'call_end',
+      sessionId: input.sessionId,
+      callId: input.callId,
+      voice: call.voice,
+      seconds: input.seconds,
+      error,
+      diagnosis: input.diagnosis,
+    });
   }
 
   /** Hangs up every call still open, for example when the server stops. */
@@ -117,6 +132,48 @@ export class VoiceCalls {
     const calls = [...this.open.keys()];
     this.open.clear();
     await Promise.all(calls.map((callId) => this.hangUp(callId)));
+  }
+
+  /** True when a call in this voice starts without waiting for the voice to be made. */
+  isReady(voiceId: string): boolean {
+    const voice = findVoice(this.deps.catalog, voiceId);
+    if (voice.sound.kind === 'builtIn') return true;
+    return this.deps.voiceClient?.isReady(callVoice(voice, this.deps.catalog.dialects[voice.dialect])) ?? false;
+  }
+
+  /** The designed voices are being made right now. */
+  isPreparing(): boolean {
+    return this.preparing;
+  }
+
+  /**
+   * Makes every designed voice that does not exist yet, one at a time, so no call waits for its voice. Making a voice
+   * is free. It stops at the first failure, since the next would most likely fail the same way; a call still makes
+   * its own voice when it needs one. Never throws.
+   */
+  async prepareVoices(): Promise<void> {
+    const { deps } = this;
+    const client = deps.voiceClient;
+    if (client === null || !deps.available || this.preparing) return;
+    this.preparing = true;
+    try {
+      for (const voice of deps.catalog.voices) {
+        const sound = callVoice(voice, deps.catalog.dialects[voice.dialect]);
+        if (client.isReady(sound)) continue;
+        const startedAt = deps.clock.now().getTime();
+        let error: string | null = null;
+        try {
+          await client.prepare(sound);
+        } catch (failure) {
+          error = errorText(failure);
+        }
+        const seconds = (deps.clock.now().getTime() - startedAt) / 1000;
+        this.log({ event: 'voice_design', sessionId: null, callId: null, voice: voice.id, seconds, error, costUsd: 0 });
+        if (error !== null) return;
+      }
+    } finally {
+      this.preparing = false;
+    }
   }
 
   /** Hangs up one call; returns why it failed, or null. */
@@ -130,9 +187,10 @@ export class VoiceCalls {
     }
   }
 
-  private log(entry: { event: 'call_start' | 'call_end'; sessionId: string; callId: string | null; voice: string; seconds: number; error: string | null }): void {
-    const costUsd = (entry.seconds / 60) * this.deps.catalog.call.pricePerMinute;
-    this.deps.logger.voice({ ...entry, costUsd });
+  /** Logs a voice event; a call's cost follows from its length unless given. */
+  private log(entry: Omit<VoiceLogEntry, 'costUsd' | 'diagnosis'> & { costUsd?: number; diagnosis?: CallDiagnosis | null }): void {
+    const costUsd = entry.costUsd ?? (entry.seconds / 60) * this.deps.catalog.call.pricePerMinute;
+    this.deps.logger.voice({ ...entry, costUsd, diagnosis: entry.diagnosis ?? null });
   }
 }
 

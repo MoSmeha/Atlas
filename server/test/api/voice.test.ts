@@ -61,15 +61,25 @@ describe('GET /api/voice/voices', () => {
       callsAvailable: true,
       dictationAvailable: true,
       voices: [
-        { id: 'english-female', label: 'English', nativeLabel: null, language: 'en', dialect: 'english', gender: 'female' },
-        { id: 'gulf-male', label: 'Gulf Arabic', nativeLabel: 'خليجي', language: 'ar', dialect: 'gulf', gender: 'male' },
+        { id: 'english-female', label: 'English', nativeLabel: null, language: 'en', dialect: 'english', gender: 'female', ready: true },
+        { id: 'gulf-male', label: 'Gulf Arabic', nativeLabel: 'خليجي', language: 'ar', dialect: 'gulf', gender: 'male', ready: false },
       ],
+      preparingVoices: false,
       defaultVoice: 'english-female',
       callPricePerMinute: 0.05,
       idleSeconds: 120,
       maxCallMinutes: 30,
       maxDictationSeconds: 120,
     });
+  });
+
+  it('marks a designed voice ready once it has been made', async () => {
+    const { app, voiceClient } = setup();
+    await voiceClient.prepare({ kind: 'designed', key: 'gulf-male', name: 'Atlas Gulf Arabic male', prompt: 'p', script: 's' });
+
+    const body = VoicesResponse.parse((await app.inject({ method: 'GET', url: '/api/voice/voices' })).json());
+
+    expect(body.voices.map((voice) => voice.ready)).toEqual([true, true]);
   });
 });
 
@@ -103,7 +113,7 @@ describe('POST /api/voice/calls/:callId/end', () => {
     await startCall(app, { sessionId: 's1', voiceId: 'english-female', sdp: 'v=0' });
 
     const end = (seconds: number) =>
-      app.inject({ method: 'POST', url: '/api/voice/calls/live_1/end', payload: { sessionId: 's1', seconds, hangUp: true } });
+      app.inject({ method: 'POST', url: '/api/voice/calls/live_1/end', payload: { sessionId: 's1', seconds, hangUp: true, diagnosis: null } });
     expect((await end(60)).statusCode).toBe(204);
     expect((await end(90)).statusCode).toBe(204);
 

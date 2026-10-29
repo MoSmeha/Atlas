@@ -4,6 +4,8 @@ import { voiceName } from './voiceChoice';
 
 interface VoicePickerProps {
   voices: VoiceOption[];
+  /** The server is still making the voices that are not ready; each group heading counts them. */
+  preparing: boolean;
   voiceId: string | null;
   onChange: (voiceId: string) => void;
   disabled?: boolean;
@@ -20,14 +22,19 @@ function optionLabel(voice: VoiceOption): string {
 
 /**
  * The call's voice, grouped by language, with each Arabic dialect's own name beside it. A call's voice is fixed when
- * it starts, so choosing another one mid-call reconnects in the new voice.
+ * it starts, so choosing another one mid-call reconnects in the new voice. While the server makes new voices, a
+ * group's heading says how many of its voices are not ready yet.
  */
-export function VoicePicker({ voices, voiceId, onChange, disabled, className, size = 'sm' }: VoicePickerProps) {
+export function VoicePicker({ voices, preparing, voiceId, onChange, disabled, className, size = 'sm' }: VoicePickerProps) {
   const byId = new Map(voices.map((voice) => [voice.id, voice]));
-  const group = (language: VoiceOption['language'], name: string) => ({
-    group: name,
-    items: voices.filter((voice) => voice.language === language).map((voice) => ({ value: voice.id, label: optionLabel(voice) })),
-  });
+  const group = (language: VoiceOption['language'], name: string) => {
+    const members = voices.filter((voice) => voice.language === language);
+    const waiting = preparing ? members.filter((voice) => !voice.ready).length : 0;
+    return {
+      group: waiting === 0 ? name : `${name} · ${waiting} still preparing`,
+      items: members.map((voice) => ({ value: voice.id, label: optionLabel(voice) })),
+    };
+  };
   const current = voiceId === null ? undefined : byId.get(voiceId);
 
   return (

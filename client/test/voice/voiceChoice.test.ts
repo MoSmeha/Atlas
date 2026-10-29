@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { chooseVoice, voiceName } from '../../src/features/voice/voiceChoice';
 
 const voices: VoiceOption[] = [
-  { id: 'english-female', label: 'English', nativeLabel: null, language: 'en', dialect: 'english', gender: 'female' },
-  { id: 'gulf-female', label: 'Gulf Arabic', nativeLabel: 'خليجي', language: 'ar', dialect: 'gulf', gender: 'female' },
-  { id: 'levantine-male', label: 'Levantine Arabic', nativeLabel: 'شامي', language: 'ar', dialect: 'levantine', gender: 'male' },
+  { id: 'english-female', label: 'English', nativeLabel: null, language: 'en', dialect: 'english', gender: 'female', ready: true },
+  { id: 'gulf-female', label: 'Gulf Arabic', nativeLabel: 'خليجي', language: 'ar', dialect: 'gulf', gender: 'female', ready: true },
+  { id: 'levantine-male', label: 'Levantine Arabic', nativeLabel: 'شامي', language: 'ar', dialect: 'levantine', gender: 'male', ready: true },
 ];
 
 describe('chooseVoice', () => {

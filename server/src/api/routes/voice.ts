@@ -37,7 +37,8 @@ export const voiceRoutes: RoutePlugin<{ deps: VoiceDeps }> = async (app, { deps 
   app.get(routes.voices, { schema: { response: { 200: VoicesResponse } } }, async () => ({
     callsAvailable: deps.callsAvailable,
     dictationAvailable: deps.dictationAvailable,
-    voices: voiceOptions(deps.catalog),
+    voices: voiceOptions(deps.catalog, (voiceId) => deps.calls.isReady(voiceId)),
+    preparingVoices: deps.calls.isPreparing(),
     defaultVoice: deps.catalog.defaultVoice,
     callPricePerMinute: deps.catalog.call.pricePerMinute,
     idleSeconds: deps.catalog.call.idleSeconds,

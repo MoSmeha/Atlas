@@ -60,6 +60,19 @@ export class OpenAiVoiceClient implements VoiceClient {
     }
   }
 
+  isReady(voice: CallVoice): boolean {
+    return voice.kind === 'builtIn' || this.load()[voice.key]?.fingerprint === fingerprintOf(voice);
+  }
+
+  async prepare(voice: CallVoice): Promise<void> {
+    if (voice.kind === 'builtIn') return;
+    try {
+      await this.voiceId(voice);
+    } catch (error) {
+      throw mapOpenAiError(error);
+    }
+  }
+
   private async create(request: CallRequest): Promise<StartedCall> {
     const voice = request.voice.kind === 'builtIn' ? request.voice.name : { id: await this.voiceId(request.voice) };
     const result = await this.client.live.create(

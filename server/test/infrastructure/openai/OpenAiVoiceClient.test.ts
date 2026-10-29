@@ -16,7 +16,7 @@ interface Recorded {
 }
 
 /** A stand-in for the SDK client: records live sessions, voice designs, deletions and hang-ups. No network. */
-function stubOpenAi(behaviour: { failCalls?: Error[]; hangUpError?: Error } = {}) {
+function stubOpenAi(behaviour: { failCalls?: Error[]; hangUpError?: Error; failDesign?: Error } = {}) {
   const recorded: Recorded = { calls: [], designs: [], deleted: [], hungUp: [] };
   const failures = [...(behaviour.failCalls ?? [])];
   let voices = 0;
@@ -38,6 +38,7 @@ function stubOpenAi(behaviour: { failCalls?: Error[]; hangUpError?: Error } = {}
     audio: {
       voices: {
         create: async (body: Record<string, unknown>) => {
+          if (behaviour.failDesign) throw behaviour.failDesign;
           recorded.designs.push(body);
           voices += 1;
           return { object: 'audio.voice', id: `voice_${voices}`, name: body.name, created_at: 0, type: 'prompt' };
@@ -196,5 +197,38 @@ describe('OpenAiVoiceClient.hangUp', () => {
   it('reports any other failure as an AppError', async () => {
     const { client } = stubOpenAi({ hangUpError: new RateLimitError(429, { message: 'Slow down.' }, undefined, new Headers()) });
     expect((await rejection(new OpenAiVoiceClient(client, voicesFile()).hangUp('live_7'))).code).toBe('rate_limited');
+  });
+});
+
+describe('OpenAiVoiceClient.prepare', () => {
+  it('counts a built-in voice as ready, and makes a designed one once so later calls need nothing', async () => {
+    const file = voicesFile();
+    const { client, recorded } = stubOpenAi();
+    const voice = new OpenAiVoiceClient(client, file);
+    expect(voice.isReady({ kind: 'builtIn', name: 'marin' })).toBe(true);
+    expect(voice.isReady(designed)).toBe(false);
+
+    await voice.prepare(designed);
+    await voice.prepare(designed);
+    await voice.startCall(request(designed));
+
+    expect(recorded.designs).toHaveLength(1);
+    expect(voice.isReady(designed)).toBe(true);
+    expect(new OpenAiVoiceClient(stubOpenAi().client, file).isReady(designed)).toBe(true);
+    expect(voice.isReady({ ...designed, prompt: 'A brighter voice.' })).toBe(false);
+  });
+
+  it('makes nothing for a built-in voice', async () => {
+    const { client, recorded } = stubOpenAi();
+    await new OpenAiVoiceClient(client, voicesFile()).prepare({ kind: 'builtIn', name: 'cedar' });
+    expect(recorded.designs).toEqual([]);
+  });
+
+  it('reports a design the service refused as an AppError, and leaves the voice not ready', async () => {
+    const { client } = stubOpenAi({ failDesign: new RateLimitError(429, { message: 'Slow down.' }, undefined, new Headers()) });
+    const voice = new OpenAiVoiceClient(client, voicesFile());
+
+    expect((await rejection(voice.prepare(designed))).code).toBe('rate_limited');
+    expect(voice.isReady(designed)).toBe(false);
   });
 });

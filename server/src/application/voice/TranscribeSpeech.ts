@@ -71,7 +71,7 @@ export class TranscribeSpeech {
     if (input.audio.byteLength === 0) throw errors.invalidRequest('The recording is empty. Hold the microphone button a little longer.');
 
     const log = (seconds: number, costUsd: number, error: string | null) =>
-      deps.logger.voice({ event: 'dictation', sessionId: input.sessionId, callId: null, voice: null, seconds, costUsd, error });
+      deps.logger.voice({ event: 'dictation', sessionId: input.sessionId, callId: null, voice: null, seconds, costUsd, error, diagnosis: null });
     try {
       const transcript = await deps.transcriber.transcribe({
         audio: input.audio,
