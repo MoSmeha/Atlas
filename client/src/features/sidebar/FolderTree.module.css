@@ -55,9 +55,20 @@
   transform: none;
 }
 
-.folderIcon {
+/* The manila folder: a deeper back with its tab, a lighter front, one thin edge round both. */
+.folderGlyph {
   flex-shrink: 0;
-  color: var(--mantine-color-gray-7);
+  stroke: var(--atlas-folder-edge);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+}
+
+.folderBack {
+  fill: var(--atlas-folder-back);
+}
+
+.folderFront {
+  fill: var(--atlas-folder-front);
 }
 
 .name,
@@ -99,9 +110,16 @@
   padding-inline: 4px 6px;
 }
 
-/* The file open in the viewer: the ink tint role, a step deeper than the wash so it reads on the chrome in both schemes. */
+/*
+ * The file open in the viewer: the selection tone, deep enough to read on the chrome in both schemes (hover lifts
+ * the other way, to the surface), with its name in the bright tone.
+ */
 .file[data-active] {
-  background-color: var(--mantine-color-ink-1);
+  background-color: var(--mantine-color-ink-2);
+}
+
+.file[data-active] .fileName {
+  color: var(--mantine-color-bright);
 }
 
 /* The name is the row's button, and its click area stretches over the whole row. */

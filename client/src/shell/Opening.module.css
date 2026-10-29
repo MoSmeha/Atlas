@@ -1,0 +1,132 @@
+/*
+ * The opening screen on the chrome ground, the same ground the page paints before the app loads, so nothing
+ * flashes. The bust comes into focus (blur, scale and opacity), each word of its line rises into place as it
+ * says it, and the whole screen lifts away to the app underneath. Each word's start (--word-at) and the lift
+ * (--leave) come from openingScript.ts, which also times the face.
+ */
+
+.opening {
+  position: fixed;
+  inset: 0;
+  z-index: var(--mantine-z-index-max);
+  display: grid;
+  place-items: center;
+  padding: var(--mantine-spacing-md);
+  background-color: var(--mantine-color-gray-1);
+  transition: opacity var(--leave) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.opening[data-phase='leaving'] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* A little above the middle, where the eye lands, like the empty conversation. */
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mantine-spacing-lg);
+  margin: 0 0 8dvh;
+  text-align: center;
+  transition:
+    transform var(--leave) cubic-bezier(0.16, 1, 0.3, 1),
+    filter var(--leave) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.opening[data-phase='leaving'] .stage {
+  transform: translateY(-8px) scale(0.985);
+  filter: blur(3px);
+}
+
+/* Unseen until the tab is looked at, then it comes into focus. */
+.face {
+  opacity: 0;
+}
+
+.opening[data-started] .face {
+  opacity: 1;
+  animation: focus-in 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes focus-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(10px);
+  }
+}
+
+.quote {
+  max-inline-size: 20ch;
+  margin: 0;
+  color: var(--mantine-color-bright);
+  font-size: var(--mantine-h1-font-size);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+:where(html[lang='ar']) .quote {
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+/*
+ * Each word waits unseen until Atlas reaches it. The quotation marks stay inside the line: hung marks centre the letters
+ * but stagger a two-line centred quote, which reads as a mistake.
+ */
+.word {
+  display: inline-block;
+  opacity: 0;
+}
+
+.opening:is([data-phase='speaking'], [data-phase='said'], [data-phase='leaving']) .word {
+  animation: word-in 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--word-at);
+}
+
+@keyframes word-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+.by {
+  color: var(--mantine-color-dimmed);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 360ms ease-out;
+}
+
+/* Who said it, once the line is said. */
+.opening:is([data-phase='said'], [data-phase='leaving']) .by {
+  opacity: 1;
+}
+
+@media (max-width: 36em) {
+  .quote {
+    font-size: var(--mantine-h2-font-size);
+  }
+}
+
+/* Reduced motion: no focus pull, no rising words, no lift; the face and the line are there, then fade. */
+.opening[data-still] .stage,
+.opening[data-still] .face,
+.opening[data-still] .word,
+.opening[data-still] .by {
+  animation: none;
+  transform: none;
+  filter: none;
+  opacity: 1;
+  transition: none;
+}

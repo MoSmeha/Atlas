@@ -1,0 +1,30 @@
+/*
+ * The sidebar's edge, which drags to resize it. At rest it is the sheet's own hairline; under the pointer, after a
+ * short pause so passing over it does not flash, a 2px line in the border role says it can move. While it is
+ * dragged or has keyboard focus the line takes the graphite primary.
+ */
+.handle {
+  --app-shell-resize-handle-size: var(--mantine-spacing-xs);
+}
+
+.handle::after {
+  width: 2px;
+  transition: background-color 150ms ease-out;
+}
+
+.handle:hover::after {
+  background-color: var(--mantine-color-gray-5);
+  transition-delay: 200ms;
+}
+
+.handle[data-active]::after,
+.handle:focus-visible::after {
+  background-color: var(--mantine-primary-color-filled);
+  transition-delay: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .handle::after {
+    transition: none;
+  }
+}

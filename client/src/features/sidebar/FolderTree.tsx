@@ -1,10 +1,11 @@
 import { useId, useState } from 'react';
 import { Collapse, UnstyledButton, VisuallyHidden } from '@mantine/core';
-import { IconChevronDown, IconFolder, IconFolderOpen } from '@tabler/icons-react';
+import { IconChevronDown } from '@tabler/icons-react';
 import { figure } from '../../i18n/count';
 import { useCopy } from '../../i18n/useCopy';
 import { motion } from '../../theme';
 import type { FolderNode } from './buildFolderTree';
+import { FolderGlyph } from './FolderGlyph';
 import classes from './FolderTree.module.css';
 import { sidebarCopy } from './sidebarCopy';
 import { TreeFile } from './TreeFile';
@@ -42,7 +43,6 @@ function Branch({ folder, root = false, closed, onToggle }: BranchProps) {
   const copy = useCopy(sidebarCopy);
   const contentsId = useId();
   const open = !closed.has(folder.path);
-  const FolderIcon = open ? IconFolderOpen : IconFolder;
 
   return (
     <li>
@@ -54,7 +54,7 @@ function Branch({ folder, root = false, closed, onToggle }: BranchProps) {
         onClick={() => onToggle(folder.path)}
       >
         <IconChevronDown size={14} stroke={2} className={classes.chevron} aria-hidden />
-        <FolderIcon size={18} stroke={1.5} className={classes.folderIcon} aria-hidden />
+        <FolderGlyph open={open} />
         <span className={classes.name} dir="auto">
           {folder.name}
         </span>

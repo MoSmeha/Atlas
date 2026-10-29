@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   AppShell,
   Badge,
   Button,
@@ -19,65 +20,70 @@ import {
   type MantineColorsTuple,
 } from '@mantine/core';
 
-/** Deep ink blue, the only brand hue. Shade 7 is the primary; OKLCH ramp at hue 260 to 265. */
+/**
+ * Graphite, the only brand tone: a near-black with a whisper of warm stone. Shade 7 is the primary
+ * fill in light; OKLCH ramp at hue 85 with almost no chroma.
+ */
 const ink: MantineColorsTuple = [
-  '#f1f6fe',
-  '#e0eafb',
-  '#c2d5f6',
-  '#9cb8eb',
-  '#7698d9',
-  '#5478c1',
-  '#3b5da7',
-  '#2a488b',
-  '#213870',
-  '#172953',
+  '#f0eeeb',
+  '#e4e3e0',
+  '#d5d4d1',
+  '#bcbab7',
+  '#94928f',
+  '#706e6b',
+  '#51504c',
+  '#373532',
+  '#282623',
+  '#1b1916',
 ];
 
 /**
- * Cool neutrals. 0 is the hover tone on white, 1 the sidebar and top bar, 2 neutral badges,
- * 3 hairlines, 6 dimmed text (5.1:1 on 1), 9 body text.
+ * Stone neutrals, warm by a hair so nothing reads blue. 0 is the hover tone on white, 1 the sidebar
+ * and top bar, 2 neutral badges, 3 hairlines, 6 dimmed text (5.1:1 on 1), 9 body text.
  */
 const gray: MantineColorsTuple = [
-  '#f6f8fb',
-  '#f1f4f9',
-  '#e6eaef',
-  '#d8dde2',
-  '#c3c8ce',
-  '#9da2a9',
-  '#626871',
-  '#4a505a',
-  '#30363f',
-  '#151a21',
+  '#f9f8f6',
+  '#f5f4f1',
+  '#ebe9e7',
+  '#dddcda',
+  '#c9c7c5',
+  '#a3a19f',
+  '#696765',
+  '#514f4d',
+  '#373533',
+  '#1b1917',
 ];
 
 /** The near-white page ground behind the conversation, a step lighter than every gray. */
-const pageGround = '#fcfcfd';
+const pageGround = '#fdfcfb';
 
 /**
- * Mantine's own dark ramp, cool like the grays: 0 text, 2 dimmed, 3 placeholder, 4 borders, 5 hover,
- * 6 inputs and raised surfaces, 7 the page, 8 the chrome.
+ * Mantine's own dark ramp, the same stone as the grays: 0 text, 2 dimmed, 3 placeholder, 4 borders,
+ * 5 hover, 6 inputs and raised surfaces, 7 the page, 8 the chrome.
  */
 const dark: MantineColorsTuple = [
-  '#e9ecf1',
-  '#cdd2d9',
-  '#939ba8',
-  '#8a92a0',
-  '#3f4651',
-  '#272d36',
-  '#1a1e25',
-  '#14171d',
-  '#0f1217',
-  '#0a0c10',
+  '#edece9',
+  '#d3d1cf',
+  '#9b9a98',
+  '#93918f',
+  '#464543',
+  '#2d2c2a',
+  '#1f1e1c',
+  '#181715',
+  '#131210',
+  '#0d0c0a',
 ];
 
 /**
  * The gray, ink, amber and red shades are roles, not lightness steps (gray 0 is the hover tone, 1 the
  * chrome, 3 hairlines, 6 dimmed text, 9 body text). In the dark scheme each role gets a dark value, so
- * components that ask for "gray.6" or "red.1" read correctly in both schemes.
+ * components that ask for "gray.6" or "red.1" read correctly in both schemes. The primary inverts:
+ * ink 7 and 8 turn to chalk, so the filled action reads as a light key on the dark page.
  */
 const darkRoles = {
-  gray: ['#1f242c', '#0f1217', '#272d36', '#2b313a', '#3f4651', '#5f6774', '#939ba8', '#aeb5c0', '#cdd2d9', '#e9ecf1'],
-  ink: { 0: '#182136', 1: '#1f2b47', 2: '#2c3e66', 9: '#c9d8f5' },
+  gray: ['#252422', '#131210', '#2d2c2a', '#31302e', '#464543', '#676664', '#9b9a98', '#b6b4b2', '#d3d1cf', '#edece9'],
+  // Wash, tint and selection sit above the hover tone (gray 0), so a marked row never reads quieter than a hovered one.
+  ink: { 0: '#2e2c29', 1: '#3a3834', 2: '#4b4945', 7: '#e8e6e2', 8: '#d3d1cd', 9: '#e9e8e4' },
   yellow: { 0: '#221c0e', 1: '#2e2512', 2: '#4a3a16', 7: '#e3a93a', 8: '#f0c060', 9: '#f2c46b' },
   red: { 0: '#241313', 1: '#3a1818', 2: '#5a2323', 7: '#f0716a', 8: '#f58a83', 9: '#ffaaa4' },
 } as const;
@@ -149,8 +155,13 @@ const fontFamilyMonospace = [
   'monospace',
 ].join(', ');
 
-/** Overlay shadows carry an ink tint, an offset and a soft blur. Surfaces use hairline borders instead. */
-const shadowTint = (alpha: number) => `rgba(21, 26, 33, ${alpha})`;
+/** Overlay shadows carry a graphite tint, an offset and a soft blur. Surfaces use hairline borders instead. */
+const shadowTint = (alpha: number) => `rgba(27, 25, 23, ${alpha})`;
+
+/** A filled control in the primary, whose text must follow the scheme. */
+function filledInk(variant: string | undefined, color: string | undefined): boolean {
+  return variant === 'filled' && (color === undefined || color === 'ink');
+}
 
 /** Where the light or dark choice is kept. index.html reads the same key before the app loads. */
 export const COLOR_SCHEME_STORAGE_KEY = 'atlas-color-scheme';
@@ -165,8 +176,8 @@ export const motion = {
 export const theme = createTheme({
   colors: { ink, gray, yellow, red, dark },
   primaryColor: 'ink',
-  // Shade 6 on the dark page keeps white button text at 6.3:1 and still reads as the action.
-  primaryShade: { light: 7, dark: 6 },
+  // Shade 7 in both: graphite with white text in light (12.2:1), chalk with graphite text in dark (14.4:1).
+  primaryShade: { light: 7, dark: 7 },
   white: '#ffffff',
   black: gray[9],
   autoContrast: true,
@@ -257,12 +268,17 @@ export const theme = createTheme({
       }),
       styles: { root: { textTransform: 'none', letterSpacing: 0, fontWeight: 600 } },
     }),
+    // Mantine gives a filled control fixed white text, but the dark primary is chalk, so the text takes the scheme's role.
     Button: Button.extend({
       defaultProps: { size: 'sm', loaderProps: { type: 'dots' } },
+      vars: (_, props) => ({ root: filledInk(props.variant ?? 'filled', props.color) ? { '--button-color': 'var(--atlas-on-ink)' } : {} }),
     }),
     ActionIcon: ActionIcon.extend({
       defaultProps: { variant: 'subtle', color: 'gray', size: 'lg' },
+      vars: (_, props) => ({ root: filledInk(props.variant, props.color) ? { '--ai-color': 'var(--atlas-on-ink)' } : {} }),
     }),
+    // Graphite links sit close to the body text, so they always carry their underline.
+    Anchor: Anchor.extend({ defaultProps: { underline: 'always' } }),
     Table: Table.extend({
       defaultProps: {
         fz: 'sm',
@@ -333,6 +349,9 @@ const roleTokens = {
   '--mantine-color-disabled': 'var(--mantine-color-gray-2)',
   '--mantine-color-disabled-color': 'var(--mantine-color-gray-5)',
   '--mantine-color-disabled-border': 'var(--mantine-color-gray-3)',
+  '--mantine-color-ink-light': 'var(--mantine-color-ink-1)',
+  '--mantine-color-ink-light-hover': 'var(--mantine-color-ink-2)',
+  '--mantine-color-ink-light-color': 'var(--mantine-color-ink-9)',
   '--mantine-color-gray-light': 'var(--mantine-color-gray-2)',
   '--mantine-color-gray-light-hover': 'var(--mantine-color-gray-3)',
   '--mantine-color-gray-light-color': 'var(--mantine-color-gray-8)',
@@ -357,9 +376,32 @@ const marbleTokens = {
 };
 
 /**
+ * The colour each kind of file is known by, on its icon only: PDF red, Excel green, and folders in
+ * manila like a desk's, a back panel, a lighter front and an edge that holds the shape on the light
+ * chrome. Each icon reads at 4.6:1 or better on the chrome in both schemes.
+ */
+const kindTokens = {
+  light: {
+    '--atlas-kind-pdf': '#c44037',
+    '--atlas-kind-excel': '#2d7b48',
+    '--atlas-folder-back': '#dea645',
+    '--atlas-folder-front': '#f4c352',
+    '--atlas-folder-edge': '#b07a2a',
+  },
+  dark: {
+    '--atlas-kind-pdf': '#f07f76',
+    '--atlas-kind-excel': '#65c281',
+    '--atlas-folder-back': '#b28235',
+    '--atlas-folder-front': '#d0a348',
+    '--atlas-folder-edge': '#7a5a26',
+  },
+};
+
+/**
  * Surface tokens on top of Mantine's defaults, per scheme: the page ground, the raised surface that
- * holds content you read (`--atlas-surface`: white in light, a lifted slate in dark), readable dimmed
- * and placeholder text (at least 4.5:1), the focus ring, tooltips, and the role shades above.
+ * holds content you read (`--atlas-surface`: white in light, lifted graphite in dark), readable dimmed
+ * and placeholder text (at least 4.5:1), the text on a primary fill, the focus ring, tooltips, the
+ * file kinds, and the role shades above.
  */
 export const cssVariablesResolver: CSSVariablesResolver = () => ({
   variables: {},
@@ -368,11 +410,13 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--mantine-color-body': pageGround,
     '--mantine-color-placeholder': 'var(--mantine-color-gray-6)',
     '--atlas-surface': '#ffffff',
+    '--atlas-on-ink': '#ffffff',
     '--atlas-overlay': shadowTint(0.32),
     '--atlas-float-edge': 'transparent',
     '--atlas-focus': 'var(--mantine-color-ink-7)',
     '--atlas-tooltip-bg': 'var(--mantine-color-gray-9)',
     '--atlas-tooltip-color': '#ffffff',
+    ...kindTokens.light,
     ...marbleTokens,
   },
   dark: {
@@ -380,16 +424,18 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     ...roleTokens,
     '--mantine-color-body': dark[7],
     '--mantine-color-text': dark[0],
-    '--mantine-color-bright': '#f4f6f9',
+    '--mantine-color-bright': '#f7f6f3',
     '--mantine-color-placeholder': dark[3],
-    '--mantine-color-anchor': 'var(--mantine-color-ink-4)',
+    '--mantine-color-anchor': dark[0],
     '--atlas-surface': dark[6],
+    '--atlas-on-ink': dark[7],
     // A shadow does not read on a near-black page, so floating surfaces also take a hairline edge.
-    '--atlas-overlay': 'rgba(5, 6, 9, 0.62)',
+    '--atlas-overlay': 'rgba(8, 7, 6, 0.62)',
     '--atlas-float-edge': dark[4],
-    '--atlas-focus': 'var(--mantine-color-ink-4)',
+    '--atlas-focus': '#c6c4c0',
     '--atlas-tooltip-bg': dark[0],
     '--atlas-tooltip-color': dark[7],
+    ...kindTokens.dark,
     ...marbleTokens,
   },
 });
