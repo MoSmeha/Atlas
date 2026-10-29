@@ -40,6 +40,8 @@ export interface SidebarCopy {
   sheets: (n: number) => string;
   tables: (n: number) => string;
   scanned: (n: number) => string;
+  /** A file size such as "7 KB", kept in its own direction inside Arabic text. */
+  fileSize: (size: string) => string;
   /** Joins the parts of a file's meta line. */
   listSeparator: string;
   steps: Record<ActivePhase, { label: string; waiting: string }>;
@@ -107,6 +109,7 @@ export const sidebarCopy: Bilingual<SidebarCopy> = {
     sheets: (n) => countEn(n, 'sheet', 'sheets'),
     tables: (n) => countEn(n, 'table', 'tables'),
     scanned: (n) => `${figure(n)} scanned`,
+    fileSize: (size) => size,
     listSeparator: ', ',
     steps: {
       scanning: { label: 'Finding files', waiting: 'Looking for PDF and Excel files' },
@@ -174,6 +177,7 @@ export const sidebarCopy: Bilingual<SidebarCopy> = {
     sheets: (n) => countAr(n, sheets),
     tables: (n) => countAr(n, tables),
     scanned: (n) => `${figure(n)} ممسوحة ضوئيًا`,
+    fileSize: (size) => isolate(size),
     listSeparator: '، ',
     steps: {
       scanning: { label: 'البحث عن الملفات', waiting: 'جارٍ البحث عن ملفات PDF وExcel' },

@@ -30,7 +30,7 @@ export function documentMeta(document: DocumentSummary, copy: SidebarCopy = side
     parts.push(copy.sheets(document.sheets.length));
   }
   if (parts.length > 0 && document.tables.length > 0) parts.push(copy.tables(document.tables.length));
-  const counts = parts.length > 0 ? parts.join(copy.listSeparator) : formatBytes(document.sizeBytes);
+  const counts = parts.length > 0 ? parts.join(copy.listSeparator) : copy.fileSize(formatBytes(document.sizeBytes));
   const type = document.classification?.type;
   return type === undefined ? counts : `${counts} · ${copy.types[type]}`;
 }
