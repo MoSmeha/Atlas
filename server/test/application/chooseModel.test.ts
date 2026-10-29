@@ -1,25 +1,43 @@
+import type { ModelProvider } from '@atlas/shared';
 import { describe, expect, it } from 'vitest';
 import { chooseModel } from '../../src/application/models/chooseModel';
-import type { CatalogModel, Lineup } from '../../src/application/models/pickLineup';
+import { smallModelFor, type ModelChoices } from '../../src/application/models/modelChoices';
+import type { CatalogModel } from '../../src/application/models/pickLineup';
 
-function model(id: string, tier: CatalogModel['tier']): CatalogModel {
-  return { id, tier, label: id, inputPrice: 1, cachedInputPrice: 0.1, outputPrice: 2 };
+function model(id: string, tier: CatalogModel['tier'], provider: ModelProvider = 'openai'): CatalogModel {
+  return { id, provider, tier, label: id, inputPrice: 1, cachedInputPrice: 0.1, outputPrice: 2 };
 }
 
-const lineup: Lineup = {
-  frontier: model('frontier-model', 'frontier'),
-  balanced: model('balanced-model', 'balanced'),
-  small: model('small-model', 'small'),
+const choices: ModelChoices = {
+  options: [
+    model('frontier-model', 'frontier'),
+    model('balanced-model', 'balanced'),
+    model('small-model', 'small'),
+    model('gemini-frontier', 'frontier', 'gemini'),
+    model('gemini-small', 'small', 'gemini'),
+    model('local-model', 'frontier', 'ollama'),
+  ],
+  defaultModel: model('balanced-model', 'balanced'),
+  reasoningEffort: {},
 };
 
 describe('chooseModel', () => {
-  it('uses a requested model of the lineup', () => {
-    expect(chooseModel(lineup, 'frontier', 'small-model').id).toBe('small-model');
+  it('uses a requested model from any provider', () => {
+    expect(chooseModel(choices, 'small-model').id).toBe('small-model');
+    expect(chooseModel(choices, 'gemini-frontier').provider).toBe('gemini');
   });
 
-  it('falls back to the answer tier for an unknown or missing model', () => {
-    expect(chooseModel(lineup, 'balanced', 'gpt-unknown').id).toBe('balanced-model');
-    expect(chooseModel(lineup, 'frontier', null).id).toBe('frontier-model');
-    expect(chooseModel(lineup, 'frontier', undefined).id).toBe('frontier-model');
+  it('falls back to the default for an unknown or missing model', () => {
+    expect(chooseModel(choices, 'gpt-unknown').id).toBe('balanced-model');
+    expect(chooseModel(choices, null).id).toBe('balanced-model');
+    expect(chooseModel(choices, undefined).id).toBe('balanced-model');
+  });
+});
+
+describe('smallModelFor', () => {
+  it("keeps a question's side jobs on its own provider, or on the model itself when the provider has no small one", () => {
+    expect(smallModelFor(choices, model('frontier-model', 'frontier')).id).toBe('small-model');
+    expect(smallModelFor(choices, model('gemini-frontier', 'frontier', 'gemini')).id).toBe('gemini-small');
+    expect(smallModelFor(choices, model('local-model', 'frontier', 'ollama')).id).toBe('local-model');
   });
 });

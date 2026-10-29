@@ -91,7 +91,7 @@ function localModels(chat: LocalModel, embedding: LocalModel): ProviderModels {
   const free = { inputPrice: 0, cachedInputPrice: 0, outputPrice: 0 };
   const label = `${chat.name} (local)`;
   return {
-    catalog: (['frontier', 'balanced', 'small'] as const).map((tier) => ({ id: chat.name, tier, label, ...free })),
+    catalog: (['frontier', 'balanced', 'small'] as const).map((tier) => ({ id: chat.name, provider: 'ollama' as const, tier, label, ...free })),
     answerTier: 'frontier',
     reasoningEffort: null,
     embedding: { id: embedding.name, price: 0, dimensions: null },

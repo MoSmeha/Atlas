@@ -1,19 +1,19 @@
 import { Badge, Tooltip, VisuallyHidden } from '@mantine/core';
 import { IconCurrencyDollarOff } from '@tabler/icons-react';
-import { useModels } from '../../api/useModels';
 import { useCopy } from '../../i18n/useCopy';
 import { freeProvider } from './freeTier';
 import { topbarCopy } from './topbarCopy';
+import { useChosenModel } from './useChosenModel';
 
 /**
- * A neutral badge with a no-cost icon beside the model picker while a free provider answers: "Free tier" for
- * Gemini, "Free, on this computer" for Ollama. It stays neutral because amber and red mean trouble. What it means
- * (the daily limit, where the documents go) shows on hover or focus.
- * Nothing while OpenAI answers. Hidden on the narrowest screens, where the top bar has no room.
+ * A neutral badge with a no-cost icon beside the model picker while the chosen model is a free one: "Free tier"
+ * for Gemini, "Free, on this computer" for Ollama. It stays neutral because amber and red mean trouble. What it
+ * means (the daily limit, where the documents go) shows on hover or focus.
+ * Nothing while an OpenAI model is chosen. Hidden on the narrowest screens, where the top bar has no room.
  */
 export function FreeTierBadge() {
   const copy = useCopy(topbarCopy);
-  const provider = freeProvider(useModels().data?.provider);
+  const provider = freeProvider(useChosenModel().option?.provider);
   if (provider === null) return null;
   const { label, hint } = copy.free[provider];
   return (

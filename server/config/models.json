@@ -30,7 +30,6 @@
   },
   "ollama": {
     "$comment": "Local models are whatever Ollama has pulled; Atlas picks the largest chat model with tool support that fits the machine's memory, and an embedding model. They cost nothing. Thinking is left at each model's default, since Ollama rejects it for models without it.",
-    "reasoningEffort": null,
     "minChatBillions": 7
   }
 }

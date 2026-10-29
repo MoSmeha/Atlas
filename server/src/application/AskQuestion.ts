@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { Answer, ChatEvent, ErrorDetail, ModelTier, Usage } from '@atlas/shared';
+import type { Answer, ChatEvent, ErrorDetail, Usage } from '@atlas/shared';
 import { isArabic } from '../domain/language';
 import { zeroUsage, type TokenPrice } from '../domain/pricing';
 import { speechFor } from '../domain/speech';
@@ -14,10 +14,11 @@ import { checkLanguage } from './guards/languageGuard';
 import { unreadableFiles } from './guards/sourcesGuard';
 import { ToolOutputLog } from './guards/ToolOutputLog';
 import { chooseModel } from './models/chooseModel';
-import type { CatalogModel, Lineup } from './models/pickLineup';
+import { smallModelFor, type ModelChoices } from './models/modelChoices';
+import type { CatalogModel } from './models/pickLineup';
 import type { Clock } from './ports/Clock';
 import type { EmbeddingClient } from './ports/EmbeddingClient';
-import type { ModelClient, ReasoningEffort } from './ports/ModelClient';
+import type { ModelClient } from './ports/ModelClient';
 import type { PageRenderer } from './ports/PageRenderer';
 import type { ResultExporter } from './ports/ResultExporter';
 import type { RunLogger } from './ports/RunLogger';
@@ -40,11 +41,8 @@ export interface AskQuestionDeps {
   exporter: ResultExporter;
   clock: Clock;
   logger: RunLogger;
-  /** The three models a question may use; their catalog prices give the cost. */
-  lineup: Lineup;
-  /** Tier of the default answer model (`answerTier` of the model config). */
-  answerTier: ModelTier;
-  reasoningEffort: ReasoningEffort | null;
+  /** The models a question may use, from every provider set up, and the default; their catalog prices give the cost. */
+  models: ModelChoices;
   maxRounds: number;
   exportsDir: string;
   /** Tools the model may call; the registry's when left out. */
@@ -54,7 +52,7 @@ export interface AskQuestionDeps {
 export interface AskQuestionInput {
   sessionId: string;
   question: string;
-  /** Requested model ID; anything but one of the lineup's three gets the default answer model. */
+  /** Requested model ID; anything but one of the choices gets the default model. */
   model?: string | null;
   /** Spoken in a voice call: the instructions allow for transcription mistakes, and a `speech` event precedes the answer. */
   spoken?: boolean;
@@ -88,7 +86,7 @@ export class AskQuestion {
     const startedAt = this.deps.clock.now().getTime();
     const question: Question = {
       id: randomUUID(),
-      model: chooseModel(this.deps.lineup, this.deps.answerTier, input.model),
+      model: chooseModel(this.deps.models, input.model),
       session: this.deps.sessions.get(input.sessionId),
       meter: this.deps.modelClient === null ? null : new UsageMeter(this.deps.modelClient),
     };
@@ -130,7 +128,7 @@ export class AskQuestion {
       exporter: deps.exporter,
       session,
       clock: deps.clock,
-      models: { answer: model.id, small: deps.lineup.small.id },
+      models: { answer: model.id, small: smallModelFor(deps.models, model).id },
       exportsDir: deps.exportsDir,
       signal: input.signal ?? new AbortController().signal,
     };
@@ -154,7 +152,7 @@ export class AskQuestion {
       submitTool: submitAnswer,
       context,
       maxRounds: deps.maxRounds,
-      reasoningEffort: deps.reasoningEffort,
+      reasoningEffort: deps.models.reasoningEffort[model.provider] ?? null,
       logger: deps.logger,
       onEvent: input.onEvent,
       onSubmit: checkLanguage(
@@ -182,7 +180,7 @@ export class AskQuestion {
   }
 
   private priceOf(modelId: string): TokenPrice | null {
-    return Object.values(this.deps.lineup).find((model) => model.id === modelId) ?? null;
+    return this.deps.models.options.find((model) => model.id === modelId) ?? null;
   }
 
   private log(

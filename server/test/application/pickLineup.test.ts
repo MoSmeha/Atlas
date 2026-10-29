@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { lineupModels, pickLineup, type CatalogModel } from '../../src/application/models/pickLineup';
 
 function model(id: string, tier: CatalogModel['tier']): CatalogModel {
-  return { id, tier, label: id, inputPrice: 1, cachedInputPrice: 0.1, outputPrice: 2 };
+  return { id, provider: 'openai', tier, label: id, inputPrice: 1, cachedInputPrice: 0.1, outputPrice: 2 };
 }
 
 const catalog = [

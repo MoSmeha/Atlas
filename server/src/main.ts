@@ -8,7 +8,7 @@ import { ClassifyDocument } from './application/indexing/ClassifyDocument';
 import { IndexFolder } from './application/indexing/IndexFolder';
 import { suggestionsStep } from './application/indexing/suggestionsStep';
 import { WatchFolder } from './application/indexing/WatchFolder';
-import type { Lineup } from './application/models/pickLineup';
+import { smallModelFor, type ModelChoices } from './application/models/modelChoices';
 import type { Clock } from './application/ports/Clock';
 import type { EmbeddingClient } from './application/ports/EmbeddingClient';
 import type { FileSystem } from './application/ports/FileSystem';
@@ -31,9 +31,11 @@ import { createOpenAiClient } from './infrastructure/openai/createOpenAiClient';
 import { OpenAiModelClient } from './infrastructure/openai/OpenAiModelClient';
 import { OpenAiTranscriber } from './infrastructure/openai/OpenAiTranscriber';
 import { OpenAiVoiceClient } from './infrastructure/openai/OpenAiVoiceClient';
-import { resolveModels, visibleModels } from './infrastructure/openai/resolveLineup';
-import { chooseProvider, type ProviderChoice } from './infrastructure/providers/chooseProvider';
+import { visibleModels } from './infrastructure/openai/resolveLineup';
+import { chooseProvider, offeredProviders, type ProviderChoice } from './infrastructure/providers/chooseProvider';
 import { connectProvider, type Provider } from './infrastructure/providers/connectProvider';
+import { ModelRouter } from './infrastructure/providers/ModelRouter';
+import { resolveChoices } from './infrastructure/providers/resolveChoices';
 import { ExcelJsReader } from './infrastructure/readers/ExcelJsReader';
 import { MupdfPageRenderer } from './infrastructure/readers/MupdfPageRenderer';
 import { MupdfReader } from './infrastructure/readers/MupdfReader';
@@ -48,14 +50,16 @@ const SHUTDOWN_GRACE_MS = 3_000;
 /** Everything the server and the CLI share, built once by compose(). */
 export interface Container {
   settings: Settings;
-  /** The answering provider's models; OpenAI's while no provider is set up. */
+  /** The default provider's models; OpenAI's while no provider is set up. */
   modelConfig: ProviderModels;
-  /** One model per tier; the default answer model is `lineup[modelConfig.answerTier]`. */
-  lineup: Lineup;
-  /** Who answers, and why; a null id means no provider is set up. */
+  /** Every model a question may use, from every provider set up, and the default one. */
+  models: ModelChoices;
+  /** The default provider, and why; a null id means no provider is set up. */
   providerChoice: ProviderChoice;
-  /** Null while no provider is set up; use cases then throw missing_api_key. */
+  /** The default provider: it answers when no model is chosen and its embeddings search. Null while none is set up. */
   provider: Provider | null;
+  /** Every provider set up, the default among them, in the order the picker shows them. */
+  providers: Provider[];
   /** Why local models are not used, when the machine was scanned and they are not; null otherwise. */
   localProblem: string | null;
   /** Null while no provider is set up; use cases then throw missing_api_key. */
@@ -95,27 +99,32 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
   const local = scansLocal
     ? pickLocalModels(await scan(settings.ollamaUrl), { minChatBillions: config.ollama.minChatBillions, allowCpu: settings.provider === 'ollama' })
     : null;
-  const providerChoice = chooseProvider({
+  const providerInputs = {
     setting: settings.provider,
     hasOpenAiKey: settings.openAiApiKey !== null,
     hasGeminiKey: settings.geminiApiKey !== null,
     local,
-  });
-  const provider = providerChoice.id === null ? null : connectProvider(providerChoice.id, settings, config, local);
+  };
+  const providerChoice = chooseProvider(providerInputs);
+  const providers = offeredProviders(providerInputs, providerChoice).map((id) => connectProvider(id, settings, config, local));
+  const provider = providers.find((offered) => offered.id === providerChoice.id) ?? null;
   const modelConfig = provider?.models ?? config.openai;
-  const modelClient = provider?.modelClient ?? null;
+  const { choices: models, visible } = await resolveChoices(providers, provider, config.openai);
+  const modelClient =
+    provider === null ? null : new ModelRouter(new Map(providers.map((offered) => [offered.id, offered.modelClient])), models.options, provider.id);
+  // Search stays on the default provider, so the index holds one embedding model's vectors whichever model answers.
   const embeddings = provider?.embeddings ?? null;
   // Voice calls and dictation stay on OpenAI, whichever provider answers.
   const openAi = settings.openAiApiKey === null ? null : createOpenAiClient(settings.openAiApiKey);
   const voiceClient = openAi === null ? null : new OpenAiVoiceClient(openAi, join(settings.dataDir, 'voices.json'));
   const transcriber = openAi === null ? null : new OpenAiTranscriber(openAi, voiceCatalog.dictation.model);
-  const { lineup, visible } = await resolveModels(modelClient, modelConfig);
-  const openAiVisible = provider?.id === 'openai' ? visible : openAi === null ? null : await visibleModels(new OpenAiModelClient(openAi));
+  const openAiVisible = visible.has('openai') ? (visible.get('openai') ?? null) : openAi === null ? null : await visibleModels(new OpenAiModelClient(openAi));
   // When the list could not be read, trust the config, as the lineup does.
   const canUse = (model: string) => openAiVisible === null || openAiVisible.includes(model);
   const workspace = new Workspace();
   const uploadsDir = join(settings.dataDir, 'uploads');
-  const classifier = modelClient === null ? null : new ClassifyDocument(modelClient, lineup.small.id);
+  // Sorting documents goes to the default provider, which also embeds them.
+  const classifier = modelClient === null ? null : new ClassifyDocument(modelClient, smallModelFor(models, models.defaultModel).id);
   const indexFolder = new IndexFolder({
     fs,
     readers: [new MupdfReader(), new ExcelJsReader()],
@@ -140,9 +149,7 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
     exporter,
     clock,
     logger,
-    lineup,
-    answerTier: modelConfig.answerTier,
-    reasoningEffort: modelConfig.reasoningEffort,
+    models,
     maxRounds: settings.maxRounds,
     exportsDir: settings.exportsDir,
   });
@@ -160,10 +167,11 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
   return {
     settings,
     modelConfig,
-    lineup,
+    models,
     providerChoice,
     provider,
-    localProblem: provider?.id === 'ollama' ? null : (local?.problem ?? null),
+    providers,
+    localProblem: providers.some((offered) => offered.id === 'ollama') ? null : (local?.problem ?? null),
     modelClient,
     embeddings,
     clock,
@@ -183,7 +191,7 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
       documents: { workspace },
       uploads: { indexFolder, uploadsDir, maxFileBytes: settings.maxFileBytes },
       chat: { askQuestion, sessions, workspace, apiKeyPresent },
-      models: { lineup, answerTier: modelConfig.answerTier, provider: provider?.id ?? null },
+      models: { choices: models },
       usage: { sessions },
       voice: { catalog: voiceCatalog, calls: voiceCalls, transcribe: transcribeSpeech, callsAvailable, dictationAvailable },
     },
@@ -206,16 +214,21 @@ async function start(): Promise<void> {
   if (settings.startFolder !== null) await loadStartFolder(container, settings.startFolder);
 }
 
-/** Who answers and why, the lineup, and why local models are not used, for the start-up log. */
-export function providerReport({ provider, providerChoice, lineup, localProblem }: Container): string[] {
-  const { frontier, balanced, small } = lineup;
+/** The default provider and why, each provider's models, and why local models are not used, for the start-up log. */
+export function providerReport({ provider, providers, providerChoice, models, localProblem }: Container): string[] {
   const lines =
     provider === null
       ? [`Models: none. ${providerChoice.reason}`]
       : [
-          `Models: ${provider.label}. ${providerChoice.reason}`,
-          `  Lineup: frontier ${frontier.id}, balanced ${balanced.id}, small ${small.id}`,
-          ...(provider.notice === null ? [] : [`  Note: ${provider.notice}`]),
+          `Models: ${provider.label} by default. ${providerChoice.reason}`,
+          ...providers.map((offered) => {
+            const ids = models.options
+              .filter((option) => option.provider === offered.id)
+              .map((option) => (option.id === models.defaultModel.id ? `${option.id} (default)` : option.id));
+            return `  ${offered.label}: ${ids.join(', ')}`;
+          }),
+          `  Search: ${provider.embeddings.model}`,
+          ...providers.flatMap((offered) => (offered.notice === null ? [] : [`  Note: ${offered.notice}`])),
         ];
   if (localProblem !== null) lines.push(`  Local models: ${capitalise(localProblem)}`);
   return lines;

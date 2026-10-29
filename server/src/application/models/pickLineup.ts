@@ -1,7 +1,9 @@
-import type { ModelTier } from '@atlas/shared';
+import type { ModelProvider, ModelTier } from '@atlas/shared';
 
 export interface CatalogModel {
   id: string;
+  /** Who serves it; a question goes to the provider of the model it uses. */
+  provider: ModelProvider;
   tier: ModelTier;
   label: string;
   inputPrice: number;

@@ -14,7 +14,7 @@ import { FakeModelClient } from './FakeModelClient';
 import { FakeExporter, FakePageRenderer } from './FakeOutputs';
 import { FakeTranscriber } from './FakeTranscriber';
 import { FakeVoiceClient } from './FakeVoiceClient';
-import { testLineup } from './lineup';
+import { testChoices } from './lineup';
 import { MemoryRunLogger } from './MemoryRunLogger';
 import { testVoiceCatalog } from './voiceCatalog';
 
@@ -44,7 +44,7 @@ export function makeTranscribeSpeech(deps: Partial<TranscribeSpeechDeps> = {}): 
   });
 }
 
-/** AskQuestion made of fakes: an empty model script, the test lineup, six rounds. */
+/** AskQuestion made of fakes: an empty model script, the test choices, six rounds. */
 export function makeAskQuestion(deps: Partial<AskQuestionDeps> = {}): AskQuestion {
   return new AskQuestion({
     workspace: new Workspace(),
@@ -55,9 +55,7 @@ export function makeAskQuestion(deps: Partial<AskQuestionDeps> = {}): AskQuestio
     exporter: new FakeExporter(),
     clock: new FakeClock(),
     logger: new MemoryRunLogger(),
-    lineup: testLineup,
-    answerTier: 'frontier',
-    reasoningEffort: null,
+    models: testChoices,
     maxRounds: 6,
     exportsDir: '/exports',
     ...deps,
@@ -89,7 +87,7 @@ export function makeApiDeps(overrides: Partial<ApiDeps> = {}): ApiDeps {
     documents: { workspace },
     uploads: { indexFolder, uploadsDir: '/data/uploads', maxFileBytes: 10 * 1024 * 1024 },
     chat: { askQuestion: makeAskQuestion({ workspace, sessions }), sessions, workspace, apiKeyPresent: false },
-    models: { lineup: testLineup, answerTier: 'frontier', provider: 'openai' },
+    models: { choices: testChoices },
     usage: { sessions },
     voice: {
       catalog: testVoiceCatalog,
