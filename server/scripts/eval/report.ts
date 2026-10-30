@@ -17,6 +17,8 @@ export interface QuestionResult {
 export interface ReportInput {
   date: Date;
   model: string;
+  /** The answer model's reasoning effort; null when the provider leaves it to each model. */
+  effort: string | null;
   folder: string;
   indexSeconds: number;
   /** True when --only picked a subset. */
@@ -43,7 +45,7 @@ export function renderReport(input: ReportInput): string {
     'Each question below was asked of Atlas against the sample folder and checked automatically against the known right answers in `samples/expected.json`. A question passes only when the numbers, the rows and the cited pages or sheets are all right.',
     '',
     `- **Date:** ${localTime(input.date)}`,
-    `- **Model:** ${input.model}`,
+    `- **Model:** ${input.model}, ${input.effort === null ? "the model's own reasoning effort" : `${input.effort} reasoning effort`}`,
     `- **Folder:** ${input.folder} (indexed in ${input.indexSeconds.toFixed(1)} s)`,
     `- **Passed:** ${passed} of ${results.length}${input.subset ? ' (a subset, chosen with --only)' : ''}`,
     `- **Total cost:** ${money(cost)}`,

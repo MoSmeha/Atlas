@@ -7,6 +7,7 @@ import {
   IconLock,
   type Icon,
 } from '@tabler/icons-react';
+import { type SidebarCopy, sidebarCopy } from './sidebarCopy';
 
 export interface StatusLook {
   label: string;
@@ -17,46 +18,16 @@ export interface StatusLook {
   detail: string;
 }
 
-const looks: Record<Exclude<FileStatus, 'ok'>, StatusLook> = {
-  scanned: {
-    label: 'Scanned',
-    color: 'yellow',
-    icon: IconAlertTriangle,
-    detail: 'Some pages are scanned images with no text, so Atlas cannot search them.',
-  },
-  too_large: {
-    label: 'Too large',
-    color: 'yellow',
-    icon: IconAlertTriangle,
-    detail: 'The file is over the size limit, so Atlas did not read it.',
-  },
-  corrupt: {
-    label: 'Damaged',
-    color: 'red',
-    icon: IconAlertCircle,
-    detail: 'The file is damaged and could not be opened.',
-  },
-  encrypted: {
-    label: 'Password protected',
-    color: 'red',
-    icon: IconLock,
-    detail: 'The file is password protected, so Atlas cannot read it.',
-  },
-  empty: {
-    label: 'Empty',
-    color: 'gray',
-    icon: IconCircleMinus,
-    detail: 'The file has no text or data to read.',
-  },
-  skipped: {
-    label: 'Not read',
-    color: 'gray',
-    icon: IconFileOff,
-    detail: 'Atlas reads only PDF and Excel files.',
-  },
+const looks: Record<Exclude<FileStatus, 'ok'>, Pick<StatusLook, 'color' | 'icon'>> = {
+  scanned: { color: 'yellow', icon: IconAlertTriangle },
+  too_large: { color: 'yellow', icon: IconAlertTriangle },
+  corrupt: { color: 'red', icon: IconAlertCircle },
+  encrypted: { color: 'red', icon: IconLock },
+  empty: { color: 'gray', icon: IconCircleMinus },
+  skipped: { color: 'gray', icon: IconFileOff },
 };
 
-/** How a file status is shown, or null for "ok", which gets no badge. */
-export function statusLook(status: FileStatus): StatusLook | null {
-  return status === 'ok' ? null : looks[status];
+/** How a file status is shown in the interface language, or null for "ok", which gets no badge. */
+export function statusLook(status: FileStatus, copy: SidebarCopy = sidebarCopy.en): StatusLook | null {
+  return status === 'ok' ? null : { ...looks[status], ...copy.statuses[status] };
 }

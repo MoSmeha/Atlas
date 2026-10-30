@@ -49,7 +49,7 @@ describe('TranscribeSpeech', () => {
     });
     expect(sessions.get('s1').totalCostUsd).toBeCloseTo(0.0006, 12);
     expect(logger.voices).toEqual([
-      { event: 'dictation', sessionId: 's1', callId: null, voice: null, seconds: 6, costUsd: expect.closeTo(0.0006, 12), error: null },
+      { event: 'dictation', sessionId: 's1', callId: null, voice: null, seconds: 6, costUsd: expect.closeTo(0.0006, 12), error: null, diagnosis: null },
     ]);
   });
 

@@ -1,17 +1,13 @@
 import type { IndexPhase, IndexProgress, IndexStatus } from '@atlas/shared';
 import type { IndexActivity } from '../../api/useIndexEvents';
+import type { SidebarCopy } from './sidebarCopy';
 
 type ActivePhase = Extract<IndexPhase, 'scanning' | 'reading' | 'embedding' | 'classifying'>;
 
-/** The four indexing steps in order, with a plain label and a line for when no progress has arrived yet. */
-const steps: Record<ActivePhase, { label: string; waiting: string }> = {
-  scanning: { label: 'Finding files', waiting: 'Looking for PDF and Excel files' },
-  reading: { label: 'Reading files', waiting: 'Opening the files' },
-  embedding: { label: 'Preparing search', waiting: 'Preparing search over the text' },
-  classifying: { label: 'Sorting by document type', waiting: 'Sorting the documents by type' },
-};
+/** The four indexing steps in order. */
+const steps: readonly ActivePhase[] = ['scanning', 'reading', 'embedding', 'classifying'];
 
-export const INDEX_STEP_COUNT = Object.keys(steps).length;
+export const INDEX_STEP_COUNT = steps.length;
 
 export interface IndexingNow {
   label: string;
@@ -25,26 +21,31 @@ export interface IndexingNow {
 
 /** True while a folder is being indexed. */
 export function isIndexing(phase: IndexPhase): phase is ActivePhase {
-  return phase in steps;
+  return (steps as readonly IndexPhase[]).includes(phase);
 }
 
 /**
  * What indexing is doing right now, or null when it is not running. The folder status decides
  * whether it runs, since it is refetched after every event and after a reconnect; the event
- * stream, which is newer, supplies the step and line while it reports a running step.
+ * stream, which is newer, supplies the step and line while it reports a running step. The server's
+ * line is English, so in Arabic the step's own line and the count stand in for it.
  */
-export function indexingNow(status: IndexStatus | undefined, activity: IndexActivity | null): IndexingNow | null {
+export function indexingNow(
+  status: IndexStatus | undefined,
+  activity: IndexActivity | null,
+  copy: SidebarCopy,
+  english: boolean,
+): IndexingNow | null {
   const running = runningStep(status, activity);
   if (running === null) return null;
 
   const { phase, progress } = running;
   const percent = progress !== null && progress.total > 0 ? Math.min(100, (progress.current / progress.total) * 100) : null;
-  return {
-    label: steps[phase].label,
-    step: Object.keys(steps).indexOf(phase) + 1,
-    message: progress?.message || steps[phase].waiting,
-    percent,
-  };
+  const { label, waiting } = copy.steps[phase];
+  let message = waiting;
+  if (english && progress?.message) message = progress.message;
+  else if (progress !== null && progress.total > 0) message = `${waiting}${copy.listSeparator}${copy.progressOf(progress.current, progress.total)}`;
+  return { label, step: steps.indexOf(phase) + 1, message, percent };
 }
 
 function runningStep(

@@ -32,8 +32,9 @@ describe('suggestionsStep', () => {
 
     const { suggestions } = workspace.status();
     expect(suggestions).toEqual(suggest(index.documents()));
+    const english = suggestions.map((question) => question.en);
     expect(suggestions).toHaveLength(5);
-    expect(suggestions.slice(0, 2)).toEqual(['What is the total of BOQ.xlsx?', 'List all cost items above SAR 1 million']);
+    expect(english.slice(0, 2)).toEqual(['What is the total of BOQ.xlsx?', 'List all cost items above SAR\u00a01\u00a0million']);
   });
 
   it('follows the documents on the next run, classifications included', async () => {
@@ -48,8 +49,9 @@ describe('suggestionsStep', () => {
     await step.run(context);
 
     const { suggestions } = workspace.status();
-    expect(suggestions.join(' ')).not.toMatch(/BOQ|scope of work/);
-    expect(suggestions[0]).toBe('Extract all dates and deliverables from these documents');
+    const english = suggestions.map((question) => question.en);
+    expect(english.join(' ')).not.toMatch(/BOQ|scope of work/);
+    expect(english[0]).toBe('Extract all dates and deliverables from these documents');
   });
 
   it('leaves the status alone when the pass was cancelled', async () => {

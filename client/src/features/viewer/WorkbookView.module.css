@@ -1,0 +1,30 @@
+/* The sheet fills the viewer above its tabs, so its rows scroll and the tabs stay in view. */
+.root,
+.panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* The sheet tabs along the foot, as in Excel, on the chrome ground. Many sheets scroll sideways. */
+.list {
+  flex: none;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-inline: var(--mantine-spacing-sm);
+  background-color: var(--mantine-color-gray-1);
+}
+
+.tab {
+  flex: none;
+  color: var(--mantine-color-gray-7);
+  font-size: var(--mantine-font-size-sm);
+  white-space: nowrap;
+}
+
+/* The open sheet sits on the reading surface like the grid above it, with the ink rule Mantine draws on its edge. */
+.tab[data-active] {
+  background-color: var(--atlas-surface);
+  color: var(--mantine-color-gray-9);
+}

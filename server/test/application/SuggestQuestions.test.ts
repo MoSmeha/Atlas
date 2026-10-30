@@ -1,6 +1,9 @@
 import type { Classification, DocumentSummary, DocumentType, TableColumn, TableSummary } from '@atlas/shared';
 import { describe, expect, it } from 'vitest';
-import { SUGGESTION_COUNT, suggest } from '../../src/application/indexing/SuggestQuestions';
+import { SUGGESTION_COUNT, suggest as suggestBoth } from '../../src/application/indexing/SuggestQuestions';
+
+/** The English side, which most checks read. */
+const suggest = (documents: readonly DocumentSummary[]) => suggestBoth(documents).map((question) => question.en);
 
 function doc(path: string, overrides: Partial<DocumentSummary> = {}): DocumentSummary {
   const name = path.split('/').pop() ?? path;
@@ -59,10 +62,20 @@ describe('suggest', () => {
   it('leads with the BOQ questions, the revisions and the contract for the demo folder', () => {
     expect(suggest(sampleFolder())).toEqual([
       'What is the total of each BOQ?',
-      'List all cost items above SAR 1 million',
+      'List all cost items above SAR\u00a01\u00a0million',
       'Check the BOQ arithmetic for errors',
       'What changed between BOQ_Phase1_Rev0.xlsx and BOQ_Phase1_Rev1.xlsx?',
       'Summarize the scope of work in Contract_Main_Works.pdf',
+    ]);
+  });
+
+  it('writes each question in Arabic too, with the file names and currency code as they are', () => {
+    expect(suggestBoth(sampleFolder()).map((question) => question.ar)).toEqual([
+      'ما مجموع كل جدول كميات؟',
+      'اعرض كل بنود التكلفة التي تزيد على 1,000,000\u00a0SAR',
+      'تحقق من أخطاء الحساب في جداول الكميات',
+      'ما الذي تغيّر بين BOQ_Phase1_Rev0.xlsx وBOQ_Phase1_Rev1.xlsx؟',
+      'لخّص نطاق العمل في Contract_Main_Works.pdf',
     ]);
   });
 
@@ -116,10 +129,10 @@ describe('suggest', () => {
     const questions = suggest([doc('Bill.xlsx', { tables: [priced('USD')], currencies: ['USD'] })]);
     expect(questions.slice(0, 3)).toEqual([
       'What is the total of Bill.xlsx?',
-      'List all cost items above USD 1 million',
+      'List all cost items above USD\u00a01\u00a0million',
       'Check the BOQ arithmetic for errors',
     ]);
-    expect(suggest([doc('Bill.xlsx', { tables: [priced(null)] })])).toContain('List all cost items above 1 million');
+    expect(suggest([doc('Bill.xlsx', { tables: [priced(null)] })])).toContain('List all cost items above 1\u00a0million');
   });
 
   it('counts a document classified as a BOQ even when no priced table was found in it', () => {
@@ -157,7 +170,7 @@ describe('suggest', () => {
         doc('Programme.xlsx', { tables: [table([column('milestone'), column('planned_finish', 'Planned Finish')], null)] }),
       ]),
     ).toEqual([
-      'How many entries in Ledger.xlsx are above SAR 1 million?',
+      'How many entries in Ledger.xlsx are above SAR\u00a01\u00a0million?',
       'List the milestones in Programme.xlsx with their planned dates',
       'What documents are in this folder and what is each one about?',
       'Who are the parties named in these documents?',

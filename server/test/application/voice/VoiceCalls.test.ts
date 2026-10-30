@@ -1,9 +1,12 @@
-import type { Answer, Usage } from '@atlas/shared';
+import type { Answer, CallDiagnosis, Usage } from '@atlas/shared';
 import { describe, expect, it } from 'vitest';
 import { AppError } from '../../../src/application/errors';
 import { SessionStore } from '../../../src/application/session/SessionStore';
+import { greetingInstruction } from '../../../src/application/voice/callInstructions';
+import type { VoiceCatalog } from '../../../src/application/voice/VoiceCatalog';
 import { BROWSER_EVENTS, VoiceCalls } from '../../../src/application/voice/VoiceCalls';
 import { Workspace } from '../../../src/application/workspace/Workspace';
+import { FakeClock } from '../../fakes/FakeClock';
 import { FakeIndex } from '../../fakes/FakeIndex';
 import { FakeVoiceClient } from '../../fakes/FakeVoiceClient';
 import { MemoryRunLogger } from '../../fakes/MemoryRunLogger';
@@ -21,7 +24,7 @@ const answer: Answer = {
   warnings: [],
 };
 
-function setup(options: { indexed?: boolean; available?: boolean; client?: FakeVoiceClient | null } = {}) {
+function setup(options: { indexed?: boolean; available?: boolean; client?: FakeVoiceClient | null; catalog?: VoiceCatalog } = {}) {
   const index = new FakeIndex();
   index.save(excelRecord('BOQ.xlsx', [boqTable([['A1', 'Piles', 10, 200000, 2000000]])]));
   index.save(pdfRecord('Contract.pdf', ['The contract value is SAR 12,500,000.']));
@@ -30,16 +33,40 @@ function setup(options: { indexed?: boolean; available?: boolean; client?: FakeV
   const sessions = new SessionStore();
   const client = options.client === undefined ? new FakeVoiceClient() : options.client;
   const logger = new MemoryRunLogger();
+  const clock = new FakeClock();
   const calls = new VoiceCalls({
     voiceClient: client,
     available: options.available ?? true,
-    catalog: testVoiceCatalog,
+    catalog: options.catalog ?? testVoiceCatalog,
     workspace,
     sessions,
     logger,
+    clock,
   });
-  return { calls, client, sessions, logger };
+  return { calls, client, sessions, logger, clock };
 }
+
+/** The test catalog with a second designed voice, so making voices one after another shows. */
+const twoDesignedVoices: VoiceCatalog = {
+  ...testVoiceCatalog,
+  voices: [
+    ...testVoiceCatalog.voices,
+    { id: 'gulf-female', dialect: 'gulf', gender: 'female', sound: { kind: 'designed', description: 'A warm woman from Riyadh.' } },
+  ],
+};
+
+const heardNothing: CallDiagnosis = {
+  micLabel: 'Microphone Array (Realtek)',
+  micState: 'live',
+  micPeak: 0.4,
+  micEnergy: 1.2,
+  packetsSent: 1400,
+  direction: 'sendrecv',
+  answerDtx: true,
+  events: { 'session.started': 1, 'session.output_transcript.delta': 12 },
+  notes: [],
+  startup: { microphone: 40, offer: 180, answer: 1450, started: 1700, firstWord: 2300 },
+};
 
 async function rejection(promise: Promise<unknown>): Promise<AppError> {
   try {
@@ -57,11 +84,8 @@ describe('VoiceCalls.start', () => {
 
     const started = await calls.start({ sessionId: 's1', voiceId: 'english-female', sdp: 'offer' });
 
-    expect(started).toEqual({
-      callId: 'live_1',
-      sdp: 'answer for offer',
-      greeting: 'Greet the user now in English, in one short sentence like this: "Hi, I\'m Atlas." Then pause and listen.',
-    });
+    expect(started).toEqual({ callId: 'live_1', sdp: 'answer for offer', greeting: greetingInstruction(testVoiceCatalog.dialects.english) });
+    expect(started.greeting).toContain('with exactly this line and nothing more: "Hi, I\'m Atlas."');
     const request = client?.started[0];
     expect(request).toMatchObject({ model: 'live-model', offerSdp: 'offer', voice: { kind: 'builtIn', name: 'marin' } });
     expect(request?.browserEvents).toEqual(BROWSER_EVENTS);
@@ -72,7 +96,7 @@ describe('VoiceCalls.start', () => {
     expect(request?.instructions).toContain('- BOQ.xlsx\n- Contract.pdf');
     expect(request?.instructions).not.toContain('Your voice:');
     expect(logger.voices).toEqual([
-      { event: 'call_start', sessionId: 's1', callId: 'live_1', voice: 'english-female', seconds: 0, costUsd: 0, error: null },
+      { event: 'call_start', sessionId: 's1', callId: 'live_1', voice: 'english-female', seconds: 0, costUsd: 0, error: null, diagnosis: null },
     ]);
   });
 
@@ -90,7 +114,7 @@ describe('VoiceCalls.start', () => {
     });
     expect(client?.started[0]?.instructions).toContain('Language and dialect:\nتكلّم باللهجة الخليجية.');
     expect(client?.started[0]?.instructions).toContain('Your voice: A calm man from Riyadh speaking Gulf Arabic.');
-    expect(started.greeting).toBe('Greet the user now in Gulf Arabic, in one short sentence like this: "هلا، أنا أطلس." Then pause and listen.');
+    expect(started.greeting).toContain('Greet the user now in Gulf Arabic with exactly this line and nothing more: "هلا، أنا أطلس."');
   });
 
   it("starts with the chat's recent turns, each answer as a call would say it", async () => {
@@ -124,7 +148,7 @@ describe('VoiceCalls.start', () => {
 
     expect((await rejection(calls.start({ sessionId: 's1', voiceId: 'english-female', sdp: 'o' }))).code).toBe('rate_limited');
     expect(logger.voices).toEqual([
-      { event: 'call_start', sessionId: 's1', callId: null, voice: 'english-female', seconds: 0, costUsd: 0, error: 'rate_limited: Slow down.' },
+      { event: 'call_start', sessionId: 's1', callId: null, voice: 'english-female', seconds: 0, costUsd: 0, error: 'rate_limited: Slow down.', diagnosis: null },
     ]);
   });
 });
@@ -134,8 +158,8 @@ describe('VoiceCalls.end', () => {
     const { calls, client, sessions, logger } = setup();
     await calls.start({ sessionId: 's1', voiceId: 'english-female', sdp: 'o' });
 
-    await calls.end({ sessionId: 's1', callId: 'live_1', seconds: 90, hangUp: false });
-    await calls.end({ sessionId: 's1', callId: 'live_1', seconds: 120, hangUp: true });
+    await calls.end({ sessionId: 's1', callId: 'live_1', seconds: 90, hangUp: false, diagnosis: null });
+    await calls.end({ sessionId: 's1', callId: 'live_1', seconds: 120, hangUp: true, diagnosis: null });
 
     const session = sessions.get('s1');
     expect(session.voiceSeconds).toBe(90);
@@ -149,7 +173,17 @@ describe('VoiceCalls.end', () => {
       seconds: 90,
       costUsd: expect.closeTo(0.075, 12),
       error: null,
+      diagnosis: null,
     });
+  });
+
+  it('keeps what the browser measured about the call in the log', async () => {
+    const { calls, logger } = setup();
+    await calls.start({ sessionId: 's1', voiceId: 'english-female', sdp: 'o' });
+
+    await calls.end({ sessionId: 's1', callId: 'live_1', seconds: 27, hangUp: false, diagnosis: heardNothing });
+
+    expect(logger.voices.at(-1)?.diagnosis).toEqual(heardNothing);
   });
 
   it('hangs up a call the page could not close, and logs a hang-up that failed', async () => {
@@ -157,7 +191,7 @@ describe('VoiceCalls.end', () => {
     await calls.start({ sessionId: 's1', voiceId: 'english-female', sdp: 'o' });
     if (client) client.hangUpError = new Error('network down');
 
-    await calls.end({ sessionId: 's1', callId: 'live_1', seconds: 30, hangUp: true });
+    await calls.end({ sessionId: 's1', callId: 'live_1', seconds: 30, hangUp: true, diagnosis: null });
 
     expect(client?.hungUp).toEqual(['live_1']);
     expect(logger.voices.at(-1)?.error).toBe('network down');
@@ -167,8 +201,8 @@ describe('VoiceCalls.end', () => {
     const { calls, client, sessions } = setup();
     await calls.start({ sessionId: 's1', voiceId: 'english-female', sdp: 'o' });
 
-    await calls.end({ sessionId: 's1', callId: 'live_9', seconds: 30, hangUp: true });
-    await calls.end({ sessionId: 's2', callId: 'live_1', seconds: 30, hangUp: true });
+    await calls.end({ sessionId: 's1', callId: 'live_9', seconds: 30, hangUp: true, diagnosis: null });
+    await calls.end({ sessionId: 's2', callId: 'live_1', seconds: 30, hangUp: true, diagnosis: null });
 
     expect(client?.hungUp).toEqual([]);
     expect(sessions.get('s1').voiceSeconds).toBe(0);
@@ -178,11 +212,73 @@ describe('VoiceCalls.end', () => {
     const { calls, client } = setup();
     await calls.start({ sessionId: 's1', voiceId: 'english-female', sdp: 'a' });
     await calls.start({ sessionId: 's2', voiceId: 'gulf-male', sdp: 'b' });
-    await calls.end({ sessionId: 's1', callId: 'live_1', seconds: 10, hangUp: false });
+    await calls.end({ sessionId: 's1', callId: 'live_1', seconds: 10, hangUp: false, diagnosis: null });
 
     await calls.hangUpAll();
     await calls.hangUpAll();
 
     expect(client?.hungUp).toEqual(['live_2']);
+  });
+});
+
+describe('VoiceCalls voice preparation', () => {
+  it('counts a built-in voice as ready, and a designed one only once it has been made', async () => {
+    const { calls } = setup();
+
+    expect(calls.isReady('english-female')).toBe(true);
+    expect(calls.isReady('gulf-male')).toBe(false);
+    await calls.prepareVoices();
+    expect(calls.isReady('gulf-male')).toBe(true);
+    expect(setup({ client: null }).calls.isReady('gulf-male')).toBe(false);
+  });
+
+  it('makes each missing designed voice one after another, logging how long each took', async () => {
+    const { calls, client, clock, logger } = setup({ catalog: twoDesignedVoices });
+    const during: boolean[] = [];
+    if (client) {
+      client.whilePreparing = () => {
+        during.push(calls.isPreparing());
+        clock.advance(17_000);
+      };
+    }
+
+    await calls.prepareVoices();
+
+    expect(client?.prepared).toEqual(['gulf-male', 'gulf-female']);
+    expect(during).toEqual([true, true]);
+    expect(calls.isPreparing()).toBe(false);
+    expect(logger.voices).toEqual([
+      { event: 'voice_design', sessionId: null, callId: null, voice: 'gulf-male', seconds: 17, costUsd: 0, error: null, diagnosis: null },
+      { event: 'voice_design', sessionId: null, callId: null, voice: 'gulf-female', seconds: 17, costUsd: 0, error: null, diagnosis: null },
+    ]);
+  });
+
+  it('skips voices that are ready, so a later start makes nothing', async () => {
+    const { calls, client, logger } = setup({ catalog: twoDesignedVoices });
+    await calls.prepareVoices();
+
+    await calls.prepareVoices();
+
+    expect(client?.prepared).toEqual(['gulf-male', 'gulf-female']);
+    expect(logger.voices).toHaveLength(2);
+  });
+
+  it('stops at the first voice it cannot make and logs why', async () => {
+    const { calls, client, logger } = setup({ catalog: twoDesignedVoices });
+    client?.failPrepare.set('gulf-male', new AppError('rate_limited', 'Slow down.'));
+
+    await calls.prepareVoices();
+
+    expect(client?.prepared).toEqual([]);
+    expect(logger.voices).toEqual([expect.objectContaining({ event: 'voice_design', voice: 'gulf-male', error: 'rate_limited: Slow down.' })]);
+    expect(calls.isPreparing()).toBe(false);
+  });
+
+  it('makes nothing without a key or without the voice model', async () => {
+    const unavailable = setup({ available: false });
+    await unavailable.calls.prepareVoices();
+    await setup({ client: null }).calls.prepareVoices();
+
+    expect(unavailable.client?.prepared).toEqual([]);
   });
 });

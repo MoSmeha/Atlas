@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { Box, Button, Group, Popover, Stack, Text } from '@mantine/core';
 import { IconChevronUp, IconFileOff } from '@tabler/icons-react';
 import { useFolderStatus } from '../../api/useFolderStatus';
+import { useCopy } from '../../i18n/useCopy';
+import { useLanguage } from '../../i18n/useLanguage';
 import { FileTypeIcon } from './FileTypeIcon';
 import { statusLook } from './fileStatus';
+import { sidebarCopy } from './sidebarCopy';
 
 /** Mantine's side padding for a compact-sm button. */
 const BUTTON_INSET = 'var(--button-padding-x-compact-sm, 0.5rem)';
@@ -11,11 +14,13 @@ const BUTTON_INSET = 'var(--button-padding-x-compact-sm, 0.5rem)';
 /** "1 file skipped" at the foot of the sidebar; it opens a list of the files Atlas did not read, and why. */
 export function SkippedLine() {
   const status = useFolderStatus();
+  const { language } = useLanguage();
+  const copy = useCopy(sidebarCopy);
   // Controlled, because Mantine closes on Escape only while focus is inside the dropdown.
   const [opened, setOpened] = useState(false);
   const skipped = status.data?.documents.filter((document) => document.status === 'skipped') ?? [];
   if (skipped.length === 0) return null;
-  const fallback = statusLook('skipped')?.detail ?? null;
+  const fallback = statusLook('skipped', copy)?.detail ?? null;
 
   return (
     <Box pt="xs" mt="xs" style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
@@ -38,27 +43,27 @@ export function SkippedLine() {
           >
             <Group component="span" gap="xs" wrap="nowrap">
               <IconFileOff size={18} stroke={1.5} />
-              {skipped.length} {skipped.length === 1 ? 'file' : 'files'} skipped
+              {copy.skipped(skipped.length)}
             </Group>
           </Button>
         </Popover.Target>
         <Popover.Dropdown p="sm">
           <Text fz="sm" fw={600}>
-            Not read
+            {copy.notRead}
           </Text>
           <Text fz="xs" c="dimmed" mb="xs">
-            Atlas reads PDF and Excel files only.
+            {copy.readsOnly}
           </Text>
           <Stack component="ul" gap="xs" p={0} m={0} style={{ listStyle: 'none' }}>
             {skipped.map((document) => (
               <Group component="li" key={document.id} gap="xs" wrap="nowrap" align="flex-start">
                 <FileTypeIcon kind={document.kind} size={16} />
                 <Stack gap={2} miw={0}>
-                  <Text fz="sm" lh="xs" style={{ overflowWrap: 'anywhere' }}>
+                  <Text fz="sm" lh="xs" dir="auto" style={{ overflowWrap: 'anywhere' }}>
                     {document.name}
                   </Text>
                   <Text fz="xs" c="dimmed">
-                    {document.statusDetail ?? fallback}
+                    {language === 'en' ? (document.statusDetail ?? fallback) : fallback}
                   </Text>
                 </Stack>
               </Group>

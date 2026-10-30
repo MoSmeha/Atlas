@@ -117,6 +117,18 @@ export class SqliteIndex implements DocumentIndex {
     this.db.prepare('UPDATE documents SET classification = ? WHERE path = ?').run(value, path);
   }
 
+  excluded(): string[] {
+    return this.db.prepare('SELECT path FROM excluded ORDER BY path COLLATE NOCASE').pluck().all() as string[];
+  }
+
+  exclude(path: string): void {
+    this.db.prepare('INSERT OR IGNORE INTO excluded (path) VALUES (?)').run(path);
+  }
+
+  include(path: string): void {
+    this.db.prepare('DELETE FROM excluded WHERE path = ?').run(path);
+  }
+
   pendingEmbeddingCount(): number {
     const row = this.db.prepare('SELECT COUNT(*) AS count FROM chunks WHERE embedding IS NULL').get() as { count: number };
     return row.count;
@@ -133,6 +145,27 @@ export class SqliteIndex implements DocumentIndex {
       for (const item of items) update.run(vectorToBuffer(item.vector), item.chunkId);
     })();
     this.vectors = null;
+  }
+
+  /**
+   * Records which embedding model the vectors come from. Vectors of another model cannot be compared with its
+   * own, so they are cleared and every chunk waits to be embedded again. A file that never recorded a model keeps
+   * its vectors only when they were made by `unrecordedKey`. Returns whether vectors were cleared.
+   */
+  useEmbeddingModel(key: string, unrecordedKey: string): boolean {
+    const stored = this.db.prepare("SELECT value FROM meta WHERE key = 'embedding_model'").pluck().get() as string | undefined;
+    if (stored === key) return false;
+    const clear = (stored ?? unrecordedKey) !== key && this.pendingEmbeddingCount() < this.chunkCount();
+    this.db.transaction(() => {
+      if (clear) this.db.prepare('UPDATE chunks SET embedding = NULL WHERE embedding IS NOT NULL').run();
+      this.db.prepare("INSERT INTO meta (key, value) VALUES ('embedding_model', ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value").run(key);
+    })();
+    this.vectors = null;
+    return clear;
+  }
+
+  private chunkCount(): number {
+    return this.db.prepare('SELECT COUNT(*) FROM chunks').pluck().get() as number;
   }
 
   keywordSearch(query: string, options: { document: string | null; limit: number }): SearchHit[] {

@@ -48,7 +48,7 @@ export interface ListDocumentsOutput {
 const description = [
   'Lists every file in the loaded folder: its status, document type, page count or sheet names, scanned pages,',
   'language, currencies, and the SQL tables loaded from it with their columns, row counts and currency.',
-  'Use it to see what the folder holds, to name files that could not be read (statusDetail says why),',
+  'Use it to see what the folder holds, to name files that are empty or could not be read (statusDetail says why),',
   'and to find table and column names for query_tables. Skipped files are not PDF or Excel.',
   'Scanned pages have no text layer; read them with look_at_page.',
 ].join(' ');

@@ -210,11 +210,18 @@ describe('requireSources', () => {
 });
 
 describe('unreadableFiles', () => {
-  it('lists corrupt, encrypted, empty and too large files, not scanned or skipped ones', () => {
+  it('lists corrupt, encrypted and too large files, not scanned, empty or skipped ones', () => {
     const { index } = setup();
     index.save({ ...pdfRecord('scan.pdf', ['']), status: 'scanned' });
     index.save({ ...pdfRecord('huge.pdf', []), status: 'too_large' });
     index.save({ ...excelRecord('blank.xlsx', []), status: 'empty' });
-    expect(unreadableFiles(index)).toEqual(['blank.xlsx', 'broken.pdf', 'huge.pdf', 'locked.pdf']);
+    expect(unreadableFiles(index)).toEqual(['broken.pdf', 'huge.pdf', 'locked.pdf']);
+  });
+
+  it('rejects an empty file as a source, saying it is empty', () => {
+    const { index, session } = setup();
+    index.save({ ...excelRecord('blank.xlsx', []), status: 'empty' });
+    const { problems } = checkSources({ index, session, kind: 'answer', sources: [excel('blank.xlsx', null, 1, 1)], resultId: null });
+    expect(problems).toContainEqual({ type: 'source', reason: 'blank.xlsx is empty, so it cannot be a source.' });
   });
 });

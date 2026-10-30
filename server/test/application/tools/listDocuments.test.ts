@@ -58,18 +58,19 @@ describe('list_documents', () => {
     expect(output.documents[1]).toMatchObject({ kind: 'pdf', pageCount: 2, sheets: [], tables: [] });
   });
 
-  it('counts readable, unreadable and skipped files and says so in the summary', async () => {
+  it('counts readable, empty, unreadable and skipped files and says so in the summary', async () => {
     const index = new FakeIndex();
     index.save(pdfRecord('a.pdf', ['text']));
     index.save({ ...pdfRecord('scan.pdf', ['']), status: 'scanned', scannedPages: [1] });
+    index.save(failedRecord('blank.xlsx', 'excel', 'empty', 'The workbook opens, but every sheet is empty.'));
     index.save(failedRecord('broken.pdf', 'pdf', 'corrupt', 'The file is damaged and could not be opened.'));
     index.save(failedRecord('locked.pdf', 'pdf', 'encrypted', 'The file is password protected.'));
     index.save(failedRecord('notes.docx', 'other', 'skipped', 'Only PDF and Excel files are read.'));
 
     const { output, summary } = await run(index);
 
-    expect(output.counts).toEqual({ total: 5, ready: 2, unreadable: 2, skipped: 1 });
-    expect(summary).toBe('5 documents: 2 readable, 2 unreadable, 1 skipped');
+    expect(output.counts).toEqual({ total: 6, ready: 2, empty: 1, unreadable: 2, skipped: 1 });
+    expect(summary).toBe('6 documents: 2 readable, 1 empty, 2 unreadable, 1 skipped');
     expect(output.documents.find((doc) => doc.name === 'locked.pdf')).toMatchObject({
       status: 'encrypted',
       statusDetail: 'The file is password protected.',
@@ -113,7 +114,7 @@ describe('list_documents', () => {
 
   it('reports an empty folder plainly', async () => {
     const { output, summary } = await run(new FakeIndex());
-    expect(output).toEqual({ counts: { total: 0, ready: 0, unreadable: 0, skipped: 0 }, documents: [] });
+    expect(output).toEqual({ counts: { total: 0, ready: 0, empty: 0, unreadable: 0, skipped: 0 }, documents: [] });
     expect(summary).toBe('No documents in the loaded folder');
   });
 

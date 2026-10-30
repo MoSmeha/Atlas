@@ -1,6 +1,7 @@
 import { Stack, Title } from '@mantine/core';
 import { IconMicrophone } from '@tabler/icons-react';
 import type { Source } from '@atlas/shared';
+import { useCopy } from '../../i18n/useCopy';
 import { motion } from '../../theme';
 import { ErrorNotice } from '../errors/ErrorNotice';
 import { AnswerMarkdown } from './AnswerMarkdown';
@@ -13,6 +14,7 @@ import { SourcesList } from './SourcesList';
 import { StoppedNote } from './StoppedNote';
 import { Trace } from './Trace';
 import { isArabicText } from './arabicText';
+import { chatCopy } from './chatCopy';
 import type { Turn as ChatTurn } from './chatReducer';
 import classes from './Turn.module.css';
 
@@ -32,6 +34,7 @@ const settleTiming = { animationDuration: `${motion.durationMs}ms`, animationTim
  * then the parts that arrive with the finished answer, and last "How I found this".
  */
 export function Turn({ turn, onRetry, openedSource, onOpenSource }: TurnProps) {
+  const copy = useCopy(chatCopy).answer;
   const { answer, status } = turn;
   const streaming = status === 'streaming';
   const hasText = turn.markdown.trim() !== '';
@@ -61,7 +64,7 @@ export function Turn({ turn, onRetry, openedSource, onOpenSource }: TurnProps) {
       <Title order={2} id={questionId} fz="xl" lh={1.35} className={classes.question} dir="auto">
         {turn.question}
         {turn.spoken && (
-          <IconMicrophone size={16} stroke={1.75} className={classes.spoken} role="img" aria-label="Asked in a voice call" />
+          <IconMicrophone size={16} stroke={1.75} className={classes.spoken} role="img" aria-label={copy.spokenQuestion} />
         )}
       </Title>
 

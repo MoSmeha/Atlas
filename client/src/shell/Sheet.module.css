@@ -1,0 +1,37 @@
+.sheet {
+  height: calc(100dvh - var(--app-shell-header-offset, 0rem) - var(--mantine-spacing-xs));
+  margin-inline-end: var(--mantine-spacing-xs);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--mantine-color-gray-3);
+  border-radius: var(--mantine-radius-lg);
+  background-color: var(--mantine-color-body);
+  /*
+   * AppShell's own timing, which it drops to zero while the sidebar edge is dragged. Main's padding already
+   * reflows over these 180ms as the sidebar slides, so the 8px margin rides that reflow instead of snapping.
+   */
+  transition: margin-inline-start var(--app-shell-transition-duration, 0ms) var(--app-shell-transition-timing-function, ease);
+}
+
+/* With the sidebar closed, the sheet stands off the window's start edge as it does from its end. */
+@media (min-width: 48em) {
+  .sheet[data-sidebar-closed] {
+    margin-inline-start: var(--mantine-spacing-xs);
+  }
+}
+
+/* Below Mantine's sm breakpoint the sidebar folds away and the sheet fills the screen under the top bar. */
+@media (max-width: 47.99em) {
+  .sheet {
+    height: calc(100dvh - var(--app-shell-header-offset, 0rem));
+    margin-inline-end: 0;
+    border-width: 1px 0 0;
+    border-radius: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    transition: none;
+  }
+}

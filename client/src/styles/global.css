@@ -2,7 +2,16 @@
 
 :where(html) {
   color-scheme: light;
-  background-color: var(--mantine-color-body);
+  background-color: var(--mantine-color-gray-1);
+}
+
+:where(html[data-mantine-color-scheme='dark']) {
+  color-scheme: dark;
+}
+
+/* Arabic letters sit lower and denser than Latin at the same size; give interface lines more air. */
+:where(html[lang='ar'] body) {
+  line-height: 1.6;
 }
 
 ::selection {
@@ -11,7 +20,7 @@
 }
 
 :where(input, textarea, [contenteditable='true']) {
-  caret-color: var(--mantine-primary-color-filled);
+  caret-color: var(--atlas-focus);
 }
 
 :where(*) {
@@ -20,7 +29,7 @@
 }
 
 :where(:focus-visible) {
-  outline: 2px solid var(--mantine-primary-color-filled);
+  outline: 2px solid var(--atlas-focus);
   outline-offset: 2px;
 }
 
@@ -43,4 +52,9 @@
 /* Figures in tables, totals and usage line up digit under digit. */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* Arrows and chevrons that point along the reading direction turn round in Arabic. */
+:where([dir='rtl']) .flip-rtl {
+  transform: scaleX(-1);
 }

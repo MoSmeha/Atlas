@@ -1,6 +1,6 @@
 /* Scrolled into view once open: clear of the top bar, and of the composer docked at the bottom (about 96px). */
 .trace {
-  scroll-margin-top: calc(var(--app-shell-header-offset, 0rem) + var(--mantine-spacing-lg));
+  scroll-margin-top: var(--mantine-spacing-lg);
   scroll-margin-bottom: calc(var(--mantine-spacing-xl) * 4);
 }
 
@@ -38,6 +38,12 @@
 .chevron {
   flex-shrink: 0;
   transition-property: transform;
+}
+
+/* Closed, the chevron points along the reading direction; in Arabic it is turned round rather than mirrored, so
+   opening turns it a quarter the other way and it still ends pointing down. */
+:where([dir='rtl']) .chevron {
+  transform: rotate(180deg);
 }
 
 .toggle[aria-expanded='true'] .chevron {

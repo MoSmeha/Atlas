@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import type { ChatEvent } from '@atlas/shared';
 import { AskQuestion, type AskQuestionDeps } from '../../src/application/AskQuestion';
-import type { Lineup } from '../../src/application/models/pickLineup';
+import type { ModelChoices } from '../../src/application/models/modelChoices';
+import type { CatalogModel, Lineup } from '../../src/application/models/pickLineup';
 import type { ModelTurnResult } from '../../src/application/ports/ModelClient';
 import { SessionStore } from '../../src/application/session/SessionStore';
 import type { SubmittedAnswer } from '../../src/application/tools/submitAnswer';
@@ -18,9 +19,15 @@ import { boqTable, excelRecord } from '../fakes/records';
 import { outputsOf } from './agent/harness';
 
 const lineup: Lineup = {
-  frontier: { id: 'frontier-model', tier: 'frontier', label: 'Frontier', inputPrice: 10, cachedInputPrice: 1, outputPrice: 50 },
-  balanced: { id: 'balanced-model', tier: 'balanced', label: 'Balanced', inputPrice: 2, cachedInputPrice: 0.1, outputPrice: 10 },
-  small: { id: 'small-model', tier: 'small', label: 'Small', inputPrice: 0.1, cachedInputPrice: 0.01, outputPrice: 0.5 },
+  frontier: { id: 'frontier-model', provider: 'openai', tier: 'frontier', label: 'Frontier', inputPrice: 10, cachedInputPrice: 1, outputPrice: 50 },
+  balanced: { id: 'balanced-model', provider: 'openai', tier: 'balanced', label: 'Balanced', inputPrice: 2, cachedInputPrice: 0.1, outputPrice: 10 },
+  small: { id: 'small-model', provider: 'openai', tier: 'small', label: 'Small', inputPrice: 0.1, cachedInputPrice: 0.01, outputPrice: 0.5 },
+};
+const freeModel: CatalogModel = { id: 'free-model', provider: 'gemini', tier: 'frontier', label: 'Free', inputPrice: 0, cachedInputPrice: 0, outputPrice: 0 };
+const models: ModelChoices = {
+  options: [lineup.frontier, lineup.balanced, lineup.small, freeModel],
+  defaultModel: lineup.frontier,
+  reasoningEffort: { openai: 'low', gemini: 'minimal' },
 };
 
 const itemsSql = 'SELECT item_code, amount, _row FROM boq_1 WHERE _is_total = 0 AND amount > 1000000';
@@ -50,9 +57,7 @@ function setup(script: ConstructorParameters<typeof FakeModelClient>[0], overrid
     exporter: new FakeExporter(),
     clock,
     logger,
-    lineup,
-    answerTier: 'frontier',
-    reasoningEffort: 'low',
+    models,
     maxRounds: 6,
     exportsDir: '/exports',
     ...overrides,
@@ -205,7 +210,14 @@ describe('AskQuestion', () => {
     expect(outputsOf(model.requests[3])[0]).toMatchObject({ file: expect.stringMatching(/\.xlsx$/) });
   });
 
-  it('uses a requested model of the lineup and falls back to the default for any other', async () => {
+  it("asks another provider's model with that provider's reasoning effort, and prices it at nothing", async () => {
+    const free = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })]);
+    const outcome = await free.question('Hello', 'free-model');
+    expect(free.model.requests[0]).toMatchObject({ model: 'free-model', reasoningEffort: 'minimal' });
+    expect(outcome.ok && outcome.usage).toMatchObject({ model: 'free-model', costUsd: 0 });
+  });
+
+  it('uses a requested model of the choices and falls back to the default for any other', async () => {
     const chosen = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })]);
     await chosen.question('Hello', 'small-model');
     expect(chosen.model.requests[0]?.model).toBe('small-model');
@@ -215,6 +227,31 @@ describe('AskQuestion', () => {
     const outcome = await unknown.question('Hello', 'gpt-unknown');
     expect(unknown.model.requests[0]?.model).toBe('frontier-model');
     expect(outcome.ok && outcome.usage.model).toBe('frontier-model');
+  });
+
+  it('runs the answer model at the requested effort and logs it, and at its provider default when none is asked for', async () => {
+    const medium = { models: { ...models, reasoningEffort: { openai: 'medium' as const } } };
+    const chosen = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })], medium);
+    await chosen.ask.execute({ sessionId: 's1', question: 'Hello', effort: 'high', onEvent: () => {} });
+    expect(chosen.model.requests[0]?.reasoningEffort).toBe('high');
+    expect(chosen.logger.questions[0]).toMatchObject({ reasoningEffort: 'high' });
+
+    const unset = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })], medium);
+    await unset.question('Hello');
+    expect(unset.model.requests[0]?.reasoningEffort).toBe('medium');
+  });
+
+  it("keeps the provider's effort when it leaves thinking to each model or names a level the picker does not offer", async () => {
+    const local = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })], {
+      models: { ...models, reasoningEffort: { openai: null } },
+    });
+    await local.ask.execute({ sessionId: 's1', question: 'Hello', effort: 'low', onEvent: () => {} });
+    expect(local.model.requests[0]?.reasoningEffort).toBeNull();
+    expect(local.logger.questions[0]).toMatchObject({ reasoningEffort: null });
+
+    const minimal = setup([submits({ kind: 'out_of_scope', markdown: 'I only answer about the loaded documents.' })]);
+    await minimal.ask.execute({ sessionId: 's1', question: 'Hello', model: 'free-model', effort: 'high', onEvent: () => {} });
+    expect(minimal.model.requests[0]?.reasoningEffort).toBe('minimal');
   });
 
   it('sends a not_indexed error when no folder is loaded', async () => {

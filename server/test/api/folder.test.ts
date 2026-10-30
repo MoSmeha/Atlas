@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, statSync, writeFileSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -12,6 +12,7 @@ import { NodeFileSystem } from '../../src/infrastructure/fs/NodeFileSystem';
 import { SqliteIndexFactory } from '../../src/infrastructure/index/SqliteIndexFactory';
 import { ExcelJsReader } from '../../src/infrastructure/readers/ExcelJsReader';
 import { makeApiDeps } from '../fakes/apiDeps';
+import { FakeFolderPicker } from '../fakes/FakeFolderPicker';
 import { FakeClock } from '../fakes/FakeClock';
 import { MemoryRunLogger } from '../fakes/MemoryRunLogger';
 
@@ -23,6 +24,7 @@ mkdirSync(docsOnly);
 writeFileSync(join(docsOnly, 'Cover_Letter.docx'), 'not a real docx');
 
 const workspace = new Workspace();
+const folderPicker = new FakeFolderPicker();
 const indexFolder = new IndexFolder({
   fs: new NodeFileSystem(),
   readers: [new ExcelJsReader()],
@@ -35,7 +37,7 @@ const indexFolder = new IndexFolder({
 });
 const app = buildApp(
   makeApiDeps({
-    folder: { indexFolder, workspace, repoRoot: root },
+    folder: { indexFolder, workspace, repoRoot: root, folderPicker },
     documents: { workspace },
   }),
 );
@@ -185,10 +187,83 @@ describe('before a folder is loaded', () => {
   });
 });
 
+describe('removing files and folders', () => {
+  const removable = join(root, 'removable');
+  const post = (url: string, path: string) => app.inject({ method: 'POST', url, payload: { path } });
+  const paths = async () => (await getStatus()).documents.map((document) => document.path);
+
+  it('removes a subfolder, keeps its files on disk and leaves it out until it is put back', async () => {
+    mkdirSync(join(removable, 'Phase 2'), { recursive: true });
+    await writeWorkbook(join(removable, 'BOQ.xlsx'));
+    await writeWorkbook(join(removable, 'Phase 2', 'BOQ2.xlsx'));
+    await loadFolder(removable);
+    await indexFolder.idle();
+    expect(await paths()).toEqual(['BOQ.xlsx', 'Phase 2/BOQ2.xlsx']);
+
+    const removed = await post('/api/folder/remove', 'Phase 2');
+    expect(removed.statusCode).toBe(200);
+    expect(IndexStatus.parse(removed.json())).toMatchObject({ uploads: false, removed: ['Phase 2'] });
+    expect(await paths()).toEqual(['BOQ.xlsx']);
+    expect(existsSync(join(removable, 'Phase 2', 'BOQ2.xlsx'))).toBe(true);
+
+    await loadFolder(removable);
+    await indexFolder.idle();
+    expect(await paths()).toEqual(['BOQ.xlsx']);
+
+    const restored = await post('/api/folder/restore', 'Phase 2');
+    expect(restored.statusCode).toBe(202);
+    await indexFolder.idle();
+    expect(await paths()).toEqual(['BOQ.xlsx', 'Phase 2/BOQ2.xlsx']);
+    expect((await getStatus()).removed).toEqual([]);
+  });
+
+  it('answers 404 for a path that matches nothing and 400 for one outside the folder', async () => {
+    expect((await post('/api/folder/remove', 'Nope.pdf')).statusCode).toBe(404);
+    expect((await post('/api/folder/remove', '../project/BOQ.xlsx')).statusCode).toBe(400);
+    expect((await post('/api/folder/restore', 'BOQ.xlsx')).statusCode).toBe(404);
+  });
+
+  it('removes the loaded folder and deletes its index, keeping the files', async () => {
+    const response = await app.inject({ method: 'DELETE', url: '/api/folder' });
+    expect(response.statusCode).toBe(200);
+    expect(IndexStatus.parse(response.json())).toMatchObject({ folder: null, phase: 'idle', documents: [] });
+    expect(existsSync(new SqliteIndexFactory(join(root, 'data')).fileFor(removable))).toBe(false);
+    expect(existsSync(join(removable, 'BOQ.xlsx'))).toBe(true);
+
+    const again = await app.inject({ method: 'DELETE', url: '/api/folder' });
+    expect(again.json().error.code).toBe('not_indexed');
+  });
+});
+
+describe('POST /api/folder/pick', () => {
+  const pickFolder = (payload: object) => app.inject({ method: 'POST', url: '/api/folder/pick', payload });
+
+  it('opens the folder window with the given title and answers with the chosen path', async () => {
+    folderPicker.answer = project;
+    const response = await pickFolder({ title: 'Choose the project folder' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ path: project });
+    expect(folderPicker.titles.at(-1)).toBe('Choose the project folder');
+  });
+
+  it('answers null when the window was closed without a folder', async () => {
+    folderPicker.answer = null;
+    const response = await pickFolder({ title: 'اختر مجلد المشروع' });
+    expect(response.json()).toEqual({ path: null });
+    expect(folderPicker.titles.at(-1)).toBe('اختر مجلد المشروع');
+  });
+
+  it('needs a title', async () => {
+    const response = await pickFolder({ title: ' ' });
+    expect(response.statusCode).toBe(400);
+    expect(response.json().error.code).toBe('invalid_request');
+  });
+});
+
 describe('GET /api/folder/events', () => {
   it('streams index events as server-sent events until the client goes away', async () => {
     const events = new Workspace();
-    const live = buildApp(makeApiDeps({ folder: { indexFolder, workspace: events, repoRoot: root } }));
+    const live = buildApp(makeApiDeps({ folder: { indexFolder, workspace: events, repoRoot: root, folderPicker } }));
     const address = await live.listen({ port: 0, host: '127.0.0.1' });
     const controller = new AbortController();
     try {

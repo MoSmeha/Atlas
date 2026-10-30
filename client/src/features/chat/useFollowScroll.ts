@@ -1,5 +1,6 @@
 import { type RefObject, useEffect, useRef } from 'react';
 import { useReducedMotion } from '@mantine/hooks';
+import { useScrollContainer } from '../../shell/useScrollContainer';
 
 /** Within this many pixels of the bottom, the reader counts as following the answer. */
 const NEAR_BOTTOM_PX = 64;
@@ -7,12 +8,13 @@ const NEAR_BOTTOM_PX = 64;
 const SETTLE_MS = 1000;
 
 /**
- * Scrolls the page to a newly asked turn, then keeps the end of its answer in view as it streams
- * and settles, but never past the point where the question would leave the top of the screen.
+ * Scrolls the sheet to a newly asked turn, then keeps the end of its answer in view as it streams
+ * and settles, but never past the point where the question would leave the top of the sheet.
  * Scrolling up stops the following; coming back to the bottom starts it again.
  */
 export function useFollowScroll(thread: RefObject<HTMLElement | null>, newestTurnId: string | null, streaming: boolean) {
   const reduceMotion = useReducedMotion();
+  const scroller = useScrollContainer();
   const following = useRef(true);
   const activeUntil = useRef(0);
 
@@ -21,12 +23,14 @@ export function useFollowScroll(thread: RefObject<HTMLElement | null>, newestTur
   }, [streaming]);
 
   useEffect(() => {
+    const sheet = scroller.current;
+    if (!sheet) return;
     const onScroll = () => {
-      following.current = distanceFromBottom() < NEAR_BOTTOM_PX;
+      following.current = distanceFromBottom(sheet) < NEAR_BOTTOM_PX;
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    sheet.addEventListener('scroll', onScroll, { passive: true });
+    return () => sheet.removeEventListener('scroll', onScroll);
+  }, [scroller]);
 
   useEffect(() => {
     if (newestTurnId === null) return;
@@ -36,22 +40,24 @@ export function useFollowScroll(thread: RefObject<HTMLElement | null>, newestTur
 
   useEffect(() => {
     const content = thread.current;
-    if (!content || newestTurnId === null) return;
+    const sheet = scroller.current;
+    if (!content || !sheet || newestTurnId === null) return;
     const observer = new ResizeObserver(() => {
       const turn = document.getElementById(newestTurnId);
       if (!turn || !following.current || performance.now() > activeUntil.current) return;
-      const bottom = document.documentElement.scrollHeight - window.innerHeight;
-      const questionAtTop = window.scrollY + turn.getBoundingClientRect().top - scrollMarginTop(turn);
+      const bottom = sheet.scrollHeight - sheet.clientHeight;
+      const questionAtTop =
+        sheet.scrollTop + turn.getBoundingClientRect().top - sheet.getBoundingClientRect().top - scrollMarginTop(turn);
       const top = Math.min(bottom, questionAtTop);
-      if (top > window.scrollY + 1) window.scrollTo({ top });
+      if (top > sheet.scrollTop + 1) sheet.scrollTo({ top });
     });
     observer.observe(content);
     return () => observer.disconnect();
-  }, [thread, newestTurnId]);
+  }, [thread, scroller, newestTurnId]);
 }
 
-function distanceFromBottom(): number {
-  return document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
+function distanceFromBottom(sheet: HTMLElement): number {
+  return sheet.scrollHeight - (sheet.scrollTop + sheet.clientHeight);
 }
 
 function scrollMarginTop(element: HTMLElement): number {

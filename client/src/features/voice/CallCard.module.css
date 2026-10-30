@@ -1,4 +1,7 @@
-/* The call card sits where the composer was: the same white 8px frame and hairline, settling in like an answer. */
+/*
+ * The call card sits where the composer was: the same raised surface (white in light, lifted graphite in dark), 8px
+ * frame and border, settling in like an answer.
+ */
 
 .card {
   display: grid;
@@ -6,7 +9,7 @@
   padding: var(--mantine-spacing-sm);
   border: 1px solid var(--mantine-color-gray-4);
   border-radius: var(--mantine-radius-lg);
-  background-color: var(--mantine-color-white);
+  background-color: var(--atlas-surface);
   animation-name: settle;
   animation-fill-mode: both;
 }
@@ -105,20 +108,19 @@
   margin-inline-start: auto;
 }
 
-.picker {
-  inline-size: 208px;
+/* The call's voice, chosen before it started; a long name trails off before the controls. */
+.voice {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* On a phone the picker takes what the 40px controls leave, so everything stays on one row. */
+/* On a phone the voice takes what the 40px controls leave, so everything stays on one row. */
 @media (max-width: 36em) {
   .controls {
     flex-wrap: nowrap;
-  }
-
-  .picker {
-    flex: 1;
-    inline-size: auto;
-    min-inline-size: 0;
   }
 }
 

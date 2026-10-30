@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { resolve } from 'node:path';
-import { AppError, errors } from './application/errors';
+import { AppError } from './application/errors';
 import { askAndPrint } from './cli/ask';
 import { chat } from './cli/chat';
 import { loadFolder } from './cli/loadFolder';
@@ -28,10 +28,10 @@ async function run(args: string[]): Promise<number> {
   let container: Container | null = null;
   try {
     container = await compose();
-    if (container.modelClient === null) throw errors.missingApiKey();
+    if (container.modelClient === null) throw new AppError('missing_api_key', container.providerChoice.reason);
     const status = await loadFolder(container, folder, terminal);
     if (question === '') {
-      await chat(container, terminal, status.suggestions);
+      await chat(container, terminal, status.suggestions.map((suggestion) => suggestion.en));
       return 0;
     }
     return (await askOnce(container, terminal, question)) ? 0 : 1;

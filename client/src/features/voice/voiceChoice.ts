@@ -1,4 +1,6 @@
 import type { VoiceOption } from '@atlas/shared';
+import type { Language } from '../../i18n/language';
+import { callCopy } from './callCopy';
 
 const STORAGE_KEY = 'atlas.voice';
 /** The voice a browser set to Arabic starts with. */
@@ -38,7 +40,7 @@ export function rememberVoice(id: string): void {
   }
 }
 
-/** "Gulf Arabic, female voice" for screen readers and the picker's tooltip. */
-export function voiceName(voice: VoiceOption): string {
-  return `${voice.label}, ${voice.gender} voice`;
+/** "Gulf Arabic, female voice" for screen readers and the picker's tooltip, in the interface language. */
+export function voiceName(voice: VoiceOption, language: Language = 'en'): string {
+  return callCopy[language].picker.name(voice);
 }

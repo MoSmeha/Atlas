@@ -3,8 +3,11 @@ import { Collapse, UnstyledButton, VisuallyHidden } from '@mantine/core';
 import { useDisclosure, useReducedMotion } from '@mantine/hooks';
 import { IconChevronRight } from '@tabler/icons-react';
 import type { ToolStep } from '@atlas/shared';
+import { useCopy } from '../../i18n/useCopy';
+import { useLanguage } from '../../i18n/useLanguage';
 import { motion } from '../../theme';
 import { TraceStep } from './TraceStep';
+import { traceCopy } from './traceCopy';
 import { traceSummary } from './traceSummary';
 import classes from './Trace.module.css';
 
@@ -23,6 +26,8 @@ const chevronTiming = { transitionDuration: `${motion.durationMs}ms`, transition
  * onto every tool step in order. While the answer streams, the steps appear and finish live.
  */
 export function Trace({ steps, streaming, durationMs }: TraceProps) {
+  const { language } = useLanguage();
+  const copy = useCopy(traceCopy);
   const [opened, { toggle }] = useDisclosure(false);
   const stepsId = useId();
   const root = useRef<HTMLDivElement>(null);
@@ -43,12 +48,12 @@ export function Trace({ steps, streaming, durationMs }: TraceProps) {
     <div ref={root} className={classes.trace}>
       <UnstyledButton className={classes.toggle} onClick={onToggle} aria-expanded={opened} aria-controls={stepsId}>
         <IconChevronRight size={16} stroke={1.75} className={classes.chevron} style={chevronTiming} aria-hidden />
-        <span className={classes.label}>How I found this</span>
+        <span className={classes.label}>{copy.toggle}</span>
         <span className={classes.meta} aria-hidden>
           ·
         </span>
-        <VisuallyHidden>, </VisuallyHidden>
-        <span className={classes.meta}>{traceSummary(steps, streaming, durationMs)}</span>
+        <VisuallyHidden>{copy.pause}</VisuallyHidden>
+        <span className={classes.meta}>{traceSummary(steps, streaming, durationMs, language)}</span>
       </UnstyledButton>
       <Collapse
         id={stepsId}
@@ -56,7 +61,7 @@ export function Trace({ steps, streaming, durationMs }: TraceProps) {
         transitionDuration={motion.durationMs}
         transitionTimingFunction={motion.easing}
       >
-        <ol className={classes.steps} aria-label="Steps Atlas took">
+        <ol className={classes.steps} aria-label={copy.stepsList}>
           {steps.map((step) => (
             <TraceStep key={step.id} step={step} ended={!streaming} />
           ))}

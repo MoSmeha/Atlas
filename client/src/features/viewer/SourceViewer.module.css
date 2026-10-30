@@ -80,6 +80,7 @@
   padding: var(--mantine-spacing-md);
 }
 
+/* The page is a picture of the document, so it stays white like paper in both schemes; the stage around it follows the theme. */
 .page {
   overflow: hidden;
   border: 1px solid var(--mantine-color-gray-3);
@@ -88,11 +89,14 @@
   box-shadow: var(--mantine-shadow-xs);
 }
 
-/* Over the drawn page a translucent wash of the brand's light tone, so the printed words show through. */
+/*
+ * Over the drawn page a translucent graphite wash, like a pencil shading the passage, so the printed words
+ * show through. Ink 4 is not a dark-scheme role and the page stays white, so the mark looks the same in both.
+ */
 .mark {
   margin: 0;
   padding: 0;
   border-radius: 2px;
-  background-color: color-mix(in srgb, var(--mantine-color-ink-3) 45%, transparent);
+  background-color: color-mix(in srgb, var(--mantine-color-ink-4) 45%, transparent);
   color: transparent;
 }

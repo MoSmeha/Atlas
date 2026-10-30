@@ -71,8 +71,12 @@ describe('buildCallInstructions', () => {
 });
 
 describe('greetingInstruction', () => {
-  it('asks for a short greeting in the dialect, then silence', () => {
-    expect(greetingInstruction(gulf)).toBe('Greet the user now in Gulf Arabic, in one short sentence like this: "هلا، أنا أطلس." Then pause and listen.');
+  it('asks for the hello word for word, said quickly, then silence', () => {
+    expect(greetingInstruction(gulf)).toBe(
+      'Greet the user now in Gulf Arabic with exactly this line and nothing more: "هلا، أنا أطلس." ' +
+        'Say it briskly, at about one and a half times your usual speaking speed; after it, speak at your usual pace. ' +
+        'Then stop and listen.',
+    );
   });
 });
 

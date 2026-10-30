@@ -46,4 +46,8 @@ export interface VoiceClient {
   startCall(request: CallRequest): Promise<StartedCall>;
   /** Ends a call from the server; a call that already ended is fine. */
   hangUp(callId: string): Promise<void>;
+  /** True when a call can use the voice straight away: a built-in voice, or a designed one already made. */
+  isReady(voice: CallVoice): boolean;
+  /** Makes a designed voice that does not exist yet, so the first call with it does not wait; others need nothing. */
+  prepare(voice: CallVoice): Promise<void>;
 }

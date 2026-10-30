@@ -1,7 +1,9 @@
-import type { ModelTier } from '@atlas/shared';
+import type { ModelProvider, ModelTier } from '@atlas/shared';
 
 export interface CatalogModel {
   id: string;
+  /** Who serves it; a question goes to the provider of the model it uses. */
+  provider: ModelProvider;
   tier: ModelTier;
   label: string;
   inputPrice: number;
@@ -26,4 +28,10 @@ export function pickLineup(catalog: CatalogModel[], visibleIds: string[] | null)
     return [tier, pick] as const;
   });
   return Object.fromEntries(entries) as Lineup;
+}
+
+/** The lineup's models from frontier to small, each once: a local provider puts one model in every tier. */
+export function lineupModels(lineup: Lineup): CatalogModel[] {
+  const models = tiers.map((tier) => lineup[tier]);
+  return models.filter((model, i) => models.findIndex((other) => other.id === model.id) === i);
 }

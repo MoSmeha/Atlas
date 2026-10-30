@@ -1,5 +1,5 @@
 .turn {
-  scroll-margin-top: calc(var(--app-shell-header-offset, 0rem) + var(--mantine-spacing-lg));
+  scroll-margin-top: var(--mantine-spacing-lg);
 }
 
 .question {

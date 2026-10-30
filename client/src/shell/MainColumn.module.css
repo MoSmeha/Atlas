@@ -1,0 +1,44 @@
+/*
+ * The column clips what hangs below it, so the question box rising from under the sheet's foot never adds a
+ * scrollbar. Clip, unlike hidden, makes no scroll container, so the dock still sticks to the sheet.
+ */
+.column {
+  overflow-y: clip;
+}
+
+/*
+ * The question box docked at the foot of the sheet. Turns scrolling under it fade out over a short band
+ * of the page ground instead of being cut at its edge, and a small gap keeps them clear of its border.
+ */
+.dock {
+  position: sticky;
+  bottom: 0;
+  padding-top: var(--mantine-spacing-xs);
+  padding-bottom: var(--mantine-spacing-md);
+  background-color: var(--mantine-color-body);
+  transition:
+    transform 560ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 360ms ease-out;
+}
+
+.dock::before {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 100%;
+  height: var(--mantine-spacing-lg);
+  background: linear-gradient(to bottom, transparent, var(--mantine-color-body));
+  pointer-events: none;
+  content: '';
+}
+
+/* On a fresh page the box waits below the foot of the sheet until Atlas has said its line, then rises into place. */
+.dock[data-waiting] {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock {
+    transition: none;
+  }
+}

@@ -1,9 +1,9 @@
-/* One hairline frame around the rows; the title, export and row count sit outside it. */
+/* One hairline frame around the rows on the raised surface; the title, export and row count sit outside it. */
 .frame {
   overflow: hidden;
   border: 1px solid var(--mantine-color-gray-3);
   border-radius: var(--mantine-radius-md);
-  background-color: var(--mantine-color-white);
+  background-color: var(--atlas-surface);
 }
 
 /* The sticky header keeps an opaque ground so rows never show through it while scrolling.
@@ -14,6 +14,7 @@
   text-wrap: balance;
 }
 
+/* Right, not end, on purpose: Western digits put the units last on the right, so they line up in either direction. */
 .frame .number {
   text-align: right;
   white-space: nowrap;

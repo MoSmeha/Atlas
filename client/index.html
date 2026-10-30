@@ -1,10 +1,25 @@
 <!doctype html>
-<html lang="en" data-mantine-color-scheme="light">
+<html lang="en" dir="ltr" data-mantine-color-scheme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:," />
     <title>Atlas</title>
+    <script>
+      // The saved scheme and language, set before the first paint so the page never flashes the other one.
+      try {
+        var scheme = localStorage.getItem('atlas-color-scheme');
+        if (scheme === 'dark' || scheme === 'light') document.documentElement.setAttribute('data-mantine-color-scheme', scheme);
+        var language = localStorage.getItem('atlas-language');
+        if (language === null && navigator.language.toLowerCase().indexOf('ar') === 0) language = 'ar';
+        if (language === 'ar') {
+          document.documentElement.lang = 'ar';
+          document.documentElement.dir = 'rtl';
+        }
+      } catch (error) {
+        // Storage blocked: light and English.
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

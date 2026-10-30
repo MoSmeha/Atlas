@@ -1,0 +1,258 @@
+/* The documents tree: folder rows with a turning chevron, files on a hairline rail under each folder. */
+
+.tree,
+.children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each folder's contents hang on a rail that drops from the middle of its chevron. */
+.children {
+  margin-inline-start: 10px;
+  padding-inline-start: 7px;
+  border-inline-start: 1px solid var(--mantine-color-gray-3);
+}
+
+.row,
+.file {
+  border-radius: var(--mantine-radius-sm);
+  transition: background-color 150ms ease-out;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  padding-block: 5px;
+  padding-inline: 3px 6px;
+  color: var(--mantine-color-gray-8);
+  font-size: var(--mantine-font-size-sm);
+  line-height: var(--mantine-line-height-xs);
+  text-align: start;
+}
+
+.row[data-root] {
+  color: var(--mantine-color-bright);
+  font-weight: 600;
+}
+
+/* Closed, the chevron points along the reading direction; open, it points down. */
+.chevron {
+  flex-shrink: 0;
+  color: var(--mantine-color-gray-6);
+  transform: rotate(-90deg);
+  transition: transform 150ms ease-out;
+}
+
+:where([dir='rtl']) .chevron {
+  transform: rotate(90deg);
+}
+
+.row[aria-expanded='true'] .chevron {
+  transform: none;
+}
+
+/* The manila folder: a deeper back with its tab, a lighter front, one thin edge round both. */
+.folderGlyph {
+  flex-shrink: 0;
+  stroke: var(--atlas-folder-edge);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+}
+
+.folderBack {
+  fill: var(--atlas-folder-back);
+}
+
+.folderFront {
+  fill: var(--atlas-folder-front);
+}
+
+.name,
+.fileName,
+.meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name {
+  flex: 1;
+}
+
+/*
+ * A Latin file name keeps its own direction, so its dots and extension stay put and a long one still
+ * trails off at its end, but in Arabic it lines up with the Arabic lines on the right.
+ */
+:where([dir='rtl']) .name,
+:where([dir='rtl']) .fileName {
+  text-align: right;
+}
+
+.count {
+  flex-shrink: 0;
+  color: var(--mantine-color-dimmed);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.file {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-block: 6px;
+  padding-inline: 4px 6px;
+}
+
+/*
+ * The file open in the viewer: the selection tone, deep enough to read on the chrome in both schemes (hover lifts
+ * the other way, to the surface), with its name in the bright tone.
+ */
+.file[data-active] {
+  background-color: var(--mantine-color-ink-2);
+}
+
+.file[data-active] .fileName {
+  color: var(--mantine-color-bright);
+}
+
+/* The name is the row's button, and its click area stretches over the whole row. */
+.open {
+  display: block;
+  flex: 1;
+  min-width: 0;
+}
+
+.open::after {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--mantine-radius-sm);
+  content: '';
+}
+
+/* The focus ring goes round the whole row, inside it so the tree's edge never clips it. */
+.open:focus-visible {
+  outline: none;
+}
+
+.open:focus-visible::after {
+  outline: 2px solid var(--atlas-focus);
+  outline-offset: -2px;
+}
+
+/* The status badge sits above the row's button, so its reason still shows on hover and focus. */
+.status {
+  position: relative;
+  z-index: 1;
+}
+
+.file > svg {
+  margin-top: 1px;
+}
+
+.fileText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fileLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.fileName {
+  display: block;
+  color: var(--mantine-color-text);
+  font-size: var(--mantine-font-size-sm);
+  line-height: var(--mantine-line-height-xs);
+}
+
+.meta {
+  color: var(--mantine-color-dimmed);
+  font-size: var(--mantine-font-size-xs);
+  line-height: var(--mantine-line-height-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A folder's row and its remove button, which sits over the row's end. */
+.folderLine {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * Remove from Atlas, at the row's end. It takes the row's own ground, so a long name runs under it, and it shows
+ * under the pointer, on keyboard focus and while its question is open.
+ */
+.removeSlot {
+  position: absolute;
+  z-index: 1;
+  inset-inline-end: 3px;
+  top: 4px;
+  display: flex;
+  border-radius: var(--mantine-radius-sm);
+  background-color: inherit;
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.folderLine > .removeSlot {
+  top: 50%;
+  translate: 0 -50%;
+}
+
+.file:hover > .removeSlot,
+.file:focus-within > .removeSlot,
+.folderLine:hover > .removeSlot,
+.folderLine:focus-within > .removeSlot,
+.removeSlot[data-open] {
+  opacity: 1;
+}
+
+/* On the chrome ground, a row lifts to the surface ground under the pointer. */
+@media (hover: hover) {
+  .row:hover,
+  .file:not([data-active]):hover {
+    background-color: var(--atlas-surface);
+  }
+
+  /* The folder's button holds the row's ground, so the remove button takes it from there. */
+  .folderLine:hover > .removeSlot {
+    background-color: var(--atlas-surface);
+  }
+
+  .folderLine:hover .count,
+  .folderLine:focus-within .count {
+    visibility: hidden;
+  }
+}
+
+/* With no pointer to hover, the remove button stays in view at the end of each row. */
+@media (hover: none) {
+  .removeSlot {
+    position: static;
+    translate: none;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .file,
+  .chevron,
+  .removeSlot {
+    transition: none;
+  }
+}

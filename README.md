@@ -1,328 +1,192 @@
 # Atlas
 
-Ask questions about a folder of project documents, PDF and Excel, in English or Arabic. Every answer shows its sources. Totals and lists are worked out by code over every row, not typed by the AI.
+**Ask your project documents a question. Get an answer you can check.**
 
-![Atlas answering "What is the total of each BOQ?"](docs/images/answer.png)
+Atlas reads a folder of PDFs and Excel files (contracts, bills of quantities, specifications, meeting minutes) and answers questions about them in English or Arabic. Every answer shows where it came from, down to the page or the spreadsheet row.
 
-## Run it
+![Atlas answering "What is the total of each BOQ?" with a table and its sources](docs/images/answer.png)
 
-| Step | Windows (PowerShell) | macOS / Linux |
-| --- | --- | --- |
-| 1. Install Node.js 24 | [nodejs.org](https://nodejs.org/en/download) | [nodejs.org](https://nodejs.org/en/download) or `brew install node@24` |
-| 2. Switch on pnpm | `corepack enable` | `corepack enable` |
-| 3. Get the code | `git clone https://github.com/MoSmeha/Atlas.git; cd Atlas` | `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas` |
-| 4. Install | `pnpm install` | `pnpm install` |
-| 5. Add your OpenAI key | `Copy-Item .env.example .env`, then set `OPENAI_API_KEY=` | `cp .env.example .env`, then set `OPENAI_API_KEY=` |
-| 6. Start | `pnpm dev`, then open http://localhost:5173 | `pnpm dev`, then open http://localhost:5173 |
+## Contents
 
-The sample project `samples/riyadh-tower` loads by itself. To use your own files, type a folder path in the sidebar or drop files on it.
+1. [What Atlas does](#what-atlas-does)
+2. [See it in action](#see-it-in-action)
+3. [Talk to Atlas](#talk-to-atlas)
+4. [Pick the AI model](#pick-the-ai-model)
+5. [English or Arabic, light or dark](#english-or-arabic-light-or-dark)
+6. [How it works](#how-it-works)
+7. [Tech stack](#tech-stack)
+8. [Run it yourself](#run-it-yourself)
+9. [Good to know](#good-to-know)
 
-From the command line: `pnpm cli samples/riyadh-tower "What is the total of each BOQ?"`
+## What Atlas does
 
-## What it does
+- **Reads a whole folder,** every PDF and spreadsheet, scanned pages included, and answers questions asked in plain words.
+- **Shows its sources.** Every fact links to its page or rows; one click opens it, highlighted.
+- **Never makes up numbers.** Code works out totals over every row, and when the files do not say, Atlas says so.
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/images/start.png" alt="Folder loaded with suggested questions"><br><b>Load a folder.</b> Every file is listed with its type, and Atlas suggests questions that fit.</td>
-    <td width="50%"><img src="docs/images/table.png" alt="57 cost items above SAR 1 million with the export menu"><br><b>Exact rows.</b> "Above SAR 1 million" is a database query over every row. Export the rows to Excel or CSV.</td>
-  </tr>
-  <tr>
-    <td><img src="docs/images/pdf-source.png" alt="PDF opened at page 37 with the clause highlighted"><br><b>Open a source.</b> A PDF opens at the cited page, with the sentence highlighted.</td>
-    <td><img src="docs/images/excel-source.png" alt="Excel sheet with the cited rows tinted"><br><b>Or the sheet.</b> A spreadsheet opens at the cited rows.</td>
-  </tr>
-  <tr>
-    <td><img src="docs/images/arabic.png" alt="Arabic question answered in Arabic"><br><b>Arabic in, Arabic out.</b> Answers read right to left. File names and numbers are kept as written.</td>
-    <td><img src="docs/images/scanned.png" alt="Scanned survey read as an image"><br><b>Scanned pages.</b> A page with no text is shown to the AI as an image.</td>
-  </tr>
-  <tr>
-    <td><img src="docs/images/revisions.png" alt="BOQ revision comparison"><br><b>Compare revisions.</b> Items added, removed and changed, and the change in total.</td>
-    <td><img src="docs/images/not-found.png" alt="Not found answer naming unreadable files"><br><b>No guessing.</b> When the documents don't say, Atlas says so and names the files it could not read.</td>
-  </tr>
-  <tr>
-    <td><img src="docs/images/trace.png" alt="How I found this, with the SQL query"><br><b>How I found this.</b> Every step Atlas took, with its time.</td>
-    <td><img src="docs/images/mobile.png" alt="Atlas at phone width" width="240"><br><b>Phone width.</b> The same app on a narrow screen.</td>
-  </tr>
-</table>
+## See it in action
 
-## Talk to it
+**1. Load a folder.** Atlas lists every file and flags the ones it cannot read (damaged, password protected, empty, scanned). Then type your question in the box at the foot.
 
-Press the phone in the question box to start a voice call, as in ChatGPT's voice mode. Ask out loud in English or Arabic, in your own dialect. Atlas answers aloud in the voice you picked, and every answer is also written in the chat with its table and sources. You can interrupt it, mute the microphone, stop an answer, or switch the voice mid-call. The microphone beside the phone dictates a question into the box instead, so you can read it over before sending.
+![A folder loaded, with every file listed and Atlas's face waiting for a question](docs/images/start.png)
 
-During a call Atlas has a face: a philosopher's bust drawn in the app's line style. It blinks, raises its brows while you speak, looks up while it checks the documents, and moves its mouth with its own voice.
+**2. Get exact lists.** "Above SAR 1 million" checks every row, not a sample. Download the list as Excel or CSV.
 
-| Voice | Dialect | Voices |
-| --- | --- | --- |
-| English | | Marin (female), Cedar (male), built in |
-| Gulf Arabic | خليجي, as spoken in Saudi Arabia | female, male |
-| Levantine Arabic | شامي | female, male |
-| Egyptian Arabic | مصري | female, male |
-| North African Arabic | مغاربي, Moroccan Darija | female, male |
-| Modern Standard Arabic | فصحى | female, male |
+<img src="docs/images/table.png" alt="57 cost items above SAR 1 million, with the export menu open" width="720">
 
-A browser set to Arabic starts in Gulf Arabic; any other starts in English. The picker remembers your last choice.
+**3. Check the page.** Click a source and the PDF opens at the right page, with the sentence highlighted.
 
-## How it works
+![A PDF opened at page 37 with the sentence highlighted](docs/images/pdf-source.png)
 
-### A voice call
+**4. Or the rows.** A spreadsheet opens with the rows the answer used marked.
 
-```mermaid
-sequenceDiagram
-  actor You
-  participant App as Web app
-  participant Atlas as Atlas server
-  participant Live as GPT-Live (voice)
-  You->>App: Press the phone
-  App->>Atlas: Call offer (WebRTC)
-  Atlas->>Live: Start the call with the key, the voice, the dialect and the file names
-  Live-->>App: Voice and events, directly
-  You->>Live: Ask a question out loud
-  Live-->>App: Hand-off: this needs the documents
-  App->>Atlas: The question, as a normal chat question
-  Atlas-->>App: The checked answer, its sources, and a short text to say
-  App->>Live: The text to say
-  Live-->>You: The answer, aloud
-```
+![A spreadsheet opened with the rows the answer used marked](docs/images/excel-source.png)
 
-- **The voice never answers about the documents itself.** GPT-Live (`gpt-live-1`) listens, takes turns and speaks; every question about the documents goes to the same agent and checks as a typed one, so totals still come from SQL. The voice gets a short text built from the checked answer (its first sentences, the table's first rows and the sources, with every number exactly as computed) and is told to say numbers as given. What it actually said is kept under the answer as "Said aloud", so the two can be compared.
-- **Arabic voices are designed.** GPT-Live has no Arabic voices built in, so Atlas designs one per dialect and gender from a description and a sample script in that dialect, the first time a call needs it (creating a voice is free; its id is kept in `.atlas/voices.json`). Each dialect's speaking rules are written in the dialect itself. How close each voice sounds to its dialect is up to the voice model: listen, then tune the descriptions in `server/config/voices.json`.
-- **Cost.** A call costs $0.05 a minute, billed by the second, plus the usual cost of each answer. It hangs up after 2 minutes with nothing said and at 30 minutes, and closing the page or stopping the server hangs it up too. The call's cost is added to the chat's total. Dictation uses `gpt-transcribe` at $0.0045 a minute, with the folder's file and sheet names as hints.
-- **Your key stays on the server.** The browser sends its call offer to the Atlas server, which starts the call with the key; only audio and events go between the browser and OpenAI.
+**5. Compare versions.** What was added, removed and changed between two revisions, and how the total moved.
 
-### A question becomes an answer
+<img src="docs/images/revisions.png" alt="Two BOQ revisions compared item by item" width="720">
 
-```mermaid
-sequenceDiagram
-  actor You
-  participant App as Web app
-  participant Atlas as Atlas server
-  participant AI as OpenAI model
-  participant Tools as Tools (code)
-  participant Index as SQLite index
-  You->>App: Ask a question
-  App->>Atlas: Question
-  loop Until the AI hands in its answer
-    Atlas->>AI: Question, file list, tools
-    AI->>Atlas: Call a tool, e.g. query_tables
-    Atlas->>Tools: Run it
-    Tools->>Index: SQL, search, page text
-    Index-->>Tools: Rows and passages
-    Tools-->>Atlas: Result, rows saved under an id
-    Atlas-->>AI: Tool result
-  end
-  AI->>Atlas: submit_answer: text, rows id, sources
-  Atlas->>Atlas: Check numbers and sources
-  Atlas-->>App: Streamed answer, table, sources, steps
-```
+**6. No guessing.** When the files do not say, Atlas says so, names the files it could not open, and shows every place it looked.
 
-### What happens when a folder loads
+<img src="docs/images/not-found.png" alt="A 'not found' answer listing the unreadable files and every search Atlas made" width="720">
 
-```mermaid
-flowchart LR
-  folder[/"Folder"/] --> scan["Scan<br/>a status for every file"]
-  scan -->|PDF| pdf["mupdf<br/>text, positions, scanned pages"]
-  scan -->|Excel| xlsx["exceljs<br/>every sheet, formulas, merged cells"]
-  scan -->|other| skip["Listed as skipped"]
-  pdf --> tables["Table finder<br/>headers, totals, SAR 1.2M, Arabic digits"]
-  xlsx --> tables
-  tables --> sql[("SQL tables<br/>one per table found")]
-  pdf --> chunks["Page passages"]
-  chunks --> fts[("Keyword index")]
-  chunks --> vec[("Meaning index<br/>embeddings")]
-  pdf --> classify["Small model<br/>document type"]
-  xlsx --> classify
-  classify --> suggest["Five suggested questions"]
-```
+## Talk to Atlas
 
-A watcher re-reads a file as soon as it is added or changed. The index is cached per folder, so loading a folder again takes milliseconds.
+Press the phone button and talk to Atlas as you would on a call, in English or in your own Arabic dialect.
 
-### Every answer is checked before you see it
-
-```mermaid
-flowchart TD
-  submit["AI hands in an answer"] --> numbers{"Does every number come<br/>from a tool result?"}
-  numbers -->|No| back["Sent back to the AI to fix<br/>(at most twice)"]
-  back --> submit
-  numbers -->|Yes| sources{"Does every source exist?<br/>File, page, sheet, rows"}
-  sources -->|Some bad| back
-  sources -->|None at all| notfound["Shown as 'not found'<br/>with the files that could not be read"]
-  sources -->|Yes| shown["Shown with its table and sources"]
-```
-
-### How the code is arranged
-
-```mermaid
-flowchart LR
-  client["Web app<br/>React, Mantine"] -- "HTTP and streamed events" --> api
-  subgraph server["Server"]
-    api["api<br/>web routes"] --> app["application<br/>agent, tools, checks, ports"]
-    app --> domain["domain<br/>pure rules: money, tables, dates, SQL check"]
-    infra["infrastructure<br/>mupdf, exceljs, SQLite, OpenAI"] -. implements ports .-> app
-  end
-  infra --> openai["OpenAI API"]
-  infra --> sqlite[("One SQLite file<br/>per folder")]
-  infra --> files[/"Your PDF and Excel files"/]
-```
-
-## Tools
-
-The AI decides which tools to call. The tools are code: the AI asks, and the code does the work.
-
-| Tool | Job |
-| --- | --- |
-| `list_documents` | Every file: its status, type, pages or sheets, tables and currencies |
-| `search_documents` | Finds passages by exact words and by meaning |
-| `read_pages` | Exact text of a range of PDF pages |
-| `query_tables` | One read-only SQL query over every loaded table |
-| `look_at_page` | Shows a page image to the AI, for scanned pages and drawings |
-| `check_boq_arithmetic` | Quantity × rate against the amount, and subtotals against their rows |
-| `extract_schedule` | Dates, deadlines, durations and deliverables, Hijri dates included |
-| `compare_revisions` | Two BOQ revisions: items added, removed and changed |
-| `calculate` | Safe arithmetic on numbers the tools returned |
-| `export_table` | Saves a result as `.xlsx` or `.csv` |
-| `submit_answer` | Hands in the answer, which is then checked as shown above |
-
-## Edge cases
+<img src="docs/images/voice.png" alt="A voice call: Atlas's face, what you said, what Atlas said, and the answer on screen" width="720">
 
 <table>
   <tr>
-    <td width="300"><img src="docs/images/files.png" alt="Sidebar with file statuses" width="280"></td>
+    <td width="270"><img src="docs/images/voice-picker.png" alt="The voice list open above the call button, with English and Arabic dialect voices" width="258"></td>
     <td>
 
-| Case | What Atlas does | Sample |
-| --- | --- | --- |
-| Damaged PDF | Listed as **Damaged** | `Drawing_Register.pdf` |
-| Password-protected PDF | Listed as **Password protected** | `Tender_Addendum_03.pdf` |
-| 0-byte Excel file | Listed as **Empty** | `Cost_Report_Empty.xlsx` |
-| Workbook with only empty sheets | Listed as **Empty** | `Blank_Template.xlsx` |
-| Scanned PDF | Listed as **Scanned**, read as an image | `Site_Survey_Scanned.pdf` |
-| Word file | Listed as **skipped** | `Cover_Letter.docx` |
-| 300-page PDF | Search finds the right pages; only those are read | `Specification_Volume_2.pdf` |
-| 10,000-row sheet | All rows in SQL; counts and totals cover every row | `Cost_Ledger_10k.xlsx` |
-| BOQ running over PDF pages | One table; carried-forward lines are not items | `BOQ_Phase2_Facade.pdf` |
-| Header under title rows, merged headers | Real header found, headers joined | `BOQ_Phase1_Rev0.xlsx` |
-| Two tables on one sheet | Split, each with its own currency | `Equipment_Imports.xlsx` |
-| "SAR 1.2M", Arabic-Indic digits | Read as plain numbers | `Provisional_Sums.xlsx` |
-| Several currencies | Never added together; one total per currency | `Equipment_Imports.xlsx` |
-| Arabic PDF | Read in the right order; Arabic questions answered in Arabic | `Meeting_Minutes_07_AR.pdf` |
-| English question, answer only in Arabic | Found by meaning, answered in English | `Meeting_Minutes_07_AR.pdf` |
-| Two revisions of a BOQ | Compared row by row | `BOQ_Phase1_Rev0/Rev1.xlsx` |
-| Question not in the documents | "Not found", with the unreadable files named | Any off-topic question |
-| A document that orders the AI around | Treated as text; the real contract value is given | `Specification_Volume_2.pdf` p. 297 |
-| Empty folder, wrong path | A clear message in the sidebar (below) | `samples/empty-folder/` |
+- **English and five Arabic dialects** (Gulf, Levantine, Egyptian, North African, Modern Standard), female or male.
+- **Pick the voice** from the arrow beside the call button.
+- **Checked answers.** The voice reads out the checked answer and never works out numbers itself.
+- **Prefer typing?** The microphone button turns speech into a question you can edit before sending.
 
 </td>
   </tr>
 </table>
 
-<img src="docs/images/folder-error.png" alt="Folder not found message" width="300">
+## Pick the AI model
 
-Every sample document is fictional. `samples/README.md` describes each file, and `samples/expected.json` holds the right answers.
+Pick the model, and how long it thinks, from the top bar. Each answer shows what it cost and how long it took.
 
-## Settings
+<img src="docs/images/models.png" alt="The model picker open, with the GPT-6 models under OpenAI and the free Gemini models below, and the effort picker beside it" width="640">
 
-Settings live in `.env`. Only the key is required.
-
-| Name | Default | What it means |
+| Model | Best for | Cost |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | none | Your OpenAI key |
-| `ATLAS_FOLDER` | `samples/riyadh-tower` | Folder loaded at start |
-| `PORT` | `3001` | Server port; the web app forwards to it |
-| `ATLAS_DATA_DIR` | `.atlas` | Index cache and uploads |
-| `ATLAS_LOG_DIR` | `.logs` | One log line per tool call and question |
-| `ATLAS_EXPORTS_DIR` | `exports` | Exported `.xlsx` and `.csv` files |
-| `ATLAS_MAX_FILE_MB` | `200` | Larger files are listed as too large |
-| `ATLAS_MAX_ROUNDS` | `12` | Tool rounds before the AI must answer |
+| GPT-6 Luna | Everyday questions | Lowest |
+| GPT-6.1 Sol | A balance of depth and cost | Medium |
+| GPT-6 Astra | The hardest questions | Highest |
 
-**Models** are set in `server/config/models.json`.
+### Or use it for free
 
-| Tier | Model | Used for |
+| Free option | How to set it up | Good to know |
 | --- | --- | --- |
-| small | GPT-6 Luna | **Default for answers** (cheap), sorting documents into types, confirming dates |
-| balanced | GPT-6.1 Sol | Picker option |
-| frontier | GPT-6 Astra | Picker option for the hardest questions |
+| Gemini's free tier | Get a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and add `GEMINI_API_KEY=` to `.env` | Daily limit. Google may use what it is sent, so keep confidential files off it |
+| A model on your computer | Install [Ollama](https://ollama.com), then run `ollama pull qwen3:14b` and `ollama pull bge-m3` | Nothing leaves your computer. Needs a graphics card with 6 GB or more, or a Mac with Apple silicon and 16 GB or more |
 
-Atlas keeps only the models your key can see; `pnpm models` lists them. Change `answerTier` to change the default.
+Free models sit in the same picker. Voice calls still use OpenAI.
 
-**Voices** are set in `server/config/voices.json`: the call model and its price, the silence and length limits, the dictation model, each dialect's speaking rules and sample script, and each voice, built in or designed from a description. Change a description and the next call designs a new voice and deletes the old one. Calls and dictation switch off by themselves when your key cannot see their models.
+## English or Arabic, light or dark
 
-## Project layout
+Switch between English and Arabic, and light and dark, from the top bar. Atlas answers in the language you ask in.
 
-```text
-shared/    Data shapes used by server and web app (Zod)
-server/    src/domain        pure rules
-           src/application   agent, tools, checks, ports
-           src/infrastructure mupdf, exceljs, SQLite, OpenAI
-           src/api           web routes
-           config/           models.json, voices.json
-           scripts/          samples, eval, models
-           test/             tests, with fakes for every port
-client/    web app (React, Vite, Mantine), DESIGN.md
-samples/   fictional documents and their right answers
-docs/      images, eval report, note, time log
-```
+![The Arabic interface, right to left, with an Arabic question answered in Arabic](docs/images/arabic.png)
 
-## Tests and eval
+![The dark theme](docs/images/dark.png)
 
-| Command | What it does |
-| --- | --- |
-| `pnpm test` | About 1,760 unit tests. No key, no network |
-| `pnpm typecheck` | Types in all three packages |
-| `pnpm eval` | 21 real questions checked against `samples/expected.json`; writes [docs/EVAL.md](docs/EVAL.md). Costs a few cents on Luna |
-| `pnpm samples` | Rebuilds the sample documents (needs Microsoft Edge) |
+## How it works
 
-**Latest eval:** 21 of 21 passed on GPT-6 Luna, with a median answer time of 6.9 seconds and **$0.02 for all 21 questions**. Every answer's time, cost and check is in [docs/EVAL.md](docs/EVAL.md).
+<p align="center"><img src="docs/images/opening.png" alt="Atlas's face with the words 'Every answer, with its page.'" width="320"></p>
 
-## Add a tool
+An AI model and ordinary code share the work. The model reads your question and decides what to look up. Code does the looking up: it searches the files, reads pages and adds up table rows. The model then writes the answer from what the code found. Before you see it, Atlas checks that every number in the answer appears in those results and that every source points to a real page or row. An answer that fails goes back to the model to fix.
 
 ```mermaid
 flowchart LR
-  a["Step 1: Shape<br/>Zod schema in shared/<br/>(only if the app shows it)"] --> b["Step 2: Tool<br/>one file in<br/>application/tools/"]
-  b --> c["Step 3: Register<br/>registry.ts + one advice<br/>line in instructions.ts"]
-  c --> d["Step 4: Test<br/>with the fakes in<br/>test/fakes/"]
-  d --> e["Step 5: Eval<br/>one question in<br/>scripts/eval/questions.ts"]
+  ask(["You ask a question"]) --> plan["The AI decides<br/>what to look up"]
+  plan --> work["Code does the work<br/>in your files: search,<br/>read pages, add up rows"]
+  work --> check{"Atlas checks every<br/>number and source"}
+  check -- "something is off" --> plan
+  check -- "all good" --> answer(["Answer with<br/>its sources"])
 ```
 
-<details>
-<summary>A tiny example tool and its test</summary>
+A voice call takes the same path: the voice only listens and speaks, and the question it hears is answered and checked like a typed one.
 
-```ts
-// server/src/application/tools/pageCount.ts
-import { z } from 'zod';
-import { defineTool, ToolError } from './Tool';
+### In the code
 
-export const pageCount = defineTool({
-  name: 'page_count',
-  description: 'Returns how many pages one PDF has. Give the file name from list_documents.',
-  parameters: z.object({ document: z.string().describe('File name or path from list_documents.') }),
-  async run(args, context) {
-    const doc = context.index.find(args.document);
-    if (doc === null || doc.pageCount === null) throw new ToolError(`No PDF named "${args.document}".`);
-    return { output: { document: doc.path, pages: doc.pageCount }, summary: `${doc.name} has ${doc.pageCount} pages` };
-  },
-});
+```mermaid
+flowchart TD
+  files[/"PDF and Excel files"/] -->|"on load and on change"| readers["Readers<br/>mupdf, exceljs"]
+  readers --> index[("SQLite index per folder<br/>tables as SQL tables<br/>keyword + embedding search")]
+
+  ask(["POST /api/chat<br/>typed, or from a voice call"]) --> agent["Agent loop<br/>OpenAI, Gemini or Ollama"]
+  agent -->|"tool call"| tools["Tools<br/>search_documents<br/>read_pages, query_tables<br/>calculate, ..."]
+  tools <--> index
+  tools -->|"result, with an id"| agent
+  agent -->|"submit_answer"| checks["Checks<br/>numbers from tool results<br/>sources exist"]
+  checks -->|"fail: back to the model, max 2"| agent
+  checks -->|"pass"| reply(["Streamed to the web app<br/>answer, table, sources"])
 ```
 
-```ts
-// server/test/application/tools/pageCount.test.ts
-import { expect, it } from 'vitest';
-import { pageCount } from '../../../src/application/tools/pageCount';
-import { FakeIndex } from '../../fakes/FakeIndex';
-import { pdfRecord } from '../../fakes/records';
-import { makeToolContext } from '../../fakes/toolContext';
+Each step has its own chart in [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
-it('counts the pages of a PDF', async () => {
-  const index = new FakeIndex();
-  index.save(pdfRecord('Contract.pdf', ['Scope', 'Payment']));
-  const result = await pageCount.run({ document: 'Contract.pdf' }, makeToolContext({ index }));
-  expect(result.output).toEqual({ document: 'Contract.pdf', pages: 2 });
-});
-```
+## Tech stack
 
-</details>
+| Part | Built with |
+| --- | --- |
+| Web app | React, Vite, Mantine, TypeScript |
+| Server | Node.js 24, Fastify, TypeScript |
+| AI | OpenAI: GPT-6 models for answers, GPT-Live for voice calls, gpt-transcribe for dictation, text-embedding-3-small for search by meaning. Free instead: Gemini (Google's free tier) or a local model through Ollama |
+| Reading files | mupdf for PDFs, exceljs for Excel |
+| Storage | SQLite on your computer, one file per folder, with keyword search |
+| Data shapes | Zod, shared by the server and the web app |
+| Tests | Vitest: about 1,890 tests that need no key and no network |
+
+## Run it yourself
+
+| Step | Windows (PowerShell) | macOS / Linux |
+| --- | --- | --- |
+| 1. Install Node.js 24 | [nodejs.org](https://nodejs.org/en/download) | [nodejs.org](https://nodejs.org/en/download), or Homebrew (see [On a Mac](#on-a-mac)) |
+| 2. Switch on pnpm | `corepack enable` | `corepack enable` |
+| 3. Get the code | `git clone https://github.com/MoSmeha/Atlas.git; cd Atlas` | `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas` |
+| 4. Install | `pnpm install` | `pnpm install` |
+| 5. Add a model key | `Copy-Item .env.example .env`, then set `OPENAI_API_KEY=`, or `GEMINI_API_KEY=` to use it free | `cp .env.example .env`, then set `OPENAI_API_KEY=`, or `GEMINI_API_KEY=` to use it free |
+| 6. Start | `pnpm dev`, then open http://localhost:5173 | `pnpm dev`, then open http://localhost:5173 |
+
+A sample project, a fictional tower in Riyadh, loads by itself. To use your own files, click the folder button in the sidebar and choose a folder, type its path, or drop files on the sidebar.
+
+### On a Mac
+
+The same steps, with what a Mac asks along the way. Open Terminal (Applications, then Utilities), and press Return after each command.
+
+1. **Install Node.js 24.** The simplest way is the macOS installer at [nodejs.org](https://nodejs.org/en/download): pick version 24. With [Homebrew](https://brew.sh) instead, run these three lines. Homebrew keeps `node@24` off the path, and the second line puts it there:
+
+   ```sh
+   brew install node@24
+   echo "export PATH=\"$(brew --prefix node@24)/bin:\$PATH\"" >> ~/.zshrc
+   source ~/.zshrc
+   ```
+
+   `node --version` should now print a version starting with `v24`.
+2. **Switch on pnpm:** `corepack enable`. If it says permission denied, run `sudo corepack enable` and type your Mac password. If it says command not found, run `npm install -g pnpm` instead.
+3. **Get the code:** `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas`. On a Mac without developer tools, this asks to install the "command line developer tools": click Install, wait for it to finish, then run the line again.
+4. **Install:** `pnpm install`. If it asks to download pnpm, type `Y`.
+5. **Add a model key:** `cp .env.example .env`, then `open -e .env` opens the file in TextEdit. Paste your key after `GEMINI_API_KEY=` (free) or `OPENAI_API_KEY=`, and save.
+6. **Start:** `pnpm dev`, then open http://localhost:5173 in Safari, Chrome or Edge. Press Control+C in Terminal to stop.
+
+The first voice call or dictation asks for the microphone. Allow it in the browser, and in System Settings, Privacy & Security, Microphone if macOS asks too.
+
+To answer for free on the Mac itself, Ollama runs on Apple silicon. `qwen3:14b` needs 24 GB of memory; with 16 GB, run `ollama pull qwen3:8b` in its place.
 
 ## Good to know
 
-- **Local.** The app, its index and your files stay on your computer. The AI runs at OpenAI, so passages, page images and the first pages of each file are sent there.
-- **One folder at a time.** PDF and Excel only (`.pdf`, `.xlsx`, `.xlsm`).
-- **Licences.** mupdf is AGPL-3.0, so this repository has no permissive LICENSE file. The other main libraries are MIT or Apache-2.0.
-- **More.** Design notes are in [docs/NOTE.md](docs/NOTE.md), time spent in [docs/TIMELOG.md](docs/TIMELOG.md), and the design system in [client/DESIGN.md](client/DESIGN.md).
+- **Your files stay on your computer.** The app and its index run locally. The AI runs at OpenAI or Google (Gemini), so the passages and page images it needs are sent there; with Ollama nothing leaves the computer.
+- **Cost.** A question on Luna costs a fraction of a cent, and nothing on Gemini's free tier or Ollama. A voice call costs $0.05 a minute.
+- **File types.** PDF and Excel (`.pdf`, `.xlsx`, `.xlsm`). Other files are listed and skipped.
+- **Sample documents are fictional.** `samples/expected.json` holds their right answers.
+- **Licence.** mupdf is AGPL-3.0, so this repository has no permissive licence file.
+- **For developers.** Settings, the eleven tools, edge cases, project layout, tests and how to add a tool are in [docs/TECHNICAL.md](docs/TECHNICAL.md). Design notes are in [docs/NOTE.md](docs/NOTE.md), time spent in [docs/TIMELOG.md](docs/TIMELOG.md), and the design system in [client/DESIGN.md](client/DESIGN.md).

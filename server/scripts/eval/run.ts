@@ -1,7 +1,10 @@
 import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { parseArgs } from 'node:util';
-import type { IndexEvent, ToolStep } from '@atlas/shared';
+import { AnswerEffort, type IndexEvent, type ToolStep } from '@atlas/shared';
+import { pickableEffort, questionEffort } from '../../src/application/models/answerEffort';
+import type { CatalogModel } from '../../src/application/models/pickLineup';
+import type { ReasoningEffort } from '../../src/application/ports/ModelClient';
 import { repoRoot } from '../../src/infrastructure/settings';
 import { compose, type Container } from '../../src/main';
 import type { CheckResult, RunTrace } from './checks';
@@ -10,26 +13,34 @@ import { renderReport, type QuestionResult } from './report';
 
 const FOLDER = join(repoRoot, 'samples', 'riyadh-tower');
 const RUNS_DIR = join(repoRoot, 'eval-runs');
-const PUBLISHED = join(repoRoot, 'docs', 'EVAL.md');
 
 /**
- * pnpm eval [--model <id>] [--only <id,id>]
+ * pnpm eval [--model <id>] [--effort low|medium|high] [--only <id,id>]
  * Indexes the sample folder, asks every eval question, checks each answer against samples/expected.json and writes
- * a report to eval-runs/. A full run also copies it to docs/EVAL.md. Failed questions still exit 0: the report is the output.
+ * a report to eval-runs/. A full run also copies it to docs/EVAL.md, or docs/EVAL-<provider>.md when the model is
+ * Gemini's or Ollama's, so a free run never replaces the OpenAI report. Failed questions still exit 0: the report is the output.
  */
 async function main(): Promise<void> {
-  const { values } = parseArgs({ options: { model: { type: 'string' }, only: { type: 'string' } }, allowPositionals: true });
+  const { values } = parseArgs({
+    options: { model: { type: 'string' }, effort: { type: 'string' }, only: { type: 'string' } },
+    allowPositionals: true,
+  });
   const selected = pickQuestions(values.only);
   const container = await compose();
-  if (container.modelClient === null) stop('OPENAI_API_KEY is not set. Add it to .env at the repository root.');
-  const model = pickModel(container, values.model);
-  console.log(`Model ${model}, ${selected.length} of ${questions.length} questions`);
+  if (container.provider === null) stop(container.providerChoice.reason);
+  const chosen = pickModel(container, values.model);
+  const model = chosen.id;
+  const published = join(repoRoot, 'docs', chosen.provider === 'openai' ? 'EVAL.md' : `EVAL-${chosen.provider}.md`);
+  const configured = container.models.reasoningEffort[chosen.provider] ?? null;
+  const effort = pickEffort(configured, values.effort);
+  const runsAt = questionEffort(configured, effort);
+  console.log(`Model ${model} (${chosen.provider}), effort ${runsAt ?? "the model's own"}, ${selected.length} of ${questions.length} questions`);
 
   const indexSeconds = await indexSamples(container);
   const runId = Date.now().toString(36);
   const results: QuestionResult[] = [];
   for (const [index, question] of selected.entries()) {
-    const result = await ask(container, question, `eval-${runId}-${question.session ?? question.id}`, model);
+    const result = await ask(container, question, `eval-${runId}-${question.session ?? question.id}`, model, effort);
     results.push(result);
     const position = `[${String(index + 1).padStart(2)}/${selected.length}]`;
     const cost = `$${(result.usage?.costUsd ?? 0).toFixed(4)}`;
@@ -38,15 +49,16 @@ async function main(): Promise<void> {
 
   const date = new Date();
   const subset = selected.length < questions.length;
-  const report = renderReport({ date, model, folder: relative(repoRoot, FOLDER).replaceAll('\\', '/'), indexSeconds, subset, results });
+  const report = renderReport({ date, model, effort: runsAt, folder: relative(repoRoot, FOLDER).replaceAll('\\', '/'), indexSeconds, subset, results });
   mkdirSync(RUNS_DIR, { recursive: true });
-  const path = join(RUNS_DIR, `${stamp(date)}-${model.replace(/[^\w.-]+/g, '_')}.md`);
+  const path = join(RUNS_DIR, `${stamp(date)}-${model.replace(/[^\w.-]+/g, '_')}${runsAt === null ? '' : `-${runsAt}`}.md`);
   writeFileSync(path, report, 'utf8');
-  if (!subset) copyFileSync(path, PUBLISHED);
+  if (!subset) copyFileSync(path, published);
   const passed = results.filter((result) => result.pass).length;
   const total = results.reduce((sum, result) => sum + (result.usage?.costUsd ?? 0), 0);
+  const publishedName = relative(repoRoot, published).replaceAll('\\', '/');
   console.log(`\nPassed ${passed} of ${results.length}, cost $${total.toFixed(4)}`);
-  console.log(`Report: ${relative(repoRoot, path)}${subset ? ' (subset run, docs/EVAL.md left as it was)' : ', copied to docs/EVAL.md'}`);
+  console.log(`Report: ${relative(repoRoot, path)}${subset ? ` (subset run, ${publishedName} left as it was)` : `, copied to ${publishedName}`}`);
 }
 
 /** The questions named by --only, in list order, with the earlier questions their follow-ups need. */
@@ -59,12 +71,22 @@ function pickQuestions(only: string | undefined): EvalQuestion[] {
   return questions.filter((question) => wanted.has(question.id));
 }
 
-/** --model when it is one of the lineup's three models, otherwise the configured default answer model. */
-function pickModel(container: Container, requested: string | undefined): string {
-  const ids = Object.values(container.lineup).map((model) => model.id);
-  if (requested === undefined) return container.lineup[container.modelConfig.answerTier].id;
-  if (!ids.includes(requested)) stop(`Model ${requested} is not in the lineup. Use one of: ${ids.join(', ')}`);
-  return requested;
+/** --model when it is one of the choices, from any provider set up, otherwise the default model. */
+function pickModel(container: Container, requested: string | undefined): CatalogModel {
+  const { options, defaultModel } = container.models;
+  if (requested === undefined) return defaultModel;
+  const chosen = options.find((model) => model.id === requested);
+  if (!chosen) stop(`Model ${requested} is not offered. Use one of: ${options.map((model) => model.id).join(', ')}`);
+  return chosen;
+}
+
+/** --effort when it is low, medium or high and the model's provider lets one be picked; null (the configured default) without it. */
+function pickEffort(configured: ReasoningEffort | null, requested: string | undefined): AnswerEffort | null {
+  if (requested === undefined) return null;
+  const parsed = AnswerEffort.safeParse(requested);
+  if (!parsed.success) stop(`Effort ${requested} is not one of: ${AnswerEffort.options.join(', ')}`);
+  if (pickableEffort(configured) === null) stop("This model's provider answers at a fixed effort, so --effort cannot change it.");
+  return parsed.data;
 }
 
 /** Loads the sample folder and waits until it is ready, printing each phase and progress step once. */
@@ -89,13 +111,20 @@ async function indexSamples(container: Container): Promise<number> {
   return seconds;
 }
 
-async function ask(container: Container, question: EvalQuestion, sessionId: string, model: string): Promise<QuestionResult> {
+async function ask(
+  container: Container,
+  question: EvalQuestion,
+  sessionId: string,
+  model: string,
+  effort: AnswerEffort | null,
+): Promise<QuestionResult> {
   const steps = new Map<string, ToolStep>();
   const started = performance.now();
   const outcome = await container.askQuestion.execute({
     sessionId,
     question: question.question,
     model,
+    effort,
     onEvent: (event) => {
       if (event.type === 'step') steps.set(event.step.id, event.step);
     },

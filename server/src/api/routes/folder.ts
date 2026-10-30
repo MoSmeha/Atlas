@@ -1,7 +1,8 @@
 import { resolve } from 'node:path';
-import { IndexEvent, IndexStatus, LoadFolderRequest, routes } from '@atlas/shared';
+import { FolderItemRequest, IndexEvent, IndexStatus, LoadFolderRequest, PickFolderRequest, PickFolderResponse, routes } from '@atlas/shared';
 import { errors } from '../../application/errors';
 import type { IndexFolder } from '../../application/indexing/IndexFolder';
+import type { FolderPicker } from '../../application/ports/FolderPicker';
 import type { Workspace } from '../../application/workspace/Workspace';
 import { openSse } from '../sse';
 import type { RoutePlugin } from '../zod';
@@ -11,6 +12,8 @@ export interface FolderDeps {
   workspace: Workspace;
   /** Relative folder paths start here: the repository root. */
   repoRoot: string;
+  /** The folder window of this computer, for choosing a folder instead of typing its path. */
+  folderPicker: FolderPicker;
 }
 
 export const folderRoutes: RoutePlugin<{ deps: FolderDeps }> = async (app, { deps }) => {
@@ -18,6 +21,23 @@ export const folderRoutes: RoutePlugin<{ deps: FolderDeps }> = async (app, { dep
     const status = await deps.indexFolder.load(folderPath(deps.repoRoot, request.body.path));
     return reply.status(202).send(status);
   });
+
+  // Removes the loaded folder from Atlas and deletes its index; uploaded files are deleted too.
+  app.delete(routes.folder, { schema: { response: { 200: IndexStatus } } }, async () => deps.indexFolder.unload());
+
+  app.post(routes.folderRemove, { schema: { body: FolderItemRequest, response: { 200: IndexStatus } } }, async (request) =>
+    deps.indexFolder.remove(request.body.path),
+  );
+
+  app.post(routes.folderRestore, { schema: { body: FolderItemRequest, response: { 202: IndexStatus } } }, async (request, reply) => {
+    const status = await deps.indexFolder.restore(request.body.path);
+    return reply.status(202).send(status);
+  });
+
+  // Waits while the window is open; the client loads the chosen folder like a typed path.
+  app.post(routes.folderPick, { schema: { body: PickFolderRequest, response: { 200: PickFolderResponse } } }, async (request) => ({
+    path: await deps.folderPicker.pick(request.body.title),
+  }));
 
   app.get(routes.folderStatus, { schema: { response: { 200: IndexStatus } } }, async () => deps.workspace.status());
 

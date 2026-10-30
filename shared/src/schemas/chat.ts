@@ -1,12 +1,14 @@
 import { z } from 'zod';
 import { Answer } from './answer';
 import { ErrorDetail } from './errors';
-import { Usage } from './models';
+import { AnswerEffort, Usage } from './models';
 
 export const ChatRequest = z.object({
   sessionId: z.string().min(1).max(100),
   question: z.string().trim().min(1).max(4000),
   model: z.string().nullable().optional(),
+  /** Null or left out gives the provider's default effort. */
+  effort: AnswerEffort.nullable().optional(),
   /** True when the question was spoken in a voice call: a short text to read aloud then comes before the answer. */
   spoken: z.boolean().optional(),
 });

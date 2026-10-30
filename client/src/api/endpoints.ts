@@ -2,10 +2,13 @@ import {
   type EndCallRequest,
   type ExportRequest,
   ExportResponse,
+  type FolderItemRequest,
   HealthResponse,
   IndexStatus,
   type LoadFolderRequest,
   ModelsResponse,
+  type PickFolderRequest,
+  PickFolderResponse,
   SheetRows,
   type StartCallRequest,
   StartCallResponse,
@@ -38,6 +41,21 @@ export const api = {
 
   loadFolder: (request: LoadFolderRequest) =>
     requestJson(routes.folder, IndexStatus, { method: 'POST', body: request }),
+
+  /** Opens the folder window on the Atlas computer and waits for the person to choose a folder or close it. */
+  pickFolder: (request: PickFolderRequest) =>
+    requestJson(routes.folderPick, PickFolderResponse, { method: 'POST', body: request }),
+
+  /** Removes the loaded folder from Atlas and deletes its index; uploaded files are deleted too. */
+  unloadFolder: () => requestJson(routes.folder, IndexStatus, { method: 'DELETE' }),
+
+  /** Removes a file or subfolder from Atlas: an uploaded copy is deleted, a file in a loaded folder is left out. */
+  removeFromFolder: (request: FolderItemRequest) =>
+    requestJson(routes.folderRemove, IndexStatus, { method: 'POST', body: request }),
+
+  /** Puts a removed file or subfolder back, which reads it again. */
+  restoreToFolder: (request: FolderItemRequest) =>
+    requestJson(routes.folderRestore, IndexStatus, { method: 'POST', body: request }),
 
   /** Sends the files as multipart form data, each under the field name "files". */
   upload: (files: File[]) => {

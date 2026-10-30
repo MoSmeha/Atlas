@@ -41,7 +41,7 @@ export class ExcelJsReader implements DocumentReader {
     const sheets = await this.readSheets(bytes);
     if (sheets === null || sheets.length === 0) return { status: 'corrupt', detail: NOT_A_WORKBOOK };
     if (sheets.every(({ grid }) => grid.rows.length === 0)) {
-      return { status: 'empty', detail: 'Every sheet in the workbook is empty.' };
+      return { status: 'empty', detail: 'The workbook opens, but every sheet is empty.' };
     }
     return { status: 'ok', document: { kind: 'excel', sheets: sheets.map(({ grid }) => grid) }, detail: truncationNote(sheets) };
   }

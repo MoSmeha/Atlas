@@ -32,7 +32,8 @@ Numbers are never typed by the model: totals, thresholds and comparisons are com
 
 - Stack is fixed: React with Vite, Mantine 9.7 (core, hooks, notifications, dropzone), @tabler/icons-react, react-pdf for the viewer, TanStack Query for server state.
 - All colours, spacing and radii come from the Mantine theme object. One brand hue plus neutrals; colour is used only for warnings and errors. No hex values in components.
-- UI language is English.
+- The interface is in English or Arabic, switched from the top bar and remembered (2026-10-29). Arabic mirrors the whole layout right to left. Answers follow the question's language. Figures stay in Western digits in both, matching the documents.
+- Light and dark themes, switched from the top bar and remembered; light is the default for the daytime meeting room.
 - File statuses: ok, empty, corrupt, encrypted, scanned, too_large, skipped. Document types: Contract, BOQ, Specification, Schedule, Drawing, Minutes, Correspondence, Other.
 - The model picker shows the cost and time of the last answer.
 
@@ -52,8 +53,8 @@ Generated sample documents for an invented project (a mixed-use building in Riya
 2. Plain language for people who are not engineers; no jargon in labels or errors.
 3. A bad file never blocks the rest; problems are named specifically, with what to do next.
 4. Numbers are exact and attributed; nothing is rounded or estimated without saying so.
-5. Fast to a first answer: suggested questions and a visible indexing progress line.
+5. Fast to a first answer: the question box waits at the foot of the first screen, and indexing shows a visible progress line. The empty conversation is Atlas's face and its line only; suggested questions were dropped from it at the owner's request (2026-10-29).
 
 ## Accessibility & Inclusion
 
-Right-to-left rendering for Arabic answers and Arabic text inside tables and sources. Readable at laptop sizes in a meeting room, where reviewers watch a shared screen.
+Right-to-left rendering for the Arabic interface, Arabic answers and Arabic text inside tables and sources; file names, paths and codes keep their own direction inside Arabic sentences. Both themes hold body text at 4.5:1 or better. Readable at laptop sizes in a meeting room, where reviewers watch a shared screen.

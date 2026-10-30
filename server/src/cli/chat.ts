@@ -13,9 +13,9 @@ const HELP = 'Type a question, or /model <id> to change the model, /clear to sta
  * questions suggested for the folder, if any.
  */
 export async function chat(container: Container, terminal: Terminal, suggestions: readonly string[] = []): Promise<void> {
-  const { lineup, modelConfig, sessions, askQuestion } = container;
-  const models = Object.values(lineup);
-  let model: CatalogModel = lineup[modelConfig.answerTier];
+  const { sessions, askQuestion } = container;
+  const models = container.models.options;
+  let model: CatalogModel = container.models.defaultModel;
   let sessionId = randomUUID();
   let running: AbortController | null = null;
 
@@ -68,9 +68,13 @@ export async function chat(container: Container, terminal: Terminal, suggestions
   }
 }
 
-/** The model named by id or tier; an empty or unknown name lists the choices and keeps the current one. */
+/**
+ * The model named by id, or by tier within the current model's provider; an empty or unknown name lists the
+ * choices and keeps the current one.
+ */
 function pickModel(models: CatalogModel[], name: string, current: CatalogModel, terminal: Terminal): CatalogModel {
-  const chosen = models.find((model) => model.id === name || model.tier === name);
+  const chosen =
+    models.find((model) => model.id === name) ?? models.find((model) => model.provider === current.provider && model.tier === name);
   if (chosen !== undefined) {
     terminal.line(`Model: ${chosen.id}.`);
     return chosen;
@@ -78,8 +82,8 @@ function pickModel(models: CatalogModel[], name: string, current: CatalogModel, 
   if (name !== '') terminal.line(`There is no model "${name}".`);
   terminal.line('Models:');
   for (const model of models) {
-    const price = `$${model.inputPrice} in / $${model.outputPrice} out per 1M tokens`;
-    terminal.line(`  ${model.id === current.id ? '*' : ' '} ${model.id.padEnd(16)} ${model.tier.padEnd(9)} ${price}`);
+    const price = model.inputPrice === 0 && model.outputPrice === 0 ? 'free' : `$${model.inputPrice} in / $${model.outputPrice} out per 1M tokens`;
+    terminal.line(`  ${model.id === current.id ? '*' : ' '} ${model.id.padEnd(22)} ${model.provider.padEnd(7)} ${model.tier.padEnd(9)} ${price}`);
   }
   return current;
 }

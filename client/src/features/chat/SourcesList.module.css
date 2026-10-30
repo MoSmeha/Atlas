@@ -117,16 +117,19 @@
   }
 }
 
-/* The source open in the viewer. */
+/*
+ * The source open in the viewer: the ink tint, a step heavier than the hover tone in both schemes, its number on the
+ * primary fill, its chevron in the link colour.
+ */
 .row[data-active] {
-  background-color: var(--mantine-color-ink-0);
+  background-color: var(--mantine-color-ink-1);
 }
 
 .row[data-active] .number {
-  background-color: var(--mantine-color-ink-7);
-  color: var(--mantine-color-white);
+  background-color: var(--mantine-primary-color-filled);
+  color: var(--atlas-on-ink);
 }
 
 .row[data-active] .open {
-  color: var(--mantine-color-ink-7);
+  color: var(--mantine-color-anchor);
 }

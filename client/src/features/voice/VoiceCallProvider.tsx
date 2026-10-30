@@ -3,14 +3,16 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toApiError } from '../../api/ApiError';
 import { silence } from '../../api/audioMeter';
 import { api } from '../../api/endpoints';
-import { type LiveConnection, openLiveCall } from '../../api/liveCall';
+import { type LiveConnection, openLiveCall, warmUpCalls } from '../../api/liveCall';
 import { MicrophoneError } from '../../api/microphone';
 import { queryKeys } from '../../api/queryKeys';
 import { useVoices } from '../../api/useVoices';
+import type { Language } from '../../i18n/language';
+import { useLanguage } from '../../i18n/useLanguage';
 import { useSession } from '../../state/useSession';
 import { useChat } from '../chat/useChat';
 import { errorMessage } from '../errors/errorCopy';
-import { endedMessage, microphoneMessage } from './callCopy';
+import { callCopy, endedMessage, microphoneMessage } from './callCopy';
 import { type CallOutcome, CallSession, type CallView } from './CallSession';
 import { VoiceCallContext, type VoiceCallValue, type VoiceNotice } from './VoiceCallContext';
 import { chooseVoice, rememberedVoice, rememberVoice } from './voiceChoice';
@@ -19,6 +21,12 @@ interface OpenCall {
   session: CallSession;
   sessionId: string;
   connection: LiveConnection | null;
+}
+
+/** A notice not yet put into words, so it reads in the interface language even if that changes while it shows. */
+interface PendingNotice {
+  tone: VoiceNotice['tone'];
+  text: (language: Language) => string;
 }
 
 const noCall = () => () => undefined;
@@ -36,9 +44,10 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
   const { sessionId } = useSession();
   const voices = useVoices();
   const queryClient = useQueryClient();
+  const { language } = useLanguage();
   const [picked, setPicked] = useState<string | null>(rememberedVoice);
   const [open, setOpen] = useState<OpenCall | null>(null);
-  const [notice, setNotice] = useState<VoiceNotice | null>(null);
+  const [notice, setNotice] = useState<PendingNotice | null>(null);
   const openRef = useRef<OpenCall | null>(null);
   const chatRef = useRef(chat);
 
@@ -71,7 +80,12 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
     async (outcome: CallOutcome, callSessionId: string) => {
       if (outcome.callId === null) return;
       try {
-        await api.endCall(outcome.callId, { sessionId: callSessionId, seconds: outcome.seconds, hangUp: !outcome.confirmed });
+        await api.endCall(outcome.callId, {
+          sessionId: callSessionId,
+          seconds: outcome.seconds,
+          hangUp: !outcome.confirmed,
+          diagnosis: outcome.diagnosis,
+        });
       } catch (error) {
         console.warn('Could not report the end of the call', error);
       }
@@ -101,8 +115,10 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
           setOpen(null);
         }
         void report(outcome, current.sessionId);
-        const message = endedMessage(session.snapshot().endReason, data.idleSeconds, data.maxCallMinutes);
-        if (message !== null) setNotice({ tone: 'info', text: message });
+        const { endReason } = session.snapshot();
+        const { idleSeconds, maxCallMinutes } = data;
+        const ended = (wording: Language) => endedMessage(endReason, idleSeconds, maxCallMinutes, wording);
+        if (ended('en') !== null) setNotice({ tone: 'info', text: (wording) => ended(wording) ?? '' });
       });
       let connection: LiveConnection;
       try {
@@ -116,23 +132,25 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
         void session.end('failed');
         setNotice({
           tone: 'error',
-          text:
+          text: (wording) =>
             error instanceof MicrophoneError
-              ? microphoneMessage(error.problem)
-              : `Atlas could not start the call. ${errorMessage(toApiError(error))}`,
+              ? microphoneMessage(error.problem, wording)
+              : callCopy[wording].couldNotStart(errorMessage(toApiError(error), wording)),
         });
         return;
       }
       if (session.snapshot().status === 'ended') {
         // Hung up while it was still connecting: the call exists on the service and bills until it is hung up.
         connection.dispose();
-        void api.endCall(connection.callId, { sessionId, seconds: 0, hangUp: true }).catch(() => undefined);
+        void api.endCall(connection.callId, { sessionId, seconds: 0, hangUp: true, diagnosis: connection.diagnosis() }).catch(() => undefined);
         return;
       }
       current.connection = connection;
       session.attach(connection);
+      // A voice made for this call is ready from now on.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.voices });
     },
-    [data, report, sessionId],
+    [data, queryClient, report, sessionId],
   );
 
   const start = useCallback(() => {
@@ -143,17 +161,20 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
     void openRef.current?.session.end('hung_up');
   }, []);
 
-  const chooseVoiceAndRestart = useCallback(
-    (next: string) => {
-      rememberVoice(next);
-      setPicked(next);
-      const current = openRef.current;
-      if (current === null || current.session.snapshot().status !== 'live') return;
-      // A call's voice is fixed when it starts, so a new voice means a new call; the chat carries the context over.
-      void current.session.end('switching').then(() => begin(next));
-    },
-    [begin],
-  );
+  // Chosen before a call; a call's voice is fixed once it starts.
+  const pickVoice = useCallback((next: string) => {
+    rememberVoice(next);
+    setPicked(next);
+  }, []);
+
+  // The first offer on a page is slow to make, so it is made once, off the click, as soon as calls are possible.
+  const callsAvailable = data?.callsAvailable ?? false;
+  useEffect(() => {
+    if (!callsAvailable) return;
+    if (typeof window.requestIdleCallback !== 'function') return void setTimeout(warmUpCalls, 0);
+    const handle = window.requestIdleCallback(warmUpCalls, { timeout: 2_000 });
+    return () => window.cancelIdleCallback(handle);
+  }, [callsAvailable]);
 
   // A new chat (Clear chat) ends the call, which belongs to the old one.
   useEffect(() => {
@@ -168,7 +189,12 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       if (current === null || current.connection === null) return;
       const seconds = current.session.snapshot().seconds;
       current.connection.send({ type: 'session.close', event_id: 'page_closed' });
-      api.endCallOnExit(current.connection.callId, { sessionId: current.sessionId, seconds, hangUp: true });
+      api.endCallOnExit(current.connection.callId, {
+        sessionId: current.sessionId,
+        seconds,
+        hangUp: true,
+        diagnosis: current.connection.diagnosis(),
+      });
       current.connection.dispose();
     };
     window.addEventListener('pagehide', onPageHide);
@@ -180,14 +206,15 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<VoiceCallValue>(
     () => ({
-      callsAvailable: data?.callsAvailable ?? false,
+      callsAvailable,
       dictationAvailable: data?.dictationAvailable ?? false,
       maxDictationSeconds: data?.maxDictationSeconds ?? 120,
       voices: data?.voices ?? [],
+      preparingVoices: data?.preparingVoices ?? false,
       voiceId,
-      chooseVoice: chooseVoiceAndRestart,
+      chooseVoice: pickVoice,
       call: call satisfies CallView | null,
-      notice,
+      notice: notice === null ? null : { tone: notice.tone, text: notice.text(language) },
       pricePerMinute: data?.callPricePerMinute ?? 0,
       levels: () => openRef.current?.session.levels() ?? silence,
       start,
@@ -195,7 +222,7 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       setMuted: (muted) => openRef.current?.session.setMuted(muted),
       stopQuestion: () => openRef.current?.session.stopQuestion(),
     }),
-    [data, voiceId, chooseVoiceAndRestart, call, notice, start, hangUp],
+    [data, callsAvailable, voiceId, pickVoice, call, notice, language, start, hangUp],
   );
 
   return <VoiceCallContext.Provider value={value}>{children}</VoiceCallContext.Provider>;

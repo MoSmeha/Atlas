@@ -14,6 +14,8 @@ export const VoiceOption = z.object({
   language: z.enum(['en', 'ar']),
   dialect: VoiceDialect,
   gender: z.enum(['female', 'male']),
+  /** False until a designed voice has been made once for this account; the first call with it waits for that. */
+  ready: z.boolean(),
 });
 export type VoiceOption = z.infer<typeof VoiceOption>;
 
@@ -23,6 +25,8 @@ export const VoicesResponse = z.object({
   /** False while OPENAI_API_KEY is unset. */
   dictationAvailable: z.boolean(),
   voices: z.array(VoiceOption),
+  /** The server is making the voices that are not ready yet, one after another. */
+  preparingVoices: z.boolean(),
   defaultVoice: z.string(),
   /** US dollars per minute of a voice call, billed per second while the call is open. */
   callPricePerMinute: z.number(),
@@ -52,12 +56,62 @@ export const StartCallResponse = z.object({
 });
 export type StartCallResponse = z.infer<typeof StartCallResponse>;
 
+const startupMs = z.number().int().nonnegative().max(600_000).nullable();
+
+/** Milliseconds from pressing Call to each step of the call's start; null for a step it never reached. */
+export const CallStartup = z.object({
+  /** The microphone was open. */
+  microphone: startupMs,
+  /** The browser's offer was ready, with its connection candidates. */
+  offer: startupMs,
+  /** The Atlas server answered, once the voice service had created the call. */
+  answer: startupMs,
+  /** The voice service said the call had started. */
+  started: startupMs,
+  /** The first words of Atlas's greeting arrived. */
+  firstWord: startupMs,
+});
+export type CallStartup = z.infer<typeof CallStartup>;
+
+/**
+ * What the browser measured about a call's audio, kept in the call log so a call where Atlas could not hear the user
+ * can be explained afterwards: was the microphone silent, did its audio leave the browser, what did the service send.
+ */
+export const CallDiagnosis = z.object({
+  /** The microphone as the browser names it. */
+  micLabel: z.string().max(200),
+  /** The microphone track at the end: muted means the device gave no sound; none means there was no track. */
+  micState: z.enum(['live', 'muted', 'ended', 'none']),
+  /** The loudest the microphone got, from 0 to 1. */
+  micPeak: z.number().min(0).max(1),
+  /** The sound energy the browser sent from the microphone; 0 is digital silence. Null before the first reading. */
+  micEnergy: z.number().nonnegative().nullable(),
+  /** Audio packets the browser sent to the service. Null before the first reading. */
+  packetsSent: z.number().int().nonnegative().nullable(),
+  /** How the browser and the service agreed to carry the audio: sendrecv when both ways. Null if they never agreed. */
+  direction: z.string().max(20).nullable(),
+  /**
+   * The service's answer asked the browser to stop sending audio in silence (Opus DTX), which the call turns off. Null
+   * before the answer arrived.
+   */
+  answerDtx: z.boolean().nullable(),
+  /** Each event type the service sent, with how many of it. */
+  events: z.record(z.string().max(80), z.number().int().nonnegative()),
+  /** The errors and notices the service sent, oldest first. */
+  notes: z.array(z.string().max(300)).max(10),
+  /** How long each step of the start took; null from a browser that did not measure it. */
+  startup: CallStartup.nullable().default(null),
+});
+export type CallDiagnosis = z.infer<typeof CallDiagnosis>;
+
 export const EndCallRequest = z.object({
   sessionId: z.string().min(1).max(100),
   /** How long the call lasted, as the voice service last reported it. */
   seconds: z.number().nonnegative().max(86_400),
   /** True when the browser could not close the call itself, for example because the page is closing. */
   hangUp: z.boolean(),
+  /** Null when the call never connected. */
+  diagnosis: CallDiagnosis.nullable(),
 });
 export type EndCallRequest = z.infer<typeof EndCallRequest>;
 
