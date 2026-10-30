@@ -2,7 +2,7 @@
 
 **Which agent.** Claude Code, first on Claude Opus 5.5 and later on Fable 5.1. I did not hand it the brief and wait. I wrote the contracts first (schemas, ports, in-memory fakes, model config) so every agent built against the same shapes. Claude Code then split the rest into about fifty units and ran them as parallel agents, each merged into `main` with `--no-ff` once typecheck and tests passed. The `impeccable` skill set the visual direction.
 
-**How long.** About 15 hours across 28 to 30 October 2026 (`docs/TIMELOG.md`): one on contracts and design, three on the parallel build, one on the eval and fixes, the rest on voice, Arabic, free providers and docs.
+**How long.** About 20 hours across 28 to 30 October 2026 (`docs/TIMELOG.md`): one on contracts and design, three on the parallel build, one on the eval and fixes, the rest on voice, Arabic, free providers and docs.
 
 **Decisions I would defend.**
 - The model never types a number. Tables become SQLite tables; totals and "above SAR 1 million" run SQL over every row, and a guard rejects any figure no tool returned. Everything else hangs on this.
