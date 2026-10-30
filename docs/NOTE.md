@@ -1,6 +1,6 @@
 # Note
 
-**AI coding agent.** Claude Code (Claude Opus 5.5). I wrote the contracts first: Zod schemas, ports, in-memory fakes and the model config. Claude Code split the rest into about 50 units and ran them as parallel agents in separate worktrees, each merged into `main` with `--no-ff` after typecheck and tests. The `impeccable` design skill set the visual direction.
+**AI coding agent.** Claude Code (Claude Opus 5.5, then Fable 5.1). I wrote the contracts first: Zod schemas, ports, in-memory fakes and the model config. Claude Code split the rest into about 50 units and ran them as parallel agents in separate worktrees, each merged into `main` with `--no-ff` after typecheck and tests. The `impeccable` design skill set the visual direction.
 
 **Time.** About 15 hours over 28 to 30 October 2026 (`docs/TIMELOG.md`): one for contracts and design direction, three for the parallel build, one for the eval and fixes, the rest for voice, the Arabic interface, free providers and docs.
 
