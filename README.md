@@ -1,6 +1,13 @@
-# Atlas
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-dark.svg">
+    <img src="docs/images/logo-light.svg" alt="The Atlas logo: Atlas's face in front of a spreadsheet and a PDF" width="128">
+  </picture>
+</p>
 
-**Ask your project documents a question. Get an answer you can check.**
+<h1 align="center">Atlas</h1>
+
+<p align="center"><b>Ask your project documents a question. Get an answer you can check.</b></p>
 
 Atlas reads a folder of PDFs and Excel files (contracts, bills of quantities, specifications, meeting minutes) and answers questions about them in English or Arabic. Every answer shows where it came from, down to the page or the spreadsheet row.
 

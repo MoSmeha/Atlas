@@ -764,7 +764,7 @@ Opens a cited source, or a whole file from the sidebar.
 | `i18n/useCopy.ts` | A feature's text in the current language |
 | `i18n/count.ts` | Numbers and plurals, Arabic plurals included |
 | `i18n/bidi.ts` | Keeps a file name's direction inside an Arabic sentence |
-| `shell/TopBar.tsx`, `Wordmark.tsx` | The top bar and Atlas's mark |
+| `shell/TopBar.tsx`, `Wordmark.tsx`, `AtlasMark.tsx` | The top bar, and Atlas's mark: a spreadsheet and a PDF behind the call face's head |
 | `shell/MainColumn.tsx` | The conversation, with the composer docked at the foot |
 | `shell/Sheet.tsx`, `ScrollContainerContext.ts`, `useScrollContainer.ts` | The inset sheet the conversation scrolls in |
 | `shell/Opening.tsx`, `openingScript.ts` | The bust's opening line before the first question |
@@ -798,4 +798,4 @@ Vitest tests for the client's pure logic, by feature: `api/` (call diagnostics, 
 | `DEMO_GUIDE.md` | A plain guide to how Atlas is built, for answering "how does it work?" in a demo |
 | `NOTE.md` | How Atlas was built: the coding agent, the time, the approach |
 | `TIMELOG.md` | One line per work block |
-| `images/` | The README's feature wheel (`features.svg`) and its three screenshots |
+| `images/` | The README's logo (`logo-light.svg`, `logo-dark.svg`), feature wheel (`features.svg`) and three screenshots |
