@@ -14,6 +14,6 @@ One line per work block, in the machine's local time.
 | 2026-10-29 | 17:27 | 20:31 | Opening in the empty conversation, removing files and folders, quicker calls, provider labels, thinking-effort picker, README retake, Mac steps, demo guide |
 | 2026-10-30 | 10:27 | 13:58 | Native folder picker, empty-file fix, folder and file guide, feature wheel, new mark |
 
-The blocks from 29 October midday on are read from commit times, first to last commit of the block, so they start late and under-count.
+The blocks from 29 October midday on are read from commit times, first to last commit of the block, so they start late and under-count: the reading, planning and checking before each first commit is not in the rows.
 
-Total: about 15 hours.
+Total: about 20 hours, counting the time before each first commit.
