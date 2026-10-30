@@ -16,4 +16,4 @@ One line per work block, in the machine's local time.
 
 The blocks from 29 October midday on are read from commit times, first to last commit of the block, so they start late and under-count: the reading, planning and checking before each first commit is not in the rows.
 
-Total: about 20 hours, counting the time before each first commit.
+Total: about 19 hours, counting the time before each first commit.
