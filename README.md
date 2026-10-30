@@ -26,14 +26,7 @@ Atlas reads a folder of PDFs and Excel files (contracts, bills of quantities, sp
 
 ## What Atlas does
 
-<p align="center"><img src="docs/images/features.svg" alt="Atlas's six features on a wheel: reads whole folders, a source for every fact, exact numbers from code, compares revisions, voice calls and dictation, English and Arabic" width="760"></p>
-
-- **Reads whole folders.** Every PDF and spreadsheet, scanned pages included. Files it cannot read (damaged, password protected, empty) are named, never skipped quietly.
-- **A source for every fact.** Each one links to its page or rows; one click opens it, highlighted.
-- **Exact numbers from code.** Ask "which items are above SAR 1 million?" and Atlas checks every row of every file, PDF tables included, not a sample. Download just those items as Excel, with their sources, or as CSV. When the files do not say, Atlas says so and shows every place it looked.
-- **Compares revisions.** Ask what changed between Rev0 and Rev1 of a bill of quantities, and Atlas lists the items added, removed and changed, and how the total moved.
-- **Voice calls and dictation.** Ask out loud and hear the checked answer back, or dictate a question and edit it before sending.
-- **English and Arabic.** Atlas answers in the language you ask in. The top bar switches the interface between English and Arabic, and light and dark.
+<p align="center"><img src="docs/images/features.svg" alt="Atlas's six features on a wheel: reads whole folders, voice calls and dictation, exact numbers from code, compares revisions, a source for every fact, English and Arabic" width="760"></p>
 
 ## Check every answer
 
@@ -67,7 +60,7 @@ Pick the model, and how long it thinks, from the top bar. Each answer shows what
 | Free option | How to set it up | Good to know |
 | --- | --- | --- |
 | Gemini's free tier | Get a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and add `GEMINI_API_KEY=` to `.env` | Daily limit. Google may use what it is sent, so keep confidential files off it |
-| A model on your computer | Install [Ollama](https://ollama.com), then run `ollama pull qwen3:14b` and `ollama pull bge-m3` | Nothing leaves your computer. Needs a graphics card with 6 GB or more, or a Mac with Apple silicon and 16 GB or more |
+| A model on your computer | Install [Ollama](https://ollama.com), then run `ollama pull qwen3:14b` (`qwen3:8b` on a 16 GB Mac) and `ollama pull bge-m3` | Nothing leaves your computer. Needs a graphics card with 6 GB or more, or a Mac with Apple silicon and 16 GB or more |
 
 Free models sit in the same picker. Voice calls still use OpenAI.
 
@@ -120,7 +113,7 @@ Each step has its own chart in [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
 | Step | Windows (PowerShell) | macOS / Linux |
 | --- | --- | --- |
-| 1. Install Node.js 24 | [nodejs.org](https://nodejs.org/en/download) | [nodejs.org](https://nodejs.org/en/download), or Homebrew (see [On a Mac](#on-a-mac)) |
+| 1. Install Node.js 24 | [nodejs.org](https://nodejs.org/en/download) | [nodejs.org](https://nodejs.org/en/download) |
 | 2. Switch on pnpm | `corepack enable` | `corepack enable` |
 | 3. Get the code | `git clone https://github.com/MoSmeha/Atlas.git; cd Atlas` | `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas` |
 | 4. Install | `pnpm install` | `pnpm install` |
@@ -129,34 +122,10 @@ Each step has its own chart in [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
 A sample project, a fictional tower in Riyadh, loads by itself. To use your own files, click the folder button in the sidebar and choose a folder, type its path, or drop files on the sidebar.
 
-### On a Mac
-
-The same steps, with what a Mac asks along the way. Open Terminal (Applications, then Utilities), and press Return after each command.
-
-1. **Install Node.js 24.** The simplest way is the macOS installer at [nodejs.org](https://nodejs.org/en/download): pick version 24. With [Homebrew](https://brew.sh) instead, run these three lines. Homebrew keeps `node@24` off the path, and the second line puts it there:
-
-   ```sh
-   brew install node@24
-   echo "export PATH=\"$(brew --prefix node@24)/bin:\$PATH\"" >> ~/.zshrc
-   source ~/.zshrc
-   ```
-
-   `node --version` should now print a version starting with `v24`.
-2. **Switch on pnpm:** `corepack enable`. If it says permission denied, run `sudo corepack enable` and type your Mac password. If it says command not found, run `npm install -g pnpm` instead.
-3. **Get the code:** `git clone https://github.com/MoSmeha/Atlas.git && cd Atlas`. On a Mac without developer tools, this asks to install the "command line developer tools": click Install, wait for it to finish, then run the line again.
-4. **Install:** `pnpm install`. If it asks to download pnpm, type `Y`.
-5. **Add a model key:** `cp .env.example .env`, then `open -e .env` opens the file in TextEdit. Paste your key after `GEMINI_API_KEY=` (free) or `OPENAI_API_KEY=`, and save.
-6. **Start:** `pnpm dev`, then open http://localhost:5173 in Safari, Chrome or Edge. Press Control+C in Terminal to stop.
-
-The first voice call or dictation asks for the microphone. Allow it in the browser, and in System Settings, Privacy & Security, Microphone if macOS asks too.
-
-To answer for free on the Mac itself, Ollama runs on Apple silicon. `qwen3:14b` needs 24 GB of memory; with 16 GB, run `ollama pull qwen3:8b` in its place.
-
 ## Good to know
 
-- **Your files stay on your computer.** The app and its index run locally. The AI runs at OpenAI or Google (Gemini), so the passages and page images it needs are sent there; with Ollama nothing leaves the computer.
-- **Cost.** A question on Luna costs a fraction of a cent, and nothing on Gemini's free tier or Ollama. A voice call costs $0.05 a minute.
-- **File types.** PDF and Excel (`.pdf`, `.xlsx`, `.xlsm`). Other files are listed and skipped.
-- **Sample documents are fictional.** `samples/expected.json` holds their right answers.
-- **Licence.** mupdf is AGPL-3.0, so this repository has no permissive licence file.
-- **For developers.** Settings, the eleven tools, edge cases, project layout, tests and how to add a tool are in [docs/TECHNICAL.md](docs/TECHNICAL.md). Design notes are in [docs/NOTE.md](docs/NOTE.md), time spent in [docs/TIMELOG.md](docs/TIMELOG.md), and the design system in [client/DESIGN.md](client/DESIGN.md).
+- **Your files stay on your computer.** Only the passages and page images the AI needs go to OpenAI or Google; with Ollama, nothing leaves.
+- **Cost.** Under a cent a question on Luna, $0.05 a minute on calls; free models cost nothing.
+- **File types.** PDF and Excel (`.xlsx`, `.xlsm`); other files are listed and skipped.
+- **Licence.** No permissive licence, because mupdf is AGPL-3.0.
+- **For developers.** [docs/TECHNICAL.md](docs/TECHNICAL.md) (settings, tools, layout, tests), [docs/NOTE.md](docs/NOTE.md) (design notes), [docs/TIMELOG.md](docs/TIMELOG.md) and [client/DESIGN.md](client/DESIGN.md).
