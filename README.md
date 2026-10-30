@@ -1,6 +1,13 @@
-# Atlas
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-dark.svg">
+    <img src="docs/images/logo-light.svg" alt="The Atlas logo: Atlas's face in front of a spreadsheet and a PDF" width="128">
+  </picture>
+</p>
 
-**Ask your project documents a question. Get an answer you can check.**
+<h1 align="center">Atlas</h1>
+
+<p align="center"><b>Ask your project documents a question. Get an answer you can check.</b></p>
 
 Atlas reads a folder of PDFs and Excel files (contracts, bills of quantities, specifications, meeting minutes) and answers questions about them in English or Arabic. Every answer shows where it came from, down to the page or the spreadsheet row.
 
@@ -9,46 +16,30 @@ Atlas reads a folder of PDFs and Excel files (contracts, bills of quantities, sp
 ## Contents
 
 1. [What Atlas does](#what-atlas-does)
-2. [See it in action](#see-it-in-action)
+2. [Check every answer](#check-every-answer)
 3. [Talk to Atlas](#talk-to-atlas)
 4. [Pick the AI model](#pick-the-ai-model)
-5. [English or Arabic, light or dark](#english-or-arabic-light-or-dark)
-6. [How it works](#how-it-works)
-7. [Tech stack](#tech-stack)
-8. [Run it yourself](#run-it-yourself)
-9. [Good to know](#good-to-know)
+5. [How it works](#how-it-works)
+6. [Tech stack](#tech-stack)
+7. [Run it yourself](#run-it-yourself)
+8. [Good to know](#good-to-know)
 
 ## What Atlas does
 
-- **Reads a whole folder,** every PDF and spreadsheet, scanned pages included, and answers questions asked in plain words.
-- **Shows its sources.** Every fact links to its page or rows; one click opens it, highlighted.
-- **Never makes up numbers.** Code works out totals over every row, and when the files do not say, Atlas says so.
+<p align="center"><img src="docs/images/features.svg" alt="Atlas's six features on a wheel: reads whole folders, a source for every fact, exact numbers from code, compares revisions, voice calls and dictation, English and Arabic" width="760"></p>
 
-## See it in action
+- **Reads whole folders.** Every PDF and spreadsheet, scanned pages included. Files it cannot read (damaged, password protected, empty) are named, never skipped quietly.
+- **A source for every fact.** Each one links to its page or rows; one click opens it, highlighted.
+- **Exact numbers from code.** Ask "which items are above SAR 1 million?" and Atlas checks every row of every file, PDF tables included, not a sample. Download just those items as Excel, with their sources, or as CSV. When the files do not say, Atlas says so and shows every place it looked.
+- **Compares revisions.** Ask what changed between Rev0 and Rev1 of a bill of quantities, and Atlas lists the items added, removed and changed, and how the total moved.
+- **Voice calls and dictation.** Ask out loud and hear the checked answer back, or dictate a question and edit it before sending.
+- **English and Arabic.** Atlas answers in the language you ask in. The top bar switches the interface between English and Arabic, and light and dark.
 
-**1. Load a folder.** Atlas lists every file and flags the ones it cannot read (damaged, password protected, empty, scanned). Then type your question in the box at the foot.
+## Check every answer
 
-![A folder loaded, with every file listed and Atlas's face waiting for a question](docs/images/start.png)
-
-**2. Get exact lists.** Ask "which items are above SAR 1 million?" and Atlas checks every row of every file, PDF tables included, not a sample. Download just those items as Excel, with their sources, or as CSV.
-
-<img src="docs/images/table.png" alt="57 cost items above SAR 1 million, with the export menu open" width="720">
-
-**3. Check the page.** Click a source and the PDF opens at the right page, with the sentence highlighted.
+Click a source and the PDF opens at the right page, with the sentence highlighted. A spreadsheet opens with the rows the answer used marked.
 
 ![A PDF opened at page 37 with the sentence highlighted](docs/images/pdf-source.png)
-
-**4. Or the rows.** A spreadsheet opens with the rows the answer used marked.
-
-![A spreadsheet opened with the rows the answer used marked](docs/images/excel-source.png)
-
-**5. Compare two editions of a BOQ.** Ask what changed between Rev0 and Rev1 of a bill of quantities, and Atlas lists the items added, removed and changed, and how the total moved.
-
-<img src="docs/images/revisions.png" alt="Two BOQ revisions compared item by item" width="720">
-
-**6. No guessing.** When the files do not say, Atlas says so, names the files it could not open, and shows every place it looked.
-
-<img src="docs/images/not-found.png" alt="A 'not found' answer listing the unreadable files and every search Atlas made" width="720">
 
 ## Talk to Atlas
 
@@ -56,25 +47,14 @@ Press the phone button and talk to Atlas as you would on a call, in English or i
 
 <img src="docs/images/voice.png" alt="A voice call: Atlas's face, what you said, what Atlas said, and the answer on screen" width="720">
 
-<table>
-  <tr>
-    <td width="270"><img src="docs/images/voice-picker.png" alt="The voice list open above the call button, with English and Arabic dialect voices" width="258"></td>
-    <td>
-
 - **English and five Arabic dialects** (Gulf, Levantine, Egyptian, North African, Modern Standard), female or male.
 - **Pick the voice** from the arrow beside the call button.
 - **Checked answers.** The voice reads out the checked answer and never works out numbers itself.
 - **Prefer typing?** The microphone button turns speech into a question you can edit before sending.
 
-</td>
-  </tr>
-</table>
-
 ## Pick the AI model
 
 Pick the model, and how long it thinks, from the top bar. Each answer shows what it cost and how long it took.
-
-<img src="docs/images/models.png" alt="The model picker open, with the GPT-6 models under OpenAI and the free Gemini models below, and the effort picker beside it" width="640">
 
 | Model | Best for | Cost |
 | --- | --- | --- |
@@ -91,17 +71,7 @@ Pick the model, and how long it thinks, from the top bar. Each answer shows what
 
 Free models sit in the same picker. Voice calls still use OpenAI.
 
-## English or Arabic, light or dark
-
-Switch between English and Arabic, and light and dark, from the top bar. Atlas answers in the language you ask in.
-
-![The Arabic interface, right to left, with an Arabic question answered in Arabic](docs/images/arabic.png)
-
-![The dark theme](docs/images/dark.png)
-
 ## How it works
-
-<p align="center"><img src="docs/images/opening.png" alt="Atlas's face with the words 'Every answer, with its page.'" width="320"></p>
 
 An AI model and ordinary code share the work. The model reads your question and decides what to look up. Code does the looking up: it searches the files, reads pages and adds up table rows. The model then writes the answer from what the code found. Before you see it, Atlas checks that every number in the answer appears in those results and that every source points to a real page or row. An answer that fails goes back to the model to fix.
 
