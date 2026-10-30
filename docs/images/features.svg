@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="880" height="620" viewBox="0 0 880 620" role="img" aria-labelledby="t d">
   <!-- Icons from Tabler Icons (MIT, tabler.io), the set the app uses; the face is Atlas's call face (faceDrawing.ts). Labels are plain text: edit them here. -->
   <title id="t">What Atlas does</title>
-  <desc id="d">Six features on a wheel round the Atlas logo (Atlas's face before a spreadsheet and a PDF) and name: reads whole folders, a source for every fact, exact numbers from code, compares revisions, voice calls and dictation (shown by Atlas's face), English and Arabic.</desc>
+  <desc id="d">Six features on a wheel round the Atlas logo (Atlas's face before a spreadsheet and a PDF) and name: reads whole folders, voice calls and dictation (shown by Atlas's face), exact numbers from code, compares revisions, a source for every fact, English and Arabic.</desc>
   <defs>
     <radialGradient id="ground" cx="50%" cy="50%" r="65%">
       <stop offset="0" stop-color="#45423e"/>
@@ -48,9 +48,25 @@
   <g>
     <circle cx="555" cy="110.8" r="84" fill="#211f1c"/>
     <circle cx="555" cy="110.8" r="71" fill="#fdfcfb"/>
-    <g transform="translate(535 70.8) scale(1.6667)" fill="none" stroke="#373532" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5"/><path d="M14 17.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0"/><path d="M18.5 19.5l2.5 2.5"/></g>
-    <text x="555" y="133.8" text-anchor="middle" class="label">A source for</text>
-    <text x="555" y="151.8" text-anchor="middle" class="label">every fact</text>
+    <g transform="translate(529 62.8) scale(0.4333)">
+      <circle cx="60" cy="60" r="58" fill="#f9f8f6"/>
+      <g clip-path="url(#face-clip)">
+        <path d="M10 124 C12 106 28 97 45 94 C52 98 68 98 75 94 C92 97 108 106 110 124 Z" fill="#ffffff" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
+        <path d="M31.50 46.00 A6.00 6.00 0 0 1 33.67 36.24 A6.20 6.20 0 0 1 39.85 27.97 A6.46 6.46 0 0 1 49.09 22.44 A6.65 6.65 0 0 1 60.00 20.50 A6.65 6.65 0 0 1 70.91 22.44 A6.46 6.46 0 0 1 80.15 27.97 A6.20 6.20 0 0 1 86.33 36.24 A6.00 6.00 0 0 1 88.50 46.00 A6.00 6.00 0 0 1 86.33 55.76 A6.20 6.20 0 0 1 80.15 64.03 A6.46 6.46 0 0 1 70.91 69.56 A6.65 6.65 0 0 1 60.00 71.50 A6.65 6.65 0 0 1 49.09 69.56 A6.46 6.46 0 0 1 39.85 64.03 A6.20 6.20 0 0 1 33.67 55.76 A6.00 6.00 0 0 1 31.50 46.00 Z" fill="#ebe9e7" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
+        <path d="M38.5 52 C38.5 35 48 26.5 60 26.5 C72 26.5 81.5 35 81.5 52 L81.5 64 C81.5 79 72 89 60 89 C48 89 38.5 79 38.5 64 Z" fill="#ffffff" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
+        <path d="M37.5 47 C37.5 33 47 25 60 25 C73 25 82.5 33 82.5 47 A3.78 3.78 0 0 1 79.00 42.00 A3.75 3.75 0 0 1 74.00 38.60 A4.15 4.15 0 0 1 67.50 37.00 A4.35 4.35 0 0 1 60.50 36.60 A4.35 4.35 0 0 1 53.50 37.00 A4.15 4.15 0 0 1 47.00 38.60 A3.75 3.75 0 0 1 42.00 42.00 A4.17 4.17 0 0 1 37.50 47.00 Z" fill="#ebe9e7" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
+        <g transform="translate(0 -0.6)" fill="none" stroke="#373533" stroke-width="2.2" stroke-linecap="round"><path d="M45.5 47.2 Q50.5 45 55 46.6"/><path d="M65 46.6 Q69.5 45 74.5 47.2"/></g>
+        <g transform="translate(50.50 54.00) scale(1 1.000)"><ellipse rx="3.3" ry="4" fill="#1b1917"/><circle cx="0.9" cy="-1.1" r="0.75" fill="#ffffff"/></g>
+        <g transform="translate(69.50 54.00) scale(1 1.000)"><ellipse rx="3.3" ry="4" fill="#1b1917"/><circle cx="0.9" cy="-1.1" r="0.75" fill="#ffffff"/></g>
+        <path d="M38.6 63 Q42 71.5 50 72.6 Q60 70.4 70 72.6 Q78 71.5 81.4 63 A5.02 5.02 0 0 1 82.60 71.00 A5.36 5.36 0 0 1 81.00 79.50 A5.41 5.41 0 0 1 77.50 87.50 A5.33 5.33 0 0 1 72.50 94.50 A4.84 4.84 0 0 1 66.50 99.50 A4.22 4.22 0 0 1 60.00 101.50 A4.22 4.22 0 0 1 53.50 99.50 A4.84 4.84 0 0 1 47.50 94.50 A5.33 5.33 0 0 1 42.50 87.50 A5.41 5.41 0 0 1 39.00 79.50 A5.36 5.36 0 0 1 37.40 71.00 A5.02 5.02 0 0 1 38.60 63.00 Z" transform="translate(0 63) scale(1 1.010) translate(0 -63)" fill="#ebe9e7" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
+        <ellipse cx="60" cy="77.6" rx="6.6" ry="3.32" fill="#ffffff"/>
+        <path d="M51.5 73.2 Q55.8 71.2 60 72.8 Q64.2 71.2 68.5 73.2" fill="none" stroke="#373533" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M55.78 77.38 Q60 77.27 64.22 77.38 Q60 79.91 55.78 77.38 Z" fill="#1b1917" stroke="#373533" stroke-width="0.8" stroke-linejoin="round"/>
+      </g>
+      <circle cx="60" cy="60" r="58" fill="none" stroke="#373532" stroke-width="3.5"/>
+    </g>
+    <text x="555" y="133.8" text-anchor="middle" class="label">Voice calls</text>
+    <text x="555" y="151.8" text-anchor="middle" class="label">and dictation</text>
   </g>
 
   <g>
@@ -72,25 +88,9 @@
   <g>
     <circle cx="325" cy="509.2" r="84" fill="#211f1c"/>
     <circle cx="325" cy="509.2" r="71" fill="#fdfcfb"/>
-    <g transform="translate(299 461.2) scale(0.4333)">
-      <circle cx="60" cy="60" r="58" fill="#f9f8f6"/>
-      <g clip-path="url(#face-clip)">
-        <path d="M10 124 C12 106 28 97 45 94 C52 98 68 98 75 94 C92 97 108 106 110 124 Z" fill="#ffffff" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
-        <path d="M31.50 46.00 A6.00 6.00 0 0 1 33.67 36.24 A6.20 6.20 0 0 1 39.85 27.97 A6.46 6.46 0 0 1 49.09 22.44 A6.65 6.65 0 0 1 60.00 20.50 A6.65 6.65 0 0 1 70.91 22.44 A6.46 6.46 0 0 1 80.15 27.97 A6.20 6.20 0 0 1 86.33 36.24 A6.00 6.00 0 0 1 88.50 46.00 A6.00 6.00 0 0 1 86.33 55.76 A6.20 6.20 0 0 1 80.15 64.03 A6.46 6.46 0 0 1 70.91 69.56 A6.65 6.65 0 0 1 60.00 71.50 A6.65 6.65 0 0 1 49.09 69.56 A6.46 6.46 0 0 1 39.85 64.03 A6.20 6.20 0 0 1 33.67 55.76 A6.00 6.00 0 0 1 31.50 46.00 Z" fill="#ebe9e7" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
-        <path d="M38.5 52 C38.5 35 48 26.5 60 26.5 C72 26.5 81.5 35 81.5 52 L81.5 64 C81.5 79 72 89 60 89 C48 89 38.5 79 38.5 64 Z" fill="#ffffff" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
-        <path d="M37.5 47 C37.5 33 47 25 60 25 C73 25 82.5 33 82.5 47 A3.78 3.78 0 0 1 79.00 42.00 A3.75 3.75 0 0 1 74.00 38.60 A4.15 4.15 0 0 1 67.50 37.00 A4.35 4.35 0 0 1 60.50 36.60 A4.35 4.35 0 0 1 53.50 37.00 A4.15 4.15 0 0 1 47.00 38.60 A3.75 3.75 0 0 1 42.00 42.00 A4.17 4.17 0 0 1 37.50 47.00 Z" fill="#ebe9e7" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
-        <g transform="translate(0 -0.6)" fill="none" stroke="#373533" stroke-width="2.2" stroke-linecap="round"><path d="M45.5 47.2 Q50.5 45 55 46.6"/><path d="M65 46.6 Q69.5 45 74.5 47.2"/></g>
-        <g transform="translate(50.50 54.00) scale(1 1.000)"><ellipse rx="3.3" ry="4" fill="#1b1917"/><circle cx="0.9" cy="-1.1" r="0.75" fill="#ffffff"/></g>
-        <g transform="translate(69.50 54.00) scale(1 1.000)"><ellipse rx="3.3" ry="4" fill="#1b1917"/><circle cx="0.9" cy="-1.1" r="0.75" fill="#ffffff"/></g>
-        <path d="M38.6 63 Q42 71.5 50 72.6 Q60 70.4 70 72.6 Q78 71.5 81.4 63 A5.02 5.02 0 0 1 82.60 71.00 A5.36 5.36 0 0 1 81.00 79.50 A5.41 5.41 0 0 1 77.50 87.50 A5.33 5.33 0 0 1 72.50 94.50 A4.84 4.84 0 0 1 66.50 99.50 A4.22 4.22 0 0 1 60.00 101.50 A4.22 4.22 0 0 1 53.50 99.50 A4.84 4.84 0 0 1 47.50 94.50 A5.33 5.33 0 0 1 42.50 87.50 A5.41 5.41 0 0 1 39.00 79.50 A5.36 5.36 0 0 1 37.40 71.00 A5.02 5.02 0 0 1 38.60 63.00 Z" transform="translate(0 63) scale(1 1.010) translate(0 -63)" fill="#ebe9e7" stroke="#373533" stroke-width="1.9" stroke-linejoin="round"/>
-        <ellipse cx="60" cy="77.6" rx="6.6" ry="3.32" fill="#ffffff"/>
-        <path d="M51.5 73.2 Q55.8 71.2 60 72.8 Q64.2 71.2 68.5 73.2" fill="none" stroke="#373533" stroke-width="1.7" stroke-linecap="round"/>
-        <path d="M55.78 77.38 Q60 77.27 64.22 77.38 Q60 79.91 55.78 77.38 Z" fill="#1b1917" stroke="#373533" stroke-width="0.8" stroke-linejoin="round"/>
-      </g>
-      <circle cx="60" cy="60" r="58" fill="none" stroke="#373532" stroke-width="3.5"/>
-    </g>
-    <text x="325" y="532.2" text-anchor="middle" class="label">Voice calls</text>
-    <text x="325" y="550.2" text-anchor="middle" class="label">and dictation</text>
+    <g transform="translate(305 469.2) scale(1.6667)" fill="none" stroke="#373532" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5"/><path d="M14 17.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0"/><path d="M18.5 19.5l2.5 2.5"/></g>
+    <text x="325" y="532.2" text-anchor="middle" class="label">A source for</text>
+    <text x="325" y="550.2" text-anchor="middle" class="label">every fact</text>
   </g>
 
   <g>
