@@ -1,0 +1,55 @@
+/*
+ * The face in the mark is marble in both schemes, as in a call: its colours come from the --atlas-marble tokens. Line
+ * weights are in the 120 unit drawing scaled to 92 %, set for the mark's 20 px.
+ */
+
+/* The head's outline, grown into a gap that cuts the files (a mask reads black as cut). */
+.headGap {
+  fill: #000;
+  stroke: #000;
+  stroke-width: 10.9;
+  stroke-linejoin: round;
+}
+
+/* The PDF's outline, grown into a gap that cuts the spreadsheet behind it. */
+.fileGap {
+  fill: #000;
+  stroke: #000;
+  stroke-width: 10;
+  stroke-linejoin: round;
+}
+
+.hair,
+.skin {
+  stroke: var(--atlas-marble-line);
+  stroke-width: 5.4;
+  stroke-linejoin: round;
+}
+
+.hair {
+  fill: var(--atlas-marble-shade);
+}
+
+.skin,
+.lips {
+  fill: var(--atlas-marble-stone);
+}
+
+.line,
+.thin {
+  fill: none;
+  stroke: var(--atlas-marble-line);
+  stroke-linecap: round;
+}
+
+.line {
+  stroke-width: 6;
+}
+
+.thin {
+  stroke-width: 4.9;
+}
+
+.eye {
+  fill: var(--atlas-marble-pupil);
+}
