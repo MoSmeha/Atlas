@@ -1,28 +1,16 @@
 # Note
 
-**AI coding agent.** Claude Code (model Claude Opus 5.5) in VS Code. I started by setting the shared contracts myself: the Zod schemas, the ports every layer codes against, in-memory fakes for tests and the model config. Claude Code then split the rest into about 50 small units and ran them as parallel agents. There were ten streams, each in its own git worktree, and every unit got its own branch. One coordinator merged each branch into `main` with `--no-ff` after typecheck and tests. The `impeccable` design skill set the visual direction and ran the review at the end. I chose the familiar chat-with-documents layout, at the polish of Claude.ai, Perplexity and Linear.
+**AI coding agent.** Claude Code (Claude Opus 5.5). I wrote the contracts first: Zod schemas, ports, in-memory fakes and the model config. Claude Code split the rest into about 50 units and ran them as parallel agents in separate worktrees, each merged into `main` with `--no-ff` after typecheck and tests. The `impeccable` design skill set the visual direction.
 
-**Time.** About 5 hours of wall-clock time on 28 and 29 October 2026, logged in `docs/TIMELOG.md`:
-- 25 minutes for the workspace and contracts
-- 30 minutes for the design direction and the model check
-- 3 hours for the parallel build
-- about 1 hour for the eval, the fixes, the design review and the docs
+**Time.** About 15 hours over 28 to 30 October 2026 (`docs/TIMELOG.md`): one for contracts and design direction, three for the parallel build, one for the eval and fixes, the rest for voice, the Arabic interface, free providers and docs.
 
 **Key design decisions.**
-- **Numbers come from code, not the model.** Excel and PDF tables become real SQLite tables, and totals and "above SAR 1 million" questions run SQL over every row. A guard rejects any number in an answer that no tool returned. The answer attaches the saved rows by id instead of retyping them.
-- **Every answer is one strict `submit_answer` call:** kind, language, text, result id and sources. An answer with no valid source becomes "not found in the loaded documents" and names the files that could not be read.
-- **Search** merges keyword hits (SQLite FTS5) with meaning-based hits (`text-embedding-3-small`) by rank. Scanned pages are rendered with mupdf and read by the model as images.
-- **The OpenAI Responses API** chains tool calls with `previous_response_id`, so reasoning carries across steps. The three models come from the account's own model list. The default answering model is the small one (GPT-6 Luna), to keep the demo cheap; the picker switches to Sol or Astra for harder questions.
-- **Voice calls** run on GPT-Live with client delegation: the voice listens, takes turns and speaks, and hands every question about the documents to the same agent and checks as a typed question, so a spoken total is still SQL. It speaks a short text built from the checked answer, in English or in Gulf, Levantine, Egyptian, North African or Modern Standard Arabic, with voices designed per dialect. During a call Atlas has an animated face, a philosopher's bust. Dictation into the question box uses `gpt-transcribe` with the folder's file names as hints.
-- **Clean architecture, kept light:** domain, application (use cases, tools, ports), infrastructure adapters, and api. One composition root serves the web server, the CLI and the eval. About 1,650 unit tests run with no API key and no network.
+- **Numbers come from code, not the model.** Tables become SQLite tables; totals and "above SAR 1 million" run SQL over every row. A guard rejects any number no tool returned.
+- **One strict `submit_answer` call** carries kind, language, text, result and sources. No valid source means "not found in the loaded documents".
+- **Search** merges keyword hits (FTS5) with embedding hits. Scanned pages are read as images.
+- **Any provider.** OpenAI by default (the small GPT-6 Luna keeps the demo cheap), Gemini's free tier or local Ollama. Voice calls on GPT-Live hand each question to the same agent, so a spoken total is still SQL.
+- **Clean architecture:** domain, application (use cases, tools, ports), infrastructure, api; one composition root serves the web server, the CLI and the eval. 1,919 unit tests run with no API key and no network.
 
-**Results.** The eval asks 21 questions and checks each answer against the known right answer (`docs/EVAL.md`). The first run passed 20 of 21 on GPT-6 Astra for $1.48; the miss listed three extra provisional sums. After the fixes (row-level sources, hidden internal columns, faster date extraction, Arabic text order, plainer answers, BOQ totals from item rows), it passed **21 of 21 on GPT-6 Luna, the default, for $0.02**, with a median answer time of 6.9 seconds.
+**Results.** The eval (`docs/EVAL.md`) asks 21 questions with known answers: 21 of 21 on GPT-6 Luna for $0.02, median 6.9 s; a first run scored 20 of 21 on GPT-6 Astra for $1.48.
 
-**With more time.**
-- Numbered markers in the answer text that point to each source.
-- A cheaper OCR pass for scanned pages before falling back to images.
-- PDF table detection for layouts beyond BOQ-style columns.
-- A spending cap per question.
-- `sqlite-vec` for very large folders.
-- Sign-in, and an Arabic interface.
-- Fewer, larger commits: the parallel build produced over 750 small ones.
+**With more time.** Numbered source markers in answers; an OCR pass before reading pages as images; PDF tables beyond BOQ layouts; a spending cap per question; `sqlite-vec` for very large folders; the eval on Gemini and Ollama, tested with fakes only; fewer, larger commits.
