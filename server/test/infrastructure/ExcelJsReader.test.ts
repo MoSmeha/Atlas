@@ -165,7 +165,7 @@ describe('ExcelJsReader, files it cannot use', () => {
       sheet.getCell('C3').font = { bold: true };
       sheet.mergeCells('D4:E5');
     });
-    expect(await reader.read(path)).toEqual({ status: 'empty', detail: 'Every sheet in the workbook is empty.' });
+    expect(await reader.read(path)).toEqual({ status: 'empty', detail: 'The workbook opens, but every sheet is empty.' });
   });
 
   it('reports a 0-byte file as empty', async () => {

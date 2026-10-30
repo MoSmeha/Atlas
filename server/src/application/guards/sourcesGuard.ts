@@ -8,8 +8,11 @@ import type { SubmittedSource } from '../tools/submitAnswer';
 import { guardMessages } from './guardMessages';
 import type { AnswerProblem } from './problems';
 
-/** Files Atlas could not read at all; a "not found" answer names them, since the answer may be inside. */
-export const UNREADABLE_STATUSES: readonly FileStatus[] = ['corrupt', 'encrypted', 'empty', 'too_large'];
+/**
+ * Files Atlas could not read at all; a "not found" answer names them, since the answer may be inside. An empty
+ * file was read and holds nothing, so it is not one of them.
+ */
+export const UNREADABLE_STATUSES: readonly FileStatus[] = ['corrupt', 'encrypted', 'too_large'];
 const MAX_QUOTE_CHARS = 300;
 
 export interface SourcesInput {
@@ -100,6 +103,7 @@ function toSource(index: DocumentIndex, submitted: SubmittedSource): Source | st
   const name = submitted.document.trim();
   const doc = index.find(name);
   if (doc === null) return `"${name}" is not a loaded document.`;
+  if (doc.status === 'empty') return `${doc.path} is empty, so it cannot be a source.`;
   if (UNREADABLE_STATUSES.includes(doc.status) || doc.status === 'skipped') {
     return `${doc.path} could not be read, so it cannot be a source.`;
   }

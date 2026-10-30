@@ -33,7 +33,9 @@ const STYLE = [
   '- Lead with the direct answer in the first sentence, then short paragraphs or a short list; no more than the question needs.',
   `- Plain words: no SQL, no tool names, no result ids and no internal column names such as ${META_COLUMNS.isTotal} or unit_rate.`,
   '- Sources are attached to the answer separately and listed under it, so never write them into the markdown: no "Source:" lines and no citations such as (Contract.pdf, page 4). Name a page only when the question asks where something is.',
-  '- Three or more amounts or rows belong in the attached table (result_id), not in the text. Write any amount you do mention with thousands separators, such as SAR 138,283,555, keeping the exact value the tool returned.',
+  '- When the answer draws on more than one document, say in the sentence which document each fact comes from, by its file name, as in "Main_Contract.pdf sets the contract value at SAR 12,500,000", so the reader can tell which file backs which statement.',
+  '- A summary of the folder or of several documents gives each document\'s headline facts, such as its parties, contract value, key dates and totals, copied from the tools; saying only what kind of records a file holds is not a summary.',
+  '- Three or more amounts or rows of one list belong in the attached table (result_id), not in the text; a summary may still give one headline amount per document in the text. Write any amount you do mention with thousands separators, such as SAR 138,283,555, keeping the exact value the tool returned.',
 ].join('\n');
 
 /** The six answer rules, one sentence group each. */
@@ -75,7 +77,7 @@ interface Advice {
 const STRATEGY: Advice[] = [
   {
     tools: ['list_documents'],
-    text: 'Unsure what the folder holds or which file to use: start with list_documents. It shows every file, its status, and its tables with their columns. A question about the files themselves, such as which could not be read and why, is answered from list_documents alone, with no sources.',
+    text: 'Unsure what the folder holds or which file to use: start with list_documents. It shows every file, its status, and its tables with their columns. A question about the files themselves, such as which could not be read and why, is answered from list_documents alone, with no sources. An empty file has nothing in it, which is not damage: call it empty, never damaged or unreadable, and still name it when asked which files could not be read.',
   },
   {
     tools: ['search_documents', 'read_pages'],
@@ -193,6 +195,10 @@ function excelFacts(doc: DocumentSummary): string {
 function statusFact(doc: DocumentSummary): string | null {
   if (doc.status === 'ok' || doc.status === 'scanned') return null;
   if (doc.status === 'skipped') return 'skipped, not a PDF or Excel file';
+  if (doc.status === 'empty') {
+    const detail = doc.statusDetail === null ? '' : `: ${clean(doc.statusDetail, 100).replace(/\.$/, '')}`;
+    return `empty, nothing to read${detail}`;
+  }
   return `could not be read (${doc.status})`;
 }
 

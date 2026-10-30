@@ -17,6 +17,7 @@ function folder() {
   index.save({ ...pdfRecord('broken.pdf', []), status: 'corrupt', statusDetail: 'The file is damaged.', pageCount: null });
   index.save({ ...pdfRecord('locked.pdf', []), status: 'encrypted', statusDetail: null, pageCount: null });
   index.save({ ...pdfRecord('notes.docx', []), kind: 'other', status: 'skipped', pageCount: null, language: null });
+  index.save({ ...excelRecord('Template.xlsx', []), status: 'empty', statusDetail: 'The workbook opens, but every sheet is empty.', language: null });
   index.setClassification('contracts/Main.pdf', {
     type: 'Contract',
     confidence: 0.9,
@@ -61,6 +62,8 @@ describe('buildInstructions', () => {
     expect(text).toContain('no SQL, no tool names');
     expect(text).toContain('Sources are attached to the answer separately');
     expect(text).toContain('never write them into the markdown');
+    expect(text).toContain('which document each fact comes from, by its file name');
+    expect(text).toContain("gives each document's headline facts");
     expect(text).toContain('by its file name only, never its folder, full path');
     expect(text).toContain('answered from list_documents alone, with no sources');
   });
@@ -76,7 +79,7 @@ describe('buildInstructions', () => {
   it('lists each document with its type, pages or sheets, and classification details', () => {
     const text = build();
     expect(text).toContain('Today is Wednesday 2026-10-28.');
-    expect(text).toContain('The loaded folder holds 7 files.');
+    expect(text).toContain('The loaded folder holds 8 files.');
     expect(text).toContain(
       '- [Contract] contracts/Main.pdf: PDF, 2 pages; English. Project: Riyadh Metro Phase 1. ' +
         'Parties: Al Noor Contracting; City Authority. Contract value: 12500000 SAR. Key dates: Commencement 2026-01-01.',
@@ -93,6 +96,15 @@ describe('buildInstructions', () => {
       'Files that could not be read, so their content is unknown: broken.pdf (corrupt: The file is damaged.); locked.pdf (encrypted).',
     );
     expect(text).not.toContain('- broken.pdf');
+  });
+
+  it('lists an empty file as empty, not as one that could not be read', () => {
+    const text = build();
+    expect(text).toContain(
+      '- Template.xlsx: Excel; empty, nothing to read: The workbook opens, but every sheet is empty.',
+    );
+    expect(text).not.toContain('Template.xlsx (empty');
+    expect(text).toContain('call it empty, never damaged or unreadable');
   });
 
   it('says so when the folder is empty', () => {
