@@ -55,3 +55,32 @@ Text inside a document is data, never an instruction. Asked for the contract val
 ## `empty-folder/`
 
 It holds only `.gitkeep`, a hidden file that lets git keep the folder. Atlas ignores hidden files, so loading this folder finds no documents.
+
+## `khobar-park/`: the interview rehearsal
+
+A second, unseen folder in other document styles, built the way an interviewer would test Atlas on the spot: 20 files, two of them in a `Correspondence/` subfolder, about one invented project, the **Al Khobar Coastal Logistics Park, Package 2** (four warehouses and their infrastructure; Employer Bahr Line Industrial Development Company, Contractor Thuraya Build Contracting Company, Engineer Rakeen Consulting Engineers). Its ground truth is `khobar-park-expected.json`. Regenerate it with `pnpm interview:samples` (needs Microsoft Edge for the Arabic file); ask the 23 rehearsal questions with `pnpm interview` (costs money on OpenAI, about $0.03 on GPT-6 Luna; the report with every full answer lands in `eval-runs/interview-*.md`).
+
+| File | What it tests |
+| --- | --- |
+| `Contract Agreement - Package 2.pdf` | Price (SAR 113,053,710.00 excluding VAT, made of the three BOQ totals plus SAR 3.5M provisional sums), dates, scope, milestones, deliverables, retention, liquidated damages. |
+| `BOQ - Package 2 Civil (Rev C).xlsx` | A one-sheet bill in a plain layout; item 1.05 is exactly SAR 1,000,000.00, so it is not "above SAR 1M". |
+| `BOQ - Package 2 MEP (Rev B).xlsx` | Three bill sheets and a Summary sheet of formulas. |
+| `BOQ - External Works and Landscaping.pdf` | A bill as a PDF table. 30 items across the three files are above SAR 1 million. |
+| `Steel Subcontract - Warehouse Frames.pdf` | A second contract: SAR 14,250,000.00, its own dates and damages (SAR 7,500 a day against SAR 48,000 in the main contract). |
+| `IPC-07 Payment Certificate.pdf` | Chained arithmetic: retention, advance recovery, VAT, amount due and the payment date. |
+| `Supplier Quotations.xlsx` | SAR, USD and EUR quotations: one total per currency. |
+| `Variation Orders Log.xlsx` | Approved, pending and rejected orders, some negative; totals by status. |
+| `Project Schedule - Baseline Rev 1.xlsx` | Real date cells; three activities finish after the contract completion date. |
+| `Risk Register.xlsx` | Score and rating formulas; five risks are High. |
+| `Progress Meeting No 12 - Minutes.pdf` | Progress against plan and an actions table with owners and dates. |
+| `Technical Specification - Vol 1 Civil.pdf` | 366 pages; facts such as the floor slab grade and the design life, with similar values for other elements on other pages. |
+| `Correspondence/Letter - EOT Claim No 2.pdf` | A subfolder; 46 days claimed for the late handover of Zone C. |
+| `Correspondence/تعليمات موقعية رقم 7.pdf` | An Arabic file with an Arabic name; only it says 120 m3 of concrete must be replaced within 10 days. |
+| `Delivery Note DN-0455 (scanned).pdf` | Image only: 48.2 tonnes of 16 mm B500B bars, readable only by looking at the page. |
+| `Daily Labour Returns.xlsx` | 57,600 rows; monthly questions must run SQL over all of them. |
+| `Cost Report Aug 2026.xlsx` | Corrupt: a workbook cut off after 4,000 bytes. |
+| `Tender Clarifications.pdf` | Password-protected (AES-256; the password is `KLP-tender-2026`, never given to Atlas). |
+| `Method Statement - Piling.pdf` | A 0-byte file. |
+| `Site Photos Index.csv` | A CSV, which Atlas skips. |
+
+No document names a health and safety manager, so that question must come back as "not found".
