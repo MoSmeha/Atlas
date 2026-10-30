@@ -12,6 +12,7 @@ import { NodeFileSystem } from '../../src/infrastructure/fs/NodeFileSystem';
 import { SqliteIndexFactory } from '../../src/infrastructure/index/SqliteIndexFactory';
 import { ExcelJsReader } from '../../src/infrastructure/readers/ExcelJsReader';
 import { makeApiDeps } from '../fakes/apiDeps';
+import { FakeFolderPicker } from '../fakes/FakeFolderPicker';
 import { FakeClock } from '../fakes/FakeClock';
 import { MemoryRunLogger } from '../fakes/MemoryRunLogger';
 
@@ -33,7 +34,7 @@ const indexFolder = new IndexFolder({
 });
 const app = buildApp(
   makeApiDeps({
-    folder: { indexFolder, workspace, repoRoot: root },
+    folder: { indexFolder, workspace, repoRoot: root, folderPicker: new FakeFolderPicker() },
     documents: { workspace },
     uploads: { indexFolder, uploadsDir, maxFileBytes: MAX_BYTES },
   }),

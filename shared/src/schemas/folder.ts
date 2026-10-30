@@ -5,6 +5,14 @@ import { ErrorDetail } from './errors';
 export const LoadFolderRequest = z.object({ path: z.string().trim().min(1) });
 export type LoadFolderRequest = z.infer<typeof LoadFolderRequest>;
 
+/** Opens the folder window on the computer running Atlas; the title is in the interface language. */
+export const PickFolderRequest = z.object({ title: z.string().trim().min(1).max(200) });
+export type PickFolderRequest = z.infer<typeof PickFolderRequest>;
+
+/** The folder chosen in that window, as an absolute path, or null when it was closed without one. */
+export const PickFolderResponse = z.object({ path: z.string().nullable() });
+export type PickFolderResponse = z.infer<typeof PickFolderResponse>;
+
 /** A file or subfolder of the loaded folder, relative to it with forward slashes, as the documents list gives it. */
 export const FolderItemRequest = z.object({ path: z.string().trim().min(1).max(1000) });
 export type FolderItemRequest = z.infer<typeof FolderItemRequest>;

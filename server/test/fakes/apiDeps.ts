@@ -9,6 +9,7 @@ import { Workspace } from '../../src/application/workspace/Workspace';
 import { FakeClock } from './FakeClock';
 import { FakeEmbeddingClient } from './FakeEmbeddingClient';
 import { FakeFileSystem } from './FakeFileSystem';
+import { FakeFolderPicker } from './FakeFolderPicker';
 import { FakeIndex } from './FakeIndex';
 import { FakeModelClient } from './FakeModelClient';
 import { FakeExporter, FakePageRenderer } from './FakeOutputs';
@@ -83,7 +84,7 @@ export function makeApiDeps(overrides: Partial<ApiDeps> = {}): ApiDeps {
       exportResult: new ExportResult(new FakeExporter(), new FakeClock()),
       exportsDir: '/exports',
     },
-    folder: { indexFolder, workspace, repoRoot: '/repo' },
+    folder: { indexFolder, workspace, repoRoot: '/repo', folderPicker: new FakeFolderPicker() },
     documents: { workspace },
     uploads: { indexFolder, uploadsDir: '/data/uploads', maxFileBytes: 10 * 1024 * 1024 },
     chat: { askQuestion: makeAskQuestion({ workspace, sessions }), sessions, workspace, apiKeyPresent: false },

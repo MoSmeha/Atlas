@@ -47,6 +47,8 @@ export const errors = {
   modelError: (message: string) => new AppError('model_error', `The model call failed: ${message}`),
   voiceUnavailable: (model: string) =>
     new AppError('model_error', `Voice calls need the ${model} model, which this OpenAI account cannot use.`),
+  folderPickerUnavailable: () =>
+    new AppError('invalid_request', "Atlas could not open a folder window on this computer. Type the folder's path instead."),
   stopped: () => new AppError('stopped', 'The question was stopped.'),
   invalidRequest: (message: string) => new AppError('invalid_request', message),
 };

@@ -12,6 +12,7 @@ import { NodeFileSystem } from '../../src/infrastructure/fs/NodeFileSystem';
 import { SqliteIndexFactory } from '../../src/infrastructure/index/SqliteIndexFactory';
 import { ExcelJsReader } from '../../src/infrastructure/readers/ExcelJsReader';
 import { makeApiDeps } from '../fakes/apiDeps';
+import { FakeFolderPicker } from '../fakes/FakeFolderPicker';
 import { FakeClock } from '../fakes/FakeClock';
 import { MemoryRunLogger } from '../fakes/MemoryRunLogger';
 
@@ -23,6 +24,7 @@ mkdirSync(docsOnly);
 writeFileSync(join(docsOnly, 'Cover_Letter.docx'), 'not a real docx');
 
 const workspace = new Workspace();
+const folderPicker = new FakeFolderPicker();
 const indexFolder = new IndexFolder({
   fs: new NodeFileSystem(),
   readers: [new ExcelJsReader()],
@@ -35,7 +37,7 @@ const indexFolder = new IndexFolder({
 });
 const app = buildApp(
   makeApiDeps({
-    folder: { indexFolder, workspace, repoRoot: root },
+    folder: { indexFolder, workspace, repoRoot: root, folderPicker },
     documents: { workspace },
   }),
 );
@@ -233,10 +235,35 @@ describe('removing files and folders', () => {
   });
 });
 
+describe('POST /api/folder/pick', () => {
+  const pickFolder = (payload: object) => app.inject({ method: 'POST', url: '/api/folder/pick', payload });
+
+  it('opens the folder window with the given title and answers with the chosen path', async () => {
+    folderPicker.answer = project;
+    const response = await pickFolder({ title: 'Choose the project folder' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ path: project });
+    expect(folderPicker.titles.at(-1)).toBe('Choose the project folder');
+  });
+
+  it('answers null when the window was closed without a folder', async () => {
+    folderPicker.answer = null;
+    const response = await pickFolder({ title: 'اختر مجلد المشروع' });
+    expect(response.json()).toEqual({ path: null });
+    expect(folderPicker.titles.at(-1)).toBe('اختر مجلد المشروع');
+  });
+
+  it('needs a title', async () => {
+    const response = await pickFolder({ title: ' ' });
+    expect(response.statusCode).toBe(400);
+    expect(response.json().error.code).toBe('invalid_request');
+  });
+});
+
 describe('GET /api/folder/events', () => {
   it('streams index events as server-sent events until the client goes away', async () => {
     const events = new Workspace();
-    const live = buildApp(makeApiDeps({ folder: { indexFolder, workspace: events, repoRoot: root } }));
+    const live = buildApp(makeApiDeps({ folder: { indexFolder, workspace: events, repoRoot: root, folderPicker } }));
     const address = await live.listen({ port: 0, host: '127.0.0.1' });
     const controller = new AbortController();
     try {

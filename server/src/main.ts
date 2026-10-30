@@ -21,6 +21,7 @@ import { VoiceCalls } from './application/voice/VoiceCalls';
 import { Workspace } from './application/workspace/Workspace';
 import { loadModelConfig, type ProviderModels } from './infrastructure/config/modelConfig';
 import { loadVoiceConfig } from './infrastructure/config/voiceConfig';
+import { NativeFolderPicker } from './infrastructure/dialog/NativeFolderPicker';
 import { XlsxExporter } from './infrastructure/export/XlsxExporter';
 import { NodeFileSystem } from './infrastructure/fs/NodeFileSystem';
 import { SqliteIndexFactory } from './infrastructure/index/SqliteIndexFactory';
@@ -187,7 +188,7 @@ export async function compose(settings: Settings = loadSettings(), scan: (ollama
     api: {
       health: { version: VERSION, apiKeyPresent },
       exports: { sessions, exportResult: new ExportResult(exporter, clock), exportsDir: settings.exportsDir },
-      folder: { indexFolder, workspace, repoRoot },
+      folder: { indexFolder, workspace, repoRoot, folderPicker: new NativeFolderPicker() },
       documents: { workspace },
       uploads: { indexFolder, uploadsDir, maxFileBytes: settings.maxFileBytes },
       chat: { askQuestion, sessions, workspace, apiKeyPresent },
