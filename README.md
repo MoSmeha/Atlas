@@ -30,7 +30,7 @@ Atlas reads a folder of PDFs and Excel files (contracts, bills of quantities, sp
 
 ![A folder loaded, with every file listed and Atlas's face waiting for a question](docs/images/start.png)
 
-**2. Get exact lists.** "Above SAR 1 million" checks every row, not a sample. Download the list as Excel or CSV.
+**2. Get exact lists.** Ask "which items are above SAR 1 million?" and Atlas checks every row of every file, PDF tables included, not a sample. Download just those items as Excel, with their sources, or as CSV.
 
 <img src="docs/images/table.png" alt="57 cost items above SAR 1 million, with the export menu open" width="720">
 
@@ -42,7 +42,7 @@ Atlas reads a folder of PDFs and Excel files (contracts, bills of quantities, sp
 
 ![A spreadsheet opened with the rows the answer used marked](docs/images/excel-source.png)
 
-**5. Compare versions.** What was added, removed and changed between two revisions, and how the total moved.
+**5. Compare two editions of a BOQ.** Ask what changed between Rev0 and Rev1 of a bill of quantities, and Atlas lists the items added, removed and changed, and how the total moved.
 
 <img src="docs/images/revisions.png" alt="Two BOQ revisions compared item by item" width="720">
 
