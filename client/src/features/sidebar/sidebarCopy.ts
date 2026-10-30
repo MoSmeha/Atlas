@@ -15,6 +15,12 @@ export interface SidebarCopy {
   projectFolder: string;
   useSample: string;
   load: string;
+  /** The folder button in the path box, which opens the computer's folder window. */
+  browse: string;
+  /** That window's title. */
+  pickTitle: string;
+  /** Shown when the computer has no folder window Atlas can open. */
+  pickFailed: string;
   emptyPathHint: string;
   folderNotFound: (path: string) => string;
   /** The server's own line counts the files it skipped; Arabic gives the plain next step instead. */
@@ -79,7 +85,10 @@ export const sidebarCopy: Bilingual<SidebarCopy> = {
     projectFolder: 'Project folder',
     useSample: 'Use sample project',
     load: 'Load',
-    emptyPathHint: 'Type the path of a folder first, for example C:\\Projects\\Riyadh Tower.',
+    browse: 'Choose a folder',
+    pickTitle: 'Choose the project folder',
+    pickFailed: "Atlas could not open a folder window on this computer. Type the folder's path instead.",
+    emptyPathHint: 'Choose a folder with the folder button, or type its path, for example C:\\Projects\\Riyadh Tower.',
     folderNotFound: (path) =>
       `Folder not found: ${path}. Check the spelling, or copy the path from the File Explorer address bar.`,
     folderEmpty: (serverMessage) => `${serverMessage} Pick a folder that holds PDF or Excel files.`,
@@ -96,7 +105,7 @@ export const sidebarCopy: Bilingual<SidebarCopy> = {
     empty: {
       'no-folder': {
         title: 'No folder loaded yet',
-        body: 'Type the path of a project folder above and press Load, or drop files into the box. Atlas lists every PDF and Excel file here and marks any it cannot read.',
+        body: 'Choose a project folder with the folder button above, or type its path and press Load, or drop files into the box. Atlas lists every PDF and Excel file here and marks any it cannot read.',
       },
       'no-files': {
         title: 'No PDF or Excel files here',
@@ -171,7 +180,10 @@ export const sidebarCopy: Bilingual<SidebarCopy> = {
     projectFolder: 'مجلد المشروع',
     useSample: 'استخدم المشروع التجريبي',
     load: 'فتح',
-    emptyPathHint: `اكتب مسار مجلد أولًا، مثل ${isolate('C:\\Projects\\Riyadh Tower')}.`,
+    browse: 'اختر مجلدًا',
+    pickTitle: 'اختر مجلد المشروع',
+    pickFailed: 'تعذّر على Atlas فتح نافذة اختيار المجلدات على هذا الحاسوب. اكتب مسار المجلد بدلًا من ذلك.',
+    emptyPathHint: `اختر مجلدًا بزر المجلد، أو اكتب مساره، مثل ${isolate('C:\\Projects\\Riyadh Tower')}.`,
     folderNotFound: (path) =>
       `لم يُعثر على المجلد ${isolate(path)}. تحقق من الكتابة، أو انسخ المسار من شريط العنوان في مستكشف الملفات.`,
     folderEmpty: () => 'لا يحوي هذا المجلد ملفات PDF أو Excel. اختر مجلدًا يحوي ملفات PDF أو Excel.',
@@ -188,7 +200,7 @@ export const sidebarCopy: Bilingual<SidebarCopy> = {
     empty: {
       'no-folder': {
         title: 'لم يُفتح أي مجلد بعد',
-        body: 'اكتب مسار مجلد المشروع في الأعلى واضغط «فتح»، أو أفلت الملفات في المربع. يعرض Atlas هنا كل ملف PDF وExcel، ويشير إلى أي ملف لا يستطيع قراءته.',
+        body: 'اختر مجلد المشروع بزر المجلد في الأعلى، أو اكتب مساره واضغط «فتح»، أو أفلت الملفات في المربع. يعرض Atlas هنا كل ملف PDF وExcel، ويشير إلى أي ملف لا يستطيع قراءته.',
       },
       'no-files': {
         title: 'لا توجد ملفات PDF أو Excel هنا',

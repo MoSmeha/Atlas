@@ -61,6 +61,8 @@ flowchart LR
   classify --> suggest["Five suggested questions"]
 ```
 
+The folder button in the sidebar's path box asks the server to open the computer's own folder window (`POST /api/folder/pick`, `infrastructure/dialog/NativeFolderPicker.ts`): Explorer's folder dialog through PowerShell on Windows, Finder's on macOS and zenity's on Linux. Server and browser run on the same computer, so the window opens in front of the person who clicked, and the chosen folder then loads in place, like a typed path. Only one window opens at a time, and closing it without a folder changes nothing. Where no window can open (Linux without zenity), the sidebar says to type the path.
+
 A watcher re-reads a file as soon as it is added or changed. The index is cached per folder, so loading a folder again takes milliseconds.
 
 Each row of the sidebar's tree has a × that removes it from Atlas, and its pages, tables and passages from the index, at once (`IndexFolder.remove`):

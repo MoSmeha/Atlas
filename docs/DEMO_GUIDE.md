@@ -134,7 +134,7 @@ Use this when someone asks "where is X in the code?". Paths start at `client/src
 
 | Feature | Screen (`client/src/`) | Brain (`server/src/`) |
 | --- | --- | --- |
-| Load a folder by path | `features/sidebar/FolderForm.tsx` | `api/routes/folder.ts`, `application/indexing/IndexFolder.ts` |
+| Load a folder by path or choose it in the folder window | `features/sidebar/FolderForm.tsx` | `api/routes/folder.ts`, `application/indexing/IndexFolder.ts`, `infrastructure/dialog/NativeFolderPicker.ts` |
 | Upload by drag and drop | `features/sidebar/UploadDrop.tsx` | `api/routes/uploads.ts` |
 | File list as a folder tree | `features/sidebar/FolderTree.tsx` | (status comes from `api/routes/folder.ts`) |
 | File status (damaged, scanned, empty...) | `features/sidebar/StatusBadge.tsx` | `domain/documentStatus.ts` |

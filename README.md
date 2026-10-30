@@ -157,7 +157,7 @@ Each step has its own chart in [docs/TECHNICAL.md](docs/TECHNICAL.md).
 | 5. Add a model key | `Copy-Item .env.example .env`, then set `OPENAI_API_KEY=`, or `GEMINI_API_KEY=` to use it free | `cp .env.example .env`, then set `OPENAI_API_KEY=`, or `GEMINI_API_KEY=` to use it free |
 | 6. Start | `pnpm dev`, then open http://localhost:5173 | `pnpm dev`, then open http://localhost:5173 |
 
-A sample project, a fictional tower in Riyadh, loads by itself. To use your own files, type a folder path in the sidebar or drop files on it.
+A sample project, a fictional tower in Riyadh, loads by itself. To use your own files, click the folder button in the sidebar and choose a folder, type its path, or drop files on the sidebar.
 
 ### On a Mac
 
