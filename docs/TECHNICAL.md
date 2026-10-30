@@ -227,6 +227,8 @@ samples/   fictional documents and their right answers
 docs/      images, eval report, note, time log
 ```
 
+[CODEBASE.md](CODEBASE.md) goes through every folder and file, one line each, and shows where the data lives and what an index file holds.
+
 ## Tests and eval
 
 | Command | What it does |

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="620" viewBox="0 0 880 620" role="img" aria-labelledby="t d">
+  <!-- Icons from Tabler Icons (MIT, tabler.io), the set the app uses. Labels are plain text: edit them here. -->
+  <title id="t">What Atlas does</title>
+  <desc id="d">Six features on a wheel round the Atlas name: reads whole folders, a source for every fact, exact numbers from code, compares revisions, voice calls and dictation, English and Arabic.</desc>
+  <defs>
+    <radialGradient id="ground" cx="50%" cy="50%" r="65%">
+      <stop offset="0" stop-color="#45423e"/>
+      <stop offset="1" stop-color="#2a2825"/>
+    </radialGradient>
+    <style>
+      text { font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; }
+      .label { font-size: 14.5px; font-weight: 600; fill: #1b1917; }
+    </style>
+  </defs>
+  <rect width="880" height="620" rx="24" fill="url(#ground)"/>
+  <circle cx="440" cy="310" r="230" fill="none" stroke="#e4e3e0" stroke-width="8"/>
+  <g transform="translate(418 218) scale(2.2)" fill="#f7f6f3">
+    <path d="M2 4.6 7 2.5v13l-5 2.1z"/>
+    <path d="M7.6 2.6 12.4 4.6v13l-4.8-2z" opacity="0.42"/>
+    <path d="M13 4.6 18 2.5v13L13 17.6z"/>
+  </g>
+  <text x="440" y="316" text-anchor="middle" font-size="40" font-weight="700" letter-spacing="-0.6" fill="#f7f6f3">Atlas</text>
+  <text x="440" y="350" text-anchor="middle" font-size="16" fill="#b6b4b2">Every answer,</text>
+  <text x="440" y="371" text-anchor="middle" font-size="16" fill="#b6b4b2">with its page.</text>
+
+  <g>
+    <circle cx="325" cy="110.8" r="84" fill="#211f1c"/>
+    <circle cx="325" cy="110.8" r="71" fill="#fdfcfb"/>
+    <g transform="translate(305 70.8) scale(1.6667)" fill="none" stroke="#373532" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19h-6a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2.5"/><path d="M15 18a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M20.2 20.2l1.8 1.8"/></g>
+    <text x="325" y="133.8" text-anchor="middle" class="label">Reads whole</text>
+    <text x="325" y="151.8" text-anchor="middle" class="label">folders</text>
+  </g>
+
+  <g>
+    <circle cx="555" cy="110.8" r="84" fill="#211f1c"/>
+    <circle cx="555" cy="110.8" r="71" fill="#fdfcfb"/>
+    <g transform="translate(535 70.8) scale(1.6667)" fill="none" stroke="#373532" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5"/><path d="M14 17.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0"/><path d="M18.5 19.5l2.5 2.5"/></g>
+    <text x="555" y="133.8" text-anchor="middle" class="label">A source for</text>
+    <text x="555" y="151.8" text-anchor="middle" class="label">every fact</text>
+  </g>
+
+  <g>
+    <circle cx="670" cy="310" r="84" fill="#211f1c"/>
+    <circle cx="670" cy="310" r="71" fill="#fdfcfb"/>
+    <g transform="translate(650 270) scale(1.6667)" fill="none" stroke="#373532" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14"/><path d="M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1"/><path d="M8 14l0 .01"/><path d="M12 14l0 .01"/><path d="M16 14l0 .01"/><path d="M8 17l0 .01"/><path d="M12 17l0 .01"/><path d="M16 17l0 .01"/></g>
+    <text x="670" y="333" text-anchor="middle" class="label">Exact numbers</text>
+    <text x="670" y="351" text-anchor="middle" class="label">from code</text>
+  </g>
+
+  <g>
+    <circle cx="555" cy="509.2" r="84" fill="#211f1c"/>
+    <circle cx="555" cy="509.2" r="71" fill="#fdfcfb"/>
+    <g transform="translate(535 469.2) scale(1.6667)" fill="none" stroke="#373532" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2"/><path d="M12 10l0 4"/><path d="M10 12l4 0"/><path d="M10 17l4 0"/></g>
+    <text x="555" y="532.2" text-anchor="middle" class="label">Compares</text>
+    <text x="555" y="550.2" text-anchor="middle" class="label">revisions</text>
+  </g>
+
+  <g>
+    <circle cx="325" cy="509.2" r="84" fill="#211f1c"/>
+    <circle cx="325" cy="509.2" r="71" fill="#fdfcfb"/>
+    <g transform="translate(305 469.2) scale(1.6667)" fill="none" stroke="#373532" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"/><path d="M15 7a2 2 0 0 1 2 2"/><path d="M15 3a6 6 0 0 1 6 6"/></g>
+    <text x="325" y="532.2" text-anchor="middle" class="label">Voice calls</text>
+    <text x="325" y="550.2" text-anchor="middle" class="label">and dictation</text>
+  </g>
+
+  <g>
+    <circle cx="210" cy="310" r="84" fill="#211f1c"/>
+    <circle cx="210" cy="310" r="71" fill="#fdfcfb"/>
+    <g transform="translate(190 270) scale(1.6667)" fill="none" stroke="#373532" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6.371c0 4.418 -2.239 6.629 -5 6.629"/><path d="M4 6.371h7"/><path d="M5 9c0 2.144 2.252 3.908 6 4"/><path d="M12 20l4 -9l4 9"/><path d="M19.1 18h-6.2"/><path d="M6.694 3l.793 .582"/></g>
+    <text x="210" y="333" text-anchor="middle" class="label">English</text>
+    <text x="210" y="351" text-anchor="middle" class="label">and Arabic</text>
+  </g>
+</svg>
